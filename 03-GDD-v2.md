@@ -1,4 +1,4 @@
-# 🎭 Reina Falsa v2 — GDD Consolidado
+# 🎭 Toxity: La Trampa Kármica de los Exmaridos (Reina Falsa v2) — GDD Consolidado
 
 ## 📖 Concepto General
 

@@ -1,4 +1,4 @@
-# 🗺️ Reina Falsa — Roadmap de Etapas
+# 🗺️ Toxity (Reina Falsa) — Roadmap de Etapas
 
 Guía de evolución del proyecto. Cada etapa es independiente y se construye sobre la anterior.
 

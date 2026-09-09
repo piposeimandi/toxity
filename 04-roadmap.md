@@ -4,11 +4,11 @@ Guía de evolución del proyecto. Cada etapa es independiente y se construye sob
 
 ---
 
-## ✅ Etapa 0 — Prototipo Mecánico (ACTUAL)
-> **Estado:** COMPLETO — en fase de playtesting
+## ✅ Etapa 0 — Prototipo Mecánico (ESTABLE)
+> **Estado:** COMPLETADO Y RESTAURADO — Listo para expansión
 
-**Entrega:** Juego modular en `game/`, listo para abrir con servidor local o subir a host.
-**Logro:** Validar que la mecánica sea divertida y balanceada.
+**Entrega:** Juego modular en `game/`, con integridad de datos verificada.
+**Logro:** Validar que la mecánica sea divertida y balanceada sin errores de carga.
 **Incluye:**
 - Lógica completa del Salado (atributos, conquistas, Puntos Gay ocultos)
 - IA de la Reina (sabotajes, stalkeo, gaslighting, cauto con PG)
@@ -16,6 +16,7 @@ Guía de evolución del proyecto. Cada etapa es independiente y se construye sob
 - Evento hombre gay
 - Panel DEBUG (tecla D) para testear mecánicas ocultas
 - Guardado local en el navegador (localStorage)
+- **FIX:** Reparada corrupción de JSON en `data.json`.
 
 **Estructura modular del código:**
 ```

@@ -1,0 +1,49 @@
+# 🎭 Reina Falsa: La Trampa Kármica de los Exmaridos
+
+**Reina Falsa** es un juego de rol de intriga psicológica y dinámicas relacionales para múltiples usuarios. El juego funciona como una guerra fría entre **dos exmaridos obsesionados con el control y el acecho mutuo (stalkeo)**. 
+
+El núcleo del diseño es una paradoja mecánica: la Reina tiene todo el poder para destruir las relaciones del Salado, pero si abusa de ese poder, desbloqueará la única condición de derrota que la destronará para siempre.
+
+---
+
+## 👥 Los Roles Principales y la Asimetría del Poder
+
+*   **La Reina (El Exmarido Acechador):** Comienza con el control absoluto del juego. Su objetivo es vigilar al Salado y usar su poder para "bloquear" y arruinar cualquier relación que este intente iniciar con mujeres (a quienes la Reina ve como "Reinas Falsas"). Su meta es mantener al Salado solo o conseguir ella un novio (hombre) primero para coronarse.
+*   **El Salado (El Exmarido Bloqueado):** Su objetivo original es rehacer su vida saliendo con mujeres y espiar a la Reina para defenderse. **Al inicio del juego, el Salado tiene estrictamente prohibido salir con hombres** (la mecánica está bloqueada para él). Solo puede desbloquear esta opción si la Reina lo empuja al límite.
+
+---
+
+## ⚙️ La Mecánica Crucial: Puntos Gay (Recurso de Frustración)
+
+Los **Puntos Gay** son un marcador especial que el Salado **no puede conseguir por sí mismo de ninguna manera**. Solo se generan a través de los errores y el abuso de poder de la Reina:
+
+1.  **El Sabotaje de la Reina:** Cada vez que el Salado intenta consolidar una cita o avanzar con una usuaria mujer ("Reina Falsa") y la Reina usa su poder para intervenir, bloquear o arruinar la relación, la Reina gana satisfacción, pero...
+2.  **La Mutación del Salado:** El juego penaliza el abuso de la Reina otorgándole **Puntos Gay** al Salado automáticamente como una simulación de "frustración amorosa absoluta con las mujeres".
+3.  **El Desbloqueo del Trono:** Al alcanzar un umbral crítico de Puntos Gay (ej. 5 puntos), el juego le notifica en secreto al Salado que **la "Ruta del Novio" ha sido desbloqueada**. A partir de ese momento, el Salado puede empezar a salir con hombres para ejecutar su venganza.
+
+---
+
+## 📊 Matriz de Acción y Repercusión
+
+| Acción de la Reina | Efecto Inmediato | Repercusión Oculta (Efecto Kármico) |
+| :--- | :--- | :--- |
+| **Bloquear a una Pretendiente** | Elimina a la mujer del juego y arruina la cita del Salado. | El Salado recibe **+1 Punto Gay** debido al sabotaje sistemático. |
+| **Stalkear con Éxito al Salado** | La Reina descubre con quién habla su ex. | Si falla el stalkeo o es descubierta, el Salado gana herramientas de contra-acecho. |
+| **Abuso de Poder Absoluto** | La Reina se siente intocable y domina la Corte. | El Salado alcanza el máximo de Puntos Gay y desbloquea la capacidad de buscar un Rey. |
+
+---
+
+## 🏁 Los Tres Finales Posibles
+
+El destino de la corona depende de qué tan estratégica (o tóxica) sea la Reina:
+
+### 1. Final: "La Reina se Corona" 👑✨
+Si la Reina es inteligente, bloquea al Salado con moderación, evita que sume los puntos necesarios y ella misma logra consolidar una relación con un hombre en el servidor. 
+> *"El Salado se quedó solo y sin opciones. La Reina ha encontrado a su nuevo rey y **se consagra como la única y Verdadera Reina**."*
+
+### 2. Final: "El Salado es la Verdadera Reina" (El Giro Kármico) 👑🏳️‍🌈
+Si la Reina abusa de su poder y destruye de forma tóxica todas las oportunidades del Salado con las mujeres, le otorga los Puntos Gay suficientes para liberar su restricción. Si el Salado aprovecha esto y consolida una relación con otro hombre, la Reina pierde instantáneamente.
+> *"La Reina destruyó cada puente del Salado con las mujeres, sin saber que construía su propio fin. El Salado ha encontrado un Rey. **¡La Reina ha caído, el Salado es la Verdadera Reina!**"*
+
+### 3. Final: "Soltería Tóxica" (Empate por Desgaste)
+Si el Salado nunca logra desbloquear los puntos o ambos se sabotean tanto que agotan a todos los pretendientes (hombres y mujeres) del servidor, el juego termina. Ambos exmaridos se quedan solos, estancados en su obsesión mutua.

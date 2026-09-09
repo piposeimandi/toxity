@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reina Falsa</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="debug-panel" id="debug-panel"><h3>[ DEBUG ]</h3><div id="debug-content"></div></div>
+<div id="mobile-debug"><button onclick="toggleDebug()">DEBUG</button></div>
+<div id="status-bar">
+<span>Semana <b id="s-week">1</b> | Dia <b id="s-day">1</b></span>
+<span>Dinero: $<b id="s-money">100</b></span>
+<span>Conquistas: <b id="s-conquests">0</b>/5</span>
+<span>Animo: <b id="s-mood">50</b></span>
+</div>
+<div id="screen-start" class="screen active">
+<h1>REINA FALSA</h1>
+<div style="text-align:center;margin-top:60px;">
+<p style="color:var(--dim);margin-bottom:30px;line-height:1.6">
+"Despues de todo lo que pase...<br>tenes que intentarlo de nuevo."
+</p>
+<p style="margin-bottom:40px;font-size:12px;color:var(--dim)">Un simulador de vida, amor y sabotaje emocional.</p>
+<div>
+<button onclick="newGame()" class="success">Nueva Partida</button>
+<button onclick="loadGame()" id="btn-continue" disabled>Continuar</button>
+</div>
+<p style="margin-top:40px;font-size:11px;color:var(--border)">Presiona D para el panel de debug</p>
+</div>
+</div>
+<div id="screen-map" class="screen">
+<h2>Mapa - Donde salir hoy</h2>
+<div id="map-locations"></div>
+<div style="margin-top:20px"><button onclick="passDay()">Pasar el dia...</button></div>
+</div>
+<div id="screen-feed" class="screen">
+<h2>Feed - Lo que pasa en tu vida</h2>
+<div id="feed-content"></div>
+<div style="margin-top:10px">
+<button onclick="showMap()">Ir a un lugar</button>
+<button onclick="passDay()">Pasar el dia</button>
+</div>
+</div>
+<div id="screen-date" class="screen">
+<h2 id="date-title">Cita</h2>
+<div id="date-content"></div>
+</div>
+<div id="screen-result" class="screen"><div id="result-content"></div></div>
+<div id="screen-weekend" class="screen">
+<h2>Fin de Semana</h2>
+<div id="weekend-content"></div>
+</div>
+<div id="screen-gameover" class="screen"><div id="gameover-content"></div></div>
+<div id="console-log"></div>
+<script src="js/data.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>

@@ -49,13 +49,20 @@ La exmarida acechadora que sabotea y controla.
 ## 🏆 Condiciones de Victoria
 
 ### El Salado gana si:
-1. **Victoria por conquista:** Acumula 3 puntos de conquista (con mujeres u hombres)
-2. **Victoria por Puntos Gay oculto:** Llega a 7 Puntos Gay → victoria sorpresa automática
+1. **Victoria por familia:** Forma una familia con UNA persona (recorriendo las etapas Conocer → Citas → Noviazgo → Familia con la misma persona).
+2. **Victoria por Puntos Gay oculto:** Llega a 7 Puntos Gay → victoria sorpresa automática (final alternativo kármico).
 
 ### La Reina gana si:
-1. **Se corona:** Consigue novio antes que el Salado
-2. **Aislamiento total:** El Salado se deprime y abandona la vida social
-3. **Asfixia:** La Reina bloquea todo por varias semanas sin que el Salado avance
+1. **Se corona formando familia:** Ella también desarrolla su relación por etapas y forma familia (con su pretendiente) antes que el Salado.
+2. **Aislamiento total:** El Salado se deprime y abandona la vida social.
+3. **Asfixia:** La Reina bloquea todo por varias semanas sin que el Salado progrese hacia el noviazgo.
+
+### 📈 Sistema de Relación (reemplaza "conquistas acumuladas")
+- NO se gana por cantidad de conquistas sueltas. Se gana **profundizando con UNA persona**.
+- **Etapas:** Conocer → Citas (repetidas con la misma persona) → Noviazgo → Familia.
+- Cada cita exitosa con el MISMO candidato avanza la relación.
+- Los conocidos quedan **disponibles en el feed** para repetir citas (no solo gente nueva random).
+- La Reina avanza su propia relación por etapas (invisible para el jugador, visible en debug).
 
 ---
 

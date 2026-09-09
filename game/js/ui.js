@@ -10,8 +10,20 @@ function updateStatusBar(){
 document.getElementById('s-week').textContent=G.week;
 document.getElementById('s-day').textContent=G.day;
 document.getElementById('s-money').textContent=G.money;
-document.getElementById('s-conquests').textContent=G.conquests;
 document.getElementById('s-mood').textContent=G.mood;
+var relEl=document.getElementById('s-relation');
+if(G.partner){
+  var rel=findRelationById(G.partner);
+  if(rel){
+    relEl.textContent=rel.name+' — '+getRelationProgressText(rel);
+  }else{
+    relEl.textContent='Sin relacion';
+  }
+}else if(G.relations.length>0){
+  relEl.textContent='Conocidos: '+G.relations.length+' (sin pareja)';
+}else{
+  relEl.textContent='Sin relacion';
+}
 document.getElementById('status-bar').style.display=G.gameOver?'none':'flex';
 }
 function getMoodLevel(){
@@ -72,7 +84,13 @@ container.appendChild(header);
 events.forEach(function(ev){
 var item=document.createElement('div');
 item.className='feed-item fade-in';
-if(ev.type==='date_opportunity'){
+if(ev.type==='known_person'){
+  var rel=ev.relation;
+  var cheapestCost=getCheapestLocationCost();
+  var canAfford=G.money>=cheapestCost;
+  var costNote=canAfford?'':' <span style="color:var(--dim)">(necesitas al menos $'+cheapestCost+')</span>';
+  item.innerHTML='<div class="time">Conocido — '+getRelationLabel(rel)+'</div><div class="text">'+ev.text+'</div><div class="actions"><button '+(canAfford?'':'disabled')+' onclick="goToDateKnown(\''+rel.id+'\')">'+(canAfford?'Volver a ver a '+rel.name:'Sin plata para salir'+costNote)+'</button></div>';
+}else if(ev.type==='date_opportunity'){
 var canAfford=ev.candidate&&true;
 var cheapestCost=getCheapestLocationCost();
 canAfford=G.money>=cheapestCost;
@@ -185,26 +203,29 @@ changesHtml+='</div>';
 }
 container.innerHTML='<div class="result-box fade-in" style="border-color:'+borderColor+'"><h2 style="color:'+borderColor+'">'+icon+' '+title+'</h2><p style="margin:10px 0;line-height:1.6">'+text+'</p>'+changesHtml+'</div><button onclick="advanceDay()">Continuar</button>';
 }
-function showGameOver(type){
+function showGameOver(type,partnerName){
 showScreen('gameover');
 var container=document.getElementById('gameover-content');
 document.getElementById('console-log').style.display='none';
 var html='';
 switch(type){
+case'victory_family':
+html='<div style="text-align:center;margin-top:80px"><h1 style="color:var(--success)">VICTORIA</h1><h2>Formaste una familia</h2><p style="margin:20px 0;color:var(--dim)">'+(partnerName||'Alguien')+' y vos, en una casita con olor a pan. Despues de todo el drama, encontraste tu lugar.</p><p style="font-style:italic;margin-top:10px">No es perfecto, pero es de ustedes. Es familia.</p></div>';
+break;
 case'victory_conquest':
 html='<div style="text-align:center;margin-top:80px"><h1 style="color:var(--success)">VICTORIA</h1><h2>El Salado logro rehacer su vida</h2><p style="margin:20px 0;color:var(--dim)">Con '+G.totalConquests+' conquistas, te reinventaste. La Reina puede coronarse tranquila: vos ya tenes tu propia corona.</p></div>';
 break;
 case'victory_pg':
 html='<div style="text-align:center;margin-top:80px"><h1 style="color:var(--accent)">VICTORIA OCULTA</h1><h2>El Salado es la Verdadera Reina</h2><p style="margin:20px 0;color:var(--dim)">Sin aviso, sin explicacion. Llegaste a '+G.pg+' Puntos Gay. La Reina no contaba con esto.</p><p style="font-style:italic;margin-top:10px">"Al parecer, yo era el problema todo el tiempo." - La Reina</p></div>';
 break;
-case'defeat_queen':
-html='<div style="text-align:center;margin-top:80px"><h1 style="color:var(--danger)">DERROTA</h1><h2>La Reina se corono</h2><p style="margin:20px 0;color:var(--dim)">La Reina consiguio '+G.queenNovio+' novio(s) antes que vos. Se corono con un diadema y todo.</p><p style="font-style:italic;margin-top:10px">"Gracias por todo, mi rey. Ahora reina yo."</p></div>';
+case'defeat_queen_family':
+html='<div style="text-align:center;margin-top:80px"><h1 style="color:var(--danger)">DERROTA</h1><h2>La Reina formo familia</h2><p style="margin:20px 0;color:var(--dim)">'+(QUEEN_DEFEAT_TEXTS.familia||'La Reina formo familia antes que vos.')+'</p><p style="font-style:italic;margin-top:10px">"Gracias por todo, mi rey. Ahora reina yo."</p></div>';
 break;
 case'defeat_isolation':
 html='<div style="text-align:center;margin-top:80px"><h1 style="color:var(--danger)">DERROTA</h1><h2>El Salado se aislo</h2><p style="margin:20px 0;color:var(--dim)">Tres semanas sin ver a nadie. Tu animo llego a cero. Te encerraste y la Reina gano por default.</p><p style="font-style:italic;margin-top:10px">"Siempre supe que no podias sin mi." - La Reina</p></div>';
 break;
 case'defeat_suffocation':
-html='<div style="text-align:center;margin-top:80px"><h1 style="color:var(--danger)">DERROTA</h1><h2>Asfixia</h2><p style="margin:20px 0;color:var(--dim)">Ocho semanas. Ni una sola conquista. La Reina bloqueo todo sin que te des cuenta.</p><p style="font-style:italic;margin-top:10px">"Que triste. Yo al menos intento." - La Reina</p></div>';
+html='<div style="text-align:center;margin-top:80px"><h1 style="color:var(--danger)">DERROTA</h1><h2>Asfixia</h2><p style="margin:20px 0;color:var(--dim)">Ocho semanas. Ni un solo conocido. La Reina bloqueo todo sin que te des cuenta.</p><p style="font-style:italic;margin-top:10px">"Que triste. Yo al menos intento." - La Reina</p></div>';
 break;
 }
 html+='<div style="margin-top:40px;text-align:center"><button onclick="location.reload()">Volver a empezar</button></div>';
@@ -215,9 +236,28 @@ if(!debugOpen)return;
 var el=document.getElementById('debug-content');
 var html='';
 html+='<div class="debug-entry"><b>PG:</b> '+G.pg+' / 7</div>';
-html+='<div class="debug-entry"><b>Progreso Reina:</b> '+G.queenProgress+' / 3</div>';
-html+='<div class="debug-entry"><b>Novio Reina:</b> '+G.queenNovio+' / 3</div>';
-html+='<div class="debug-entry"><b>Semanas s/conquista:</b> '+G.weeksWithoutConquests+'</div>';
+html+='<div class="debug-entry"><b>Relaciones:</b> '+G.relations.length+'</div>';
+if(G.partner){
+  var pRel=findRelationById(G.partner);
+  if(pRel){
+    html+='<div class="debug-entry"><b>Pareja:</b> '+pRel.name+' — '+getRelationProgressText(pRel)+'</div>';
+  }else{
+    html+='<div class="debug-entry"><b>Pareja:</b> (ID: '+G.partner+', no encontrada)</div>';
+  }
+}else{
+  html+='<div class="debug-entry"><b>Pareja:</b> Ninguna</div>';
+}
+html+='<div class="debug-entry"><b>Family done:</b> '+(G.familyDone?'SI':'NO')+'</div>';
+html+='<div class="debug-entry" style="margin-top:6px;border-top:1px solid var(--border);padding-top:6px"><b>Reina:</b> '+G.queenRelation.stage+' ('+G.queenRelation.dates+'/'+REL_STAGE_THRESHOLDS.familia+')</div>';
+html+='<div class="debug-entry" style="margin-top:6px"><b>Dates log:</b></div>';
+G.dateLog.slice(-8).forEach(function(d){
+  html+='<div class="debug-entry">'+(d.success?'OK':'FALLA')+' — '+d.name+' W'+d.week+'D'+d.day+'</div>';
+});
+html+='<div class="debug-entry" style="margin-top:6px;border-top:1px solid var(--border);padding-top:6px"><b>Relaciones detalle:</b></div>';
+G.relations.forEach(function(r){
+  html+='<div class="debug-entry">'+r.name+' — '+getRelationProgressText(r)+' ('+r.dates+' citas)</div>';
+});
+html+='<div class="debug-entry" style="margin-top:6px;border-top:1px solid var(--border);padding-top:6px"><b>Semanas s/conquista:</b> '+G.weeksWithoutConquests+'</div>';
 html+='<div class="debug-entry"><b>Dias s/salir:</b> '+G.daysWithoutDates+'</div>';
 html+='<div class="debug-entry"><b>Hombres consecutivos:</b> '+G.consecutiveMen+'</div>';
 html+='<div class="debug-entry"><b>Animo:</b> '+G.mood+'</div>';
@@ -226,11 +266,11 @@ html+='<div class="debug-entry"><b>Dinero:</b> $'+G.money+'</div>';
 html+='<div class="debug-entry" style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px"><b>Gym mode:</b> '+(G.gymLastEvent||'ninguno')+'</div>';
 html+='<div class="debug-entry" style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px"><b>Log de la Reina:</b></div>';
 G.queensLogs.slice(-10).forEach(function(l){
-html+='<div class="debug-entry">'+l.type+' - W'+l.week+(l.pg?' PG:'+l.pg:'')+(l.note?' ['+l.note+']':'')+'</div>';
+html+='<div class="debug-entry">'+l.type+' - W'+l.week+(l.stage?' ['+l.stage+']':'')+(l.pg?' PG:'+l.pg:'')+(l.note?' ['+l.note+']':'')+'</div>';
 });
 html+='<div class="debug-entry" style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px"><b>Historial:</b></div>';
 G.history.slice(-10).forEach(function(h){
-html+='<div class="debug-entry">'+h.type+' - '+(h.name||'-')+' - W'+h.week+'D'+h.day+'</div>';
+html+='<div class="debug-entry">'+h.type+' - '+(h.name||'-')+' - W'+h.week+'D'+h.day+(h.stage?' ['+h.stage+']':'')+'</div>';
 });
 el.innerHTML=html;
 }

@@ -1,4 +1,60 @@
 {
+  "relStageThresholds": {
+    "citando": 3,
+    "novio": 5,
+    "familia": 7
+  },
+  "queenChancePerWeek": 60,
+  "stageAdvanceTexts": {
+    "first_meet": [
+      "Conociste a {name}. Algo en esa mirada te hizo quedarte un rato mas.",
+      "La charla con {name} fue facil. Raro, pero bueno.",
+      "{name} te parecio distinta. No sabes por que, pero queres saber mas.",
+      "Conociste a {name} y te diste cuenta de que no queres seguir solo.",
+      "La primera vez que hablaste con {name}, algo se movio adentro."
+    ],
+    "citando": [
+      "Llevan varias citas y la cosa se pone seria. {name} y vos estan saliendo.",
+      "Despues de tantas salidas, ya no pueden decir que 'son amigos'. {name} y vos estan citando.",
+      "La gente los ve y dice 'son una pareja'. Ni ustedes lo niegan ya. Salen con {name}.",
+      "Tercera cita con {name} y te diste cuenta: esto ya no es casual.",
+      "{name} te escribio 'nos vemos el finde?' y vos no pudiste decir que no."
+    ],
+    "novio": [
+      "Se pusieron de novios. {name} te tomo de la mano y dijiste 'dale, vamos'.",
+      "La conexion con {name} es real. Se declararon. Novios oficiales.",
+      "No necesitaron decirlo. Simplemente pasaron a ser novios. {name} y vos.",
+      "La noche fue perfecta. {name} te dijo 'ya no quiero estar con otro' y vos tambien.",
+      "Se dieron cuenta: esto es noviazgo. {name} y vos, juntos, oficialmente."
+    ],
+    "familia": [
+      "Formaste una familia con {name}. La casa huele a pan y a futuro.",
+      "Vos y {name} armaron algo que parecia imposible. Una familia. Una casa. Un comienzo.",
+      "Despues de todo el drama, encontraste tu lugar. Con {name}, en una casita con olor a pan.",
+      "{name} y vos construyeron algo real. No es perfecto, pero es de ustedes. Es familia.",
+      "Cerraste los ojos y pensaste: 'esto es lo que queria'. Una familia con {name}."
+    ]
+  },
+  "queenAdvanceTexts": {
+    "citando": [
+      "La Reina salio con alguien. Parece que algo se movio en su vida.",
+      "Tu ex esta saliendo con alguien. No lo ves pero lo sentis.",
+      "La Reina tiene cita. Vos la ves por historias. Ella sonrie."
+    ],
+    "novio": [
+      "La Reina se puso de novia. Subio una foto con alguien. La leyenda dice 'nuevo comienzo'.",
+      "Tu ex tiene novio. La gente te avisa. Vos fingis que no te importa.",
+      "La Reina se declaro con alguien. Es peor de lo que pensabas."
+    ],
+    "familia": [
+      "La Reina formo familia. La casita esta en Instagram. Huele a pan, dicen.",
+      "Tu ex se caso. O algo asi. Ya tiene familia. Ya gano.",
+      "La Reina ya tiene su familia. Vos quedaste mirando desde afuera."
+    ]
+  },
+  "queenDefeatTexts": {
+    "familia": "La Reina formo familia antes que vos. Se corono con diadema y todo. La casita esta en Instagram."
+  },
   "femaleCandidates": [
     {"name":"Camila","traits":"Divertida, directa, le gusta el cafe","personality":"Extrovertida","appeal":60},
     {"name":"Lucia","traits":"Intelectual, timida, lee mucho","personality":"Introspectiva","appeal":55},

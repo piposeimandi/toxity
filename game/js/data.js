@@ -22,6 +22,7 @@ var queenChancePerWeek=60;
 var stageAdvanceTexts={};
 var queenAdvanceTexts={};
 var queenDefeatTexts={};
+var ACTION_ICONS={};
 var DATA_LOADED=false;
 
 function loadGameData(){
@@ -52,6 +53,7 @@ function loadGameData(){
       stageAdvanceTexts=data.stageAdvanceTexts||{};
       queenAdvanceTexts=data.queenAdvanceTexts||{};
       queenDefeatTexts=data.queenDefeatTexts||{};
+      ACTION_ICONS=data.actionIcons||{};
       DATA_LOADED=true;
     })
     .catch(function(err){

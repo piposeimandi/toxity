@@ -49,6 +49,8 @@ function getOrCreateRelation(name){
     if(G.relations[i].name===name)return G.relations[i];
   }
   var rel={id:'rel_'+Date.now()+'_'+Math.floor(Math.random()*1000),name:name,stage:'conocer',dates:0,isGay:false};
+  for(var j=0;j<FEMALE_CANDIDATES.length;j++){if(FEMALE_CANDIDATES[j].name===name){rel.photo=FEMALE_CANDIDATES[j].photo;break;}}
+  if(!rel.photo){for(var j=0;j<MALE_CANDIDATES.length;j++){if(MALE_CANDIDATES[j].name===name){rel.photo=MALE_CANDIDATES[j].photo;break;}}}
   G.relations.push(rel);
   return rel;
 }
@@ -243,7 +245,7 @@ saveGame();
 showScreen('date');
 document.getElementById('date-title').textContent='Algo raro en el gym...';
 var container=document.getElementById('date-content');
-container.innerHTML='<div class="candidate fade-in"><div class="name" style="color:var(--accent)">'+c.name+'</div><div class="traits">'+c.traits+' | '+c.personality+'</div><div class="desc">'+text+'</div></div><button onclick="advanceDay()">Continuar</button>';
+container.innerHTML='<div class="candidate fade-in"><div class="name" style="color:var(--accent)">'+photoHtml(c.photo,c.name)+c.name+'</div><div class="traits">'+c.traits+' | '+c.personality+'</div><div class="desc">'+text+'</div></div><button onclick="advanceDay()">Continuar</button>';
 }
 function resolveGymHarasser(){
 var c=GYM_HARASSER_TEXTS[Math.floor(Math.random()*GYM_HARASSER_TEXTS.length)];
@@ -410,7 +412,7 @@ baseChance=Math.max(5,Math.min(95,baseChance));
 var badgeCls=loc.risk==='low'?'easy':loc.risk==='medium'?'medium':loc.risk==='high'?'hard':'extreme';
 var riskBadge='<span class="badge '+badgeCls+'">Riesgo: '+loc.riskLabel+'</span>';
 var stageBadge='<span class="badge medium">'+getRelationLabel(rel)+'</span>';
-container.innerHTML='<div class="candidate fade-in"><div class="name">'+rel.name+' '+riskBadge+' '+stageBadge+'</div><div class="traits">Saliendo: '+getRelationProgressText(rel)+'</div><div class="desc">Chance de exito estimado: ~'+Math.round(baseChance)+'%</div></div><div class="dialogue-options" id="dialogue-opts"></div>';
+container.innerHTML='<div class="candidate fade-in"><div class="name">'+photoHtml(rel.photo,rel.name)+rel.name+' '+riskBadge+' '+stageBadge+'</div><div class="traits">Saliendo: '+getRelationProgressText(rel)+'</div><div class="desc">Chance de exito estimado: ~'+Math.round(baseChance)+'%</div></div><div class="dialogue-options" id="dialogue-opts"></div>';
 var opts=document.getElementById('dialogue-opts');
 var moodLevel=getMoodLevel();
 DIALOGUE_OPTIONS.forEach(function(d,i){
@@ -589,7 +591,7 @@ if(hasProgressionTowardNoviazgo())G.weeksWithoutConquests=0;
 queenAdvanceWeek();
 generateWeekEvents();
 var html='<div class="week-summary fade-in">';
-html+='<h3>Semana '+G.week+' completada</h3>';
+html+='<h3>🗓️ Semana '+G.week+' completada</h3>';
 html+='<p style="margin:10px 0">Dinero: $'+G.money+' (cobro +$40)</p>';
 html+='<p>Animo: '+G.mood+'</p>';
 if(G.partner){

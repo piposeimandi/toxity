@@ -70,3 +70,4 @@ button:disabled .price-note{color:var(--danger);font-size:11px}
 .badge.medium{border-color:var(--accent);color:var(--accent)}
 .badge.hard{border-color:#e07020;color:#e07020}
 .badge.extreme{border-color:var(--danger);color:var(--danger)}
+.candidate-photo{width:60px;height:60px;border-radius:50%;border:1px solid var(--border);margin-right:10px;vertical-align:middle;object-fit:cover}

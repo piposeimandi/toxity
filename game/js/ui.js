@@ -3,6 +3,7 @@
    Depende de las funciones y datos en data.js y game.js. */
 
 var debugOpen=false;
+function photoHtml(src,name){return src?'<img class="candidate-photo" src="'+src+'" alt="'+name+'" onerror="this.style.display=\'none\'">':'';}
 
 function log(msg,cls){var el=document.getElementById('console-log');var d=document.createElement('div');d.className='log-line'+(cls?' '+cls:'');d.textContent=msg;el.appendChild(d);el.scrollTop=el.scrollHeight;}
 function showScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});var el=document.getElementById('screen-'+id);if(el)el.classList.add('active');updateStatusBar();}
@@ -50,10 +51,10 @@ keys.forEach(function(key){
 var loc=DATE_LOCATIONS[key];
 var canAfford=G.money>=loc.cost;
 var costText=canAfford?'$'+loc.cost:'$'+loc.cost+' (necesitas $'+(loc.cost-G.money)+' mas)';
-var btnText=canAfford?'Ir al '+loc.name:'Sin plata para '+loc.name;
+var btnText=canAfford?'📍 Ir al '+loc.name:'Sin plata para '+loc.name;
 var card=document.createElement('div');
 card.className='location-card fade-in';
-card.innerHTML='<div class="info"><div class="name">'+loc.name+(canAfford?'':' <span style="color:var(--danger)">[BLOQUEADO]</span>')+(loc.safe?' <span style="color:var(--success)">[REFUGIO]</span>':'')+'</div><div class="desc">'+loc.desc+' | Riesgo: '+loc.riskLabel+'</div><div class="desc" style="margin-top:4px">'+costText+'</div></div><div><button '+(canAfford?'':'disabled')+' onclick="goToLocationFromMap(\''+key+'\')">'+btnText+'</button></div>';
+card.innerHTML='<div class="info"><div class="name">'+loc.icon+' '+loc.name+(canAfford?'':' <span style="color:var(--danger)">[BLOQUEADO]</span>')+(loc.safe?' <span style="color:var(--success)">[REFUGIO]</span>':'')+'</div><div class="desc">'+loc.desc+' | Riesgo: '+loc.riskLabel+'</div><div class="desc" style="margin-top:4px">'+costText+'</div></div><div><button '+(canAfford?'':'disabled')+' onclick="goToLocationFromMap(\''+key+'\')">'+btnText+'</button></div>';
 container.appendChild(card);
 });
 }
@@ -89,18 +90,18 @@ if(ev.type==='known_person'){
   var cheapestCost=getCheapestLocationCost();
   var canAfford=G.money>=cheapestCost;
   var costNote=canAfford?'':' <span style="color:var(--dim)">(necesitas al menos $'+cheapestCost+')</span>';
-  item.innerHTML='<div class="time">Conocido — '+getRelationLabel(rel)+'</div><div class="text">'+ev.text+'</div><div class="actions"><button '+(canAfford?'':'disabled')+' onclick="goToDateKnown(\''+rel.id+'\')">'+(canAfford?'Volver a ver a '+rel.name:'Sin plata para salir'+costNote)+'</button></div>';
+  item.innerHTML='<div class="time">💞 Conocido — '+getRelationLabel(rel)+'</div>'+photoHtml(rel.photo,rel.name)+'<div class="text">'+ev.text+'</div><div class="actions"><button '+(canAfford?'':'disabled')+' onclick="goToDateKnown(\''+rel.id+'\')">'+(canAfford?'💞 Volver a ver a '+rel.name:'Sin plata para salir'+costNote)+'</button></div>';
 }else if(ev.type==='date_opportunity'){
 var canAfford=ev.candidate&&true;
 var cheapestCost=getCheapestLocationCost();
 canAfford=G.money>=cheapestCost;
 var costNote=canAfford?'':' <span style="color:var(--dim)">(necesitas al menos $'+cheapestCost+')</span>';
-item.innerHTML='<div class="time">Oportunidad</div><div class="text">'+ev.text+'</div><div class="actions"><button '+(canAfford?'':'disabled')+' onclick="goToDate(\''+ev.candidate.name+'\')">'+(canAfford?'Ir a ver a '+ev.candidate.name:'Sin plata para salir'+costNote)+'</button></div>';
+item.innerHTML='<div class="time">✨ Oportunidad</div>'+photoHtml(ev.candidate.photo,ev.candidate.name)+'<div class="text">'+ev.text+'</div><div class="actions"><button '+(canAfford?'':'disabled')+' onclick="goToDate(\''+ev.candidate.name+'\')">'+(canAfford?'💘 Ir a ver a '+ev.candidate.name:'Sin plata para salir'+costNote)+'</button></div>';
 }else if(ev.type==='location_hint'){
 var loc=DATE_LOCATIONS[ev.location];
 var canAfford=G.money>=loc.cost;
 var costNote=canAfford?'':' <span style="color:var(--dim)">(necesitas $'+loc.cost+')</span>';
-item.innerHTML='<div class="time">Sugerencia</div><div class="text">'+ev.text+'</div><div class="actions"><button '+(canAfford?'':'disabled')+' onclick="goToLocation(\''+ev.location+'\')">'+(canAfford?'Ir al '+loc.name:'Sin plata para '+loc.name+costNote)+'</button></div>';
+item.innerHTML='<div class="time">📍 Sugerencia</div><div class="text">'+ev.text+'</div><div class="actions"><button '+(canAfford?'':'disabled')+' onclick="goToLocation(\''+ev.location+'\')">'+(canAfford?'📍 Ir al '+loc.name:'Sin plata para '+loc.name+costNote)+'</button></div>';
 }else{
 item.innerHTML='<div class="time">Tu vida</div><div class="text">'+ev.text+'</div>';
 }
@@ -135,7 +136,7 @@ baseChance=Math.max(5,Math.min(95,baseChance));
 var riskBadge='';
 var badgeCls=loc.risk==='low'?'easy':loc.risk==='medium'?'medium':loc.risk==='high'?'hard':'extreme';
 riskBadge='<span class="badge '+badgeCls+'">Riesgo: '+loc.riskLabel+'</span>';
-container.innerHTML='<div class="candidate fade-in"><div class="name">'+c.name+' '+riskBadge+'</div><div class="traits">'+c.traits+' | '+c.personality+'</div><div class="desc">Chance de exito estimado: ~'+Math.round(baseChance)+'%</div></div><div class="dialogue-options" id="dialogue-opts"></div>';
+container.innerHTML='<div class="candidate fade-in"><div class="name">'+photoHtml(c.photo,c.name)+c.name+' '+riskBadge+'</div><div class="traits">'+c.traits+' | '+c.personality+'</div><div class="desc">Chance de exito estimado: ~'+Math.round(baseChance)+'%</div></div><div class="dialogue-options" id="dialogue-opts"></div>';
 var opts=document.getElementById('dialogue-opts');
 var moodLevel=getMoodLevel();
 DIALOGUE_OPTIONS.forEach(function(d,i){
@@ -171,7 +172,7 @@ G.money-=0;
 G.daysWithoutDates++;
 G.history.push({type:'gay_encounter',name:c.name,week:G.week,day:G.day});
 saveGame();
-container.innerHTML='<div class="result-box info fade-in"><h2 style="color:var(--fg)">Algo no cerro...</h2><p style="margin:10px 0;line-height:1.6">Te cruzaste con '+c.name+' en el '+loc.name+'. Hablaron un rato pero algo no se sentia bien. La vibe era... diferente.</p><p style="font-style:italic;margin-top:10px;color:var(--dim)">Perdiste el dia y el dinero. No sabes bien que paso.</p></div><button onclick="advanceDay()">Continuar</button>';
+container.innerHTML='<div class="result-box info fade-in"><h2 style="color:var(--fg)">Algo no cerro...</h2>'+photoHtml(c.photo,c.name)+'<p style="margin:10px 0;line-height:1.6">Te cruzaste con '+c.name+' en el '+loc.name+'. Hablaron un rato pero algo no se sentia bien. La vibe era... diferente.</p><p style="font-style:italic;margin-top:10px;color:var(--dim)">Perdiste el dia y el dinero. No sabes bien que paso.</p></div><button onclick="advanceDay()">Continuar</button>';
 }
 function showGymResult(type,text,changes){
 showScreen('result');
@@ -182,15 +183,15 @@ var icon='';
 if(type==='training'){
 title='Entrenamiento';
 borderColor='var(--success)';
-icon='[GYM]';
+icon='💪';
 }else if(type==='friend'){
 title='Social';
 borderColor='var(--accent)';
-icon='[SOCIAL]';
+icon='🤝';
 }else if(type==='harasser'){
 title='Situacion rara...';
 borderColor='var(--danger)';
-icon='[???]';
+icon='⚠️';
 }
 var changesHtml='';
 if(changes&&changes.length>0){

@@ -16,7 +16,8 @@ var relEl=document.getElementById('s-relation');
 if(G.partner){
   var rel=findRelationById(G.partner);
   if(rel){
-    relEl.textContent=rel.name+' — '+getRelationProgressText(rel);
+    var hp=(rel.healthPoints!==undefined?rel.healthPoints:(G.healthPoints||0));
+    relEl.textContent=rel.name+' — '+hp+'/100 ['+getRelStageText(hp)+']';
   }else{
     relEl.textContent='Sin relacion';
   }
@@ -31,6 +32,19 @@ function getMoodLevel(){
 if(G.mood>=70)return'high';
 if(G.mood>=30)return'medium';
 return'low';
+}
+/* Etapa de la relación según puntos de salud (umbrales de REL_HEALTH_THRESHOLDS). */
+function getRelStageText(pts){
+pts=pts||0;
+var novioT=40,famT=70;
+if(typeof REL_HEALTH_THRESHOLDS!=='undefined'&&REL_HEALTH_THRESHOLDS){
+  if(REL_HEALTH_THRESHOLDS.novio)novioT=REL_HEALTH_THRESHOLDS.novio;
+  if(REL_HEALTH_THRESHOLDS.familia)famT=REL_HEALTH_THRESHOLDS.familia;
+}
+if(pts>=famT)return'Familia';
+if(pts>=novioT)return'Novios';
+if(pts>=20)return'Saliendo';
+return'Conociendo';
 }
 function getCheapestLocationCost(){
 var min=99999;
@@ -120,6 +134,26 @@ warn.className='feed-item fade-in';
 warn.innerHTML='<div class="time" style="color:var(--danger)">Alerta</div><div class="text" style="color:var(--danger)">Llevas '+G.daysWithoutDates+' dias sin salir. Tu animo se esta deteriorando.</div>';
 container.appendChild(warn);
 }
+if(G.partner){
+  var prel=findRelationById(G.partner);
+  if(prel){
+    var php=(prel.healthPoints!==undefined?prel.healthPoints:(G.healthPoints||0));
+    var hItem=document.createElement('div');
+    hItem.className='feed-item fade-in';
+    var hHtml='<div class="time">💞 Salud relación</div><div class="text">Tu relación con '+prel.name+': '+php+'/100 ['+getRelStageText(php)+']';
+    if(G.weeksWithoutProgress>0){
+      hHtml+='<br>Lleva '+G.weeksWithoutProgress+' semana(s) sin progresar.';
+    }
+    hHtml+='</div>';
+    var gate=((typeof REL_HEALTH_THRESHOLDS!=='undefined'&&REL_HEALTH_THRESHOLDS&&REL_HEALTH_THRESHOLDS.novio)||40);
+    var risk=((typeof INFIDELITY_RISK!=='undefined')?INFIDELITY_RISK:40);
+    if(G.healthPoints>=gate){
+      hHtml+='<div class="text" style="color:var(--danger)">⚠️ Tenés pareja ('+prel.name+'). Salir con alguien nuevo tiene '+risk+'% de riesgo de que se entere por cita.</div>';
+    }
+    hItem.innerHTML=hHtml;
+    container.appendChild(hItem);
+  }
+}
 updateDebug();
 }
 function showCandidateDate(c,loc){
@@ -137,6 +171,12 @@ var riskBadge='';
 var badgeCls=loc.risk==='low'?'easy':loc.risk==='medium'?'medium':loc.risk==='high'?'hard':'extreme';
 riskBadge='<span class="badge '+badgeCls+'">Riesgo: '+loc.riskLabel+'</span>';
 container.innerHTML='<div class="candidate fade-in"><div class="name">'+photoHtml(c.photo,c.name)+c.name+' '+riskBadge+'</div><div class="traits">'+c.traits+' | '+c.personality+'</div><div class="desc">Chance de exito estimado: ~'+Math.round(baseChance)+'%</div></div><div class="dialogue-options" id="dialogue-opts"></div>';
+var _pr=G.partner?findRelationById(G.partner):null;
+var _gate=((typeof REL_HEALTH_THRESHOLDS!=='undefined'&&REL_HEALTH_THRESHOLDS&&REL_HEALTH_THRESHOLDS.novio)||40);
+var _risk=((typeof INFIDELITY_RISK!=='undefined')?INFIDELITY_RISK:40);
+if(_pr&&c.name!==_pr.name&&G.healthPoints>=_gate){
+container.innerHTML+='<div class="candidate fade-in" style="border-color:var(--danger)"><div class="text" style="color:var(--danger)">⚠️ ADVERTENCIA: Tenés pareja ('+_pr.name+', '+G.healthPoints+'/100). Si seguís saliendo con alguien más, hay '+_risk+'% de riesgo de que se entere.</div></div>';
+}
 var opts=document.getElementById('dialogue-opts');
 var moodLevel=getMoodLevel();
 DIALOGUE_OPTIONS.forEach(function(d,i){
@@ -174,7 +214,7 @@ G.history.push({type:'gay_encounter',name:c.name,week:G.week,day:G.day});
 saveGame();
 container.innerHTML='<div class="result-box info fade-in"><h2 style="color:var(--fg)">Algo no cerro...</h2>'+photoHtml(c.photo,c.name)+'<p style="margin:10px 0;line-height:1.6">Te cruzaste con '+c.name+' en el '+loc.name+'. Hablaron un rato pero algo no se sentia bien. La vibe era... diferente.</p><p style="font-style:italic;margin-top:10px;color:var(--dim)">Perdiste el dia y el dinero. No sabes bien que paso.</p></div><button onclick="advanceDay()">Continuar</button>';
 }
-function showGymResult(type,text,changes){
+function showGymResult(type,text,changes,healthNote){
 showScreen('result');
 var container=document.getElementById('result-content');
 var title='';
@@ -202,7 +242,11 @@ changesHtml+='<div style="font-size:12px;margin:2px 0"><span style="color:var(--
 }
 changesHtml+='</div>';
 }
-container.innerHTML='<div class="result-box fade-in" style="border-color:'+borderColor+'"><h2 style="color:'+borderColor+'">'+icon+' '+title+'</h2><p style="margin:10px 0;line-height:1.6">'+text+'</p>'+changesHtml+'</div><button onclick="advanceDay()">Continuar</button>';
+var healthHtml='';
+if(healthNote){
+healthHtml='<div style="margin-top:8px;font-size:12px;color:var(--dim);font-style:italic">💞 '+healthNote+'</div>';
+}
+container.innerHTML='<div class="result-box fade-in" style="border-color:'+borderColor+'"><h2 style="color:'+borderColor+'">'+icon+' '+title+'</h2><p style="margin:10px 0;line-height:1.6">'+text+'</p>'+changesHtml+healthHtml+'</div><button onclick="advanceDay()">Continuar</button>';
 }
 function showGameOver(type,partnerName){
 showScreen('gameover');
@@ -226,7 +270,10 @@ case'defeat_isolation':
 html='<div style="text-align:center;margin-top:80px"><h1 style="color:var(--danger)">DERROTA</h1><h2>El Salado se aislo</h2><p style="margin:20px 0;color:var(--dim)">Tres semanas sin ver a nadie. Tu animo llego a cero. Te encerraste y la Reina gano por default.</p><p style="font-style:italic;margin-top:10px">"Siempre supe que no podias sin mi." - La Reina</p></div>';
 break;
 case'defeat_suffocation':
-html='<div style="text-align:center;margin-top:80px"><h1 style="color:var(--danger)">DERROTA</h1><h2>Asfixia</h2><p style="margin:20px 0;color:var(--dim)">Ocho semanas. Ni un solo conocido. La Reina bloqueo todo sin que te des cuenta.</p><p style="font-style:italic;margin-top:10px">"Que triste. Yo al menos intento." - La Reina</p></div>';
+html='<div style="text-align:center;margin-top:80px"><h1 style="color:var(--danger)">DERROTA</h1><h2>Asfixia</h2><p style="margin:20px 0;color:var(--dim)">Ocho semanas sin progresar. Tu relación se estancó y la Reina ganó por desgaste.</p><p style="font-style:italic;margin-top:10px">"Que triste. Yo al menos intento." - La Reina</p></div>';
+break;
+case'defeat_dumped':
+html='<div style="text-align:center;margin-top:80px"><h1 style="color:var(--danger)">DERROTA</h1><h2>Te dejaron</h2><p style="margin:20px 0;color:var(--dim)">La salud de tu relación llegó a 0. Te deprimiste, te dejó, o ambas cosas a la vez.</p><p style="font-style:italic;margin-top:10px">"Sabía que no podías sin mí. Ni conmigo, parece." - La Reina</p></div>';
 break;
 }
 html+='<div style="margin-top:40px;text-align:center"><button onclick="location.reload()">Volver a empezar</button></div>';
@@ -249,6 +296,9 @@ if(G.partner){
   html+='<div class="debug-entry"><b>Pareja:</b> Ninguna</div>';
 }
 html+='<div class="debug-entry"><b>Family done:</b> '+(G.familyDone?'SI':'NO')+'</div>';
+html+='<div class="debug-entry"><b>Salud relación:</b> '+(G.healthPoints||0)+'/100 ['+getRelStageText(G.healthPoints||0)+']</div>';
+html+='<div class="debug-entry"><b>Semanas sin progreso:</b> '+(G.weeksWithoutProgress||0)+'</div>';
+html+='<div class="debug-entry"><b>Reina salud:</b> '+((G.queenRelation&&G.queenRelation.healthPoints)||0)+'/100</div>';
 html+='<div class="debug-entry" style="margin-top:6px;border-top:1px solid var(--border);padding-top:6px"><b>Reina:</b> '+G.queenRelation.stage+' ('+G.queenRelation.dates+'/'+REL_STAGE_THRESHOLDS.familia+')</div>';
 html+='<div class="debug-entry" style="margin-top:6px"><b>Dates log:</b></div>';
 G.dateLog.slice(-8).forEach(function(d){

@@ -5,6 +5,17 @@
     "familia": 7
   },
   "queenChancePerWeek": 60,
+  "relHealthThresholds": {
+    "novio": 40,
+    "familia": 70
+  },
+  "infidelityRisk": 40,
+  "queenSabotageChance": 60,
+  "queenSabotagePenalty": {
+    "major": 15,
+    "minor": 5
+  },
+  "queenChoicesPerWeek": 2,
   "stageAdvanceTexts": {
     "first_meet": [
       "Conociste a {name}. Algo en esa mirada te hizo quedarte un rato mas.",

@@ -258,9 +258,9 @@ tab=tab||'contactos';
 showScreen('phone');
 document.getElementById('phone-title').textContent='📱 Teléfono';
 var tabs=document.getElementById('phone-tabs');
-tabs.innerHTML='<button'+(tab==='contactos'?' class="active"':'')+' onclick="showPhone(\'contactos\')">👥 Contactos</button>'
-+'<button'+(tab==='mensajes'?' class="active"':'')+' onclick="showPhone(\'mensajes\')">💬 Mensajes</button>'
-+'<button'+(tab==='app'?' class="active"':'')+' onclick="showPhone(\'app\')">📱 App</button>';
+tabs.innerHTML='<button'+(tab==='contactos'?' class="active"':'')+' onclick="showPhone(\'contactos\')"><span class="tab-icon">👥</span><span class="tab-label">Contactos</span></button>'
++'<button'+(tab==='mensajes'?' class="active"':'')+' onclick="showPhone(\'mensajes\')"><span class="tab-icon">💬</span><span class="tab-label">Mensajes</span></button>'
++'<button'+(tab==='app'?' class="active"':'')+' onclick="showPhone(\'app\')"><span class="tab-icon">📱</span><span class="tab-label">App</span></button>';
 var container=document.getElementById('phone-content');
 var html='';
 if(tab==='mensajes'){
@@ -321,9 +321,9 @@ var rel=findRelationById(relId);
 if(!rel){showPhone('contactos');return;}
 showScreen('phone');
 document.getElementById('phone-title').textContent='💞 Invitar a '+rel.name;
-document.getElementById('phone-tabs').innerHTML='<button onclick="showPhone(\'contactos\')">👥 Contactos</button>'
-+'<button onclick="showPhone(\'mensajes\')">💬 Mensajes</button>'
-+'<button onclick="showPhone(\'app\')">📱 App</button>';
+document.getElementById('phone-tabs').innerHTML='<button onclick="showPhone(\'contactos\')"><span class="tab-icon">👥</span><span class="tab-label">Contactos</span></button>'
++'<button onclick="showPhone(\'mensajes\')"><span class="tab-icon">💬</span><span class="tab-label">Mensajes</span></button>'
++'<button onclick="showPhone(\'app\')"><span class="tab-icon">📱</span><span class="tab-label">App</span></button>';
 var container=document.getElementById('phone-content');
 var html='<div class="candidate fade-in">'+photoHtml(rel.photo,rel.name)+'<div class="text">¿A dónde invitás a '+rel.name+'? ('+getRelationProgressText(rel)+')</div></div>';
 var keys=Object.keys(DATE_LOCATIONS).filter(function(k){return DATE_LOCATIONS[k].mapVisible!==false && k!=='app';});

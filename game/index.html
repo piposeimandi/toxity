@@ -51,9 +51,16 @@
 <div id="date-content"></div>
 </div>
 <div id="screen-phone" class="screen">
-<h2 id="phone-title">📱 Teléfono</h2>
-<div id="phone-tabs" class="phone-tabs"></div>
+<div class="phone-frame">
+<div class="phone-notch"></div>
+<div class="phone-status"><span id="phone-clock">--:--</span><span>📶 🔋</span></div>
+<h2 id="phone-title" class="phone-appbar">📱 Teléfono</h2>
+<div class="phone-screen-body">
 <div id="phone-content"></div>
+</div>
+<div id="phone-tabs" class="phone-tabs phone-tabbar"></div>
+<div class="phone-home"></div>
+</div>
 </div>
 <div id="screen-result" class="screen"><div id="result-content"></div></div>
 <div id="screen-weekend" class="screen">
@@ -65,5 +72,11 @@
 <script src="js/data.js"></script>
 <script src="js/game.js"></script>
 <script src="js/ui.js"></script>
+<script>
+/* Reloj decorativo de la status bar del teléfono (solo visual, no toca lógica). */
+function updatePhoneClock(){var el=document.getElementById('phone-clock');if(!el)return;var d=new Date();var h=String(d.getHours()).padStart(2,'0');var m=String(d.getMinutes()).padStart(2,'0');el.textContent=h+':'+m;}
+updatePhoneClock();setInterval(updatePhoneClock,30000);
+new MutationObserver(updatePhoneClock).observe(document.getElementById('screen-phone'),{attributes:true,attributeFilter:['class']});
+</script>
 </body>
 </html>

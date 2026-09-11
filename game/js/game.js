@@ -309,16 +309,20 @@ return events;
 function getAmbientEvent(){
 return AMBIENT_EVENTS[Math.floor(Math.random()*AMBIENT_EVENTS.length)];
 }
-/* Visitas a lugares (mapa y sugerencias del feed).
+/* Visitas a lugares (mapa y sugerencias del feed). IR = IR, punto.
    - app: puerta de entrada — muestra 3-4 perfiles nuevos (visitApp), sin crear contactos.
+   - gym: flujo propio (goToGym: entrenar/social/acosador).
    - bar/café/parque: ~15% (casualEncounterChance) de encuentro casual con alguien
-     nuevo; si no sale, el lugar sirve para citas con conocidos.
-   - resto: solo citas con conocidos. Ningún otro lugar genera gente nueva.
+     nuevo; si no sale, visita ambiente (visitAmbient).
+   - resto: visita ambiente (visitAmbient: +2 ánimo, avanza el día).
+   El mapa NUNCA pregunta a quién invitar: invitar es SOLO por teléfono
+   (Contactos → Invitar → goToDateKnownAtLocation).
    Se conserva el evento de hombre (genderRatio/consecutiveMen) como hoy. */
 function goToLocation(locKey){
 var loc=DATE_LOCATIONS[locKey];
 if(!loc){log('Ese lugar no existe.','danger');return;}
 if(locKey==='app'){showPhone('app');return;}
+if(locKey==='gym'){goToGym();return;}
 if(G.money<loc.cost){
 log('No tenes plata para ir al '+loc.name+'. Necesitas $'+loc.cost+'.','danger');
 return;
@@ -350,8 +354,25 @@ showCandidateDate(c,loc,{origin:'casual'});
 return;
 }
 }
-// Sin casual (o lugar sin casuales): el lugar sirve para citas con conocidos.
-showLocationKnownPicker(locKey);
+// Sin casual (o lugar sin casuales): visita ambiente, sin invitar a nadie.
+visitAmbient(locKey);
+}
+/* Visita ambiente: fuiste a un lugar solo, sin invitar a nadie.
+   Muestra un texto random de AMBIENT_EVENTS con el icono del lugar,
+   da +2 ánimo (tope 100, salir despeja), guarda y avanza el día. */
+function visitAmbient(locKey){
+var loc=DATE_LOCATIONS[locKey]||{name:locKey,icon:'📍'};
+var pool=(typeof AMBIENT_EVENTS!=='undefined'&&AMBIENT_EVENTS&&AMBIENT_EVENTS.length)?AMBIENT_EVENTS:['Te pediste algo rico y miraste gente pasar. Tranqui.'];
+var text=pool[Math.floor(Math.random()*pool.length)];
+G.mood+=2;if(G.mood>100)G.mood=100;
+/* Salir es salir: la visita ambiente también resetea el aislamiento. */
+G.daysWithoutDates=0;
+log('Fuiste al '+loc.name+'. Salir te despeja (+2 ánimo).','success');
+G.history.push({type:'ambient',week:G.week,day:G.day});
+saveGame();
+showScreen('result');
+var container=document.getElementById('result-content');
+container.innerHTML='<div class="result-box info fade-in"><h2>'+loc.icon+' '+loc.name+'</h2><p style="margin:10px 0;line-height:1.6">'+text+'</p><p style="margin-top:10px">+2 ánimo</p></div><button onclick="advanceDay()">Continuar</button>';
 }
 /* App de Citas: fuente principal de gente nueva. Muestra hasta
    appProfilesPerVisit perfiles desconocidos (FEMALE+MALE) para elegir.
@@ -532,7 +553,8 @@ log('Gastaste $'+loc.cost+' y saliste con '+rel.name+'.','highlight');
 showKnownPersonDate(rel,loc);
 }
 
-/* Cita con un conocido en un lugar FIJO (picker del mapa). Sin gente nueva. */
+/* Cita con un conocido en un lugar FIJO (invitación desde el teléfono).
+   Sin plata: log + vuelta a Contactos para que invite cuando tenga. */
 function goToDateKnownAtLocation(relationId,locKey){
 var rel=null;
 for(var i=0;i<G.relations.length;i++){
@@ -543,7 +565,7 @@ var loc=DATE_LOCATIONS[locKey];
 if(!loc){log('Ese lugar no existe.','danger');return;}
 if(G.money<loc.cost){
   log('No tenes plata para salir con '+rel.name+' al '+loc.name+'. Necesitas $'+loc.cost+'.','danger');
-  showLocationKnownPicker(locKey);
+  showPhone('contactos');
   return;
 }
 G.money-=loc.cost;

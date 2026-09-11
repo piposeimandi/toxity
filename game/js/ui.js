@@ -250,29 +250,6 @@ html+='<div class="candidate fade-in"><div class="time">✨ Nuevo match en la ap
 html+='<button onclick="showFeed()">Volver</button>';
 container.innerHTML=html;
 }
-/* Picker de conocidos en un lugar fijo: sin gente nueva. */
-function showLocationKnownPicker(locKey){
-if(G.gameOver)return;
-var loc=DATE_LOCATIONS[locKey];
-if(!loc){showFeed();return;}
-showScreen('date');
-document.getElementById('date-title').textContent=loc.icon+' '+loc.name;
-var container=document.getElementById('date-content');
-var known=getAvailableKnownPeople();
-var html='';
-if(known.length===0){
-html+='<div class="candidate fade-in"><div class="text">Todavía no conocés a nadie. La App de Citas 📱 es la puerta de entrada: abrí el teléfono 📱 y mirá la pestaña App.</div></div><button onclick="showPhone(\'app\')">📱 Abrir la App</button>';
-}else{
-html+='<div class="candidate fade-in"><div class="text">Nadie nuevo por acá hoy. Pero podés invitar a alguien que ya conocés al '+loc.name+' ($'+loc.cost+').</div></div>';
-for(var i=0;i<known.length;i++){
-var r=known[i];
-var canAfford=G.money>=loc.cost;
-html+='<div class="candidate fade-in">'+photoHtml(r.photo,r.name)+'<div class="name">'+r.name+'</div><div class="traits">Saliendo: '+getRelationProgressText(r)+'</div><div class="actions"><button '+(canAfford?'':'disabled')+' onclick="goToDateKnownAtLocation(\''+r.id+'\',\''+locKey+'\')">'+(canAfford?'💞 Invitar al '+loc.name:'Sin plata ($'+loc.cost+')')+'</button></div></div>';
-}
-html+='<button onclick="showMap()">Volver al mapa</button>';
-}
-container.innerHTML=html;
-}
 /* 📱 Teléfono simulado: puerta de entrada a flujos EXISTENTES (no duplica lógica).
    tab = 'contactos' | 'mensajes' | 'app'. */
 function showPhone(tab){

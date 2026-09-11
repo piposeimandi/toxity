@@ -17,17 +17,12 @@ var GYM_SOLO_TEXTS=[];
 var GYM_FRIEND_TEXTS=[];
 var GYM_HARASSER_TEXTS=[];
 var GYM_INTEREST_TEXTS=[];
-var relStageThresholds={citando:3,novio:5,familia:7};
-var queenChancePerWeek=60;
 var relHealthThresholds={novio:40,familia:70};
 var infidelityRisk=40;
 var queenSabotageChance=60;
 var queenSabotagePenalty={major:15,minor:5};
-var queenChoicesPerWeek=2;
 var stageAdvanceTexts={};
-var queenAdvanceTexts={};
 var queenDefeatTexts={};
-var ACTION_ICONS={};
 var DATA_LOADED=false;
 
 function loadGameData(){
@@ -53,17 +48,12 @@ function loadGameData(){
       GYM_FRIEND_TEXTS=data.gymFriendTexts||[];
       GYM_HARASSER_TEXTS=data.gymHarasserTexts||[];
       GYM_INTEREST_TEXTS=data.gymInterestTexts||[];
-      relStageThresholds=data.relStageThresholds||{citando:3,novio:5,familia:7};
-      queenChancePerWeek=data.queenChancePerWeek||60;
       relHealthThresholds=data.relHealthThresholds||{novio:40,familia:70};
       infidelityRisk=(data.infidelityRisk!==undefined)?data.infidelityRisk:40;
       queenSabotageChance=(data.queenSabotageChance!==undefined)?data.queenSabotageChance:60;
       queenSabotagePenalty=data.queenSabotagePenalty||{major:15,minor:5};
-      queenChoicesPerWeek=(data.queenChoicesPerWeek!==undefined)?data.queenChoicesPerWeek:2;
       stageAdvanceTexts=data.stageAdvanceTexts||{};
-      queenAdvanceTexts=data.queenAdvanceTexts||{};
       queenDefeatTexts=data.queenDefeatTexts||{};
-      ACTION_ICONS=data.actionIcons||{};
       DATA_LOADED=true;
     })
     .catch(function(err){

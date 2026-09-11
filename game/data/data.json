@@ -1,10 +1,4 @@
 {
-  "relStageThresholds": {
-    "citando": 3,
-    "novio": 5,
-    "familia": 7
-  },
-  "queenChancePerWeek": 60,
   "relHealthThresholds": {
     "novio": 40,
     "familia": 70
@@ -15,7 +9,6 @@
     "major": 15,
     "minor": 5
   },
-  "queenChoicesPerWeek": 2,
   "stageAdvanceTexts": {
     "first_meet": [
       "Conociste a {name}. Algo en esa mirada te hizo quedarte un rato mas.",
@@ -44,23 +37,6 @@
       "Despues de todo el drama, encontraste tu lugar. Con {name}, en una casita con olor a pan.",
       "{name} y vos construyeron algo real. No es perfecto, pero es de ustedes. Es familia.",
       "Cerraste los ojos y pensaste: 'esto es lo que queria'. Una familia con {name}."
-    ]
-  },
-  "queenAdvanceTexts": {
-    "citando": [
-      "La Reina salio con alguien. Parece que algo se movio en su vida.",
-      "Tu ex esta saliendo con alguien. No lo ves pero lo sentis.",
-      "La Reina tiene cita. Vos la ves por historias. Ella sonrie."
-    ],
-    "novio": [
-      "La Reina se puso de novia. Subio una foto con alguien. La leyenda dice 'nuevo comienzo'.",
-      "Tu ex tiene novio. La gente te avisa. Vos fingis que no te importa.",
-      "La Reina se declaro con alguien. Es peor de lo que pensabas."
-    ],
-    "familia": [
-      "La Reina formo familia. La casita esta en Instagram. Huele a pan, dicen.",
-      "Tu ex se caso. O algo asi. Ya tiene familia. Ya gano.",
-      "La Reina ya tiene su familia. Vos quedaste mirando desde afuera."
     ]
   },
   "queenDefeatTexts": {
@@ -130,24 +106,6 @@
     "museo":{"name":"Museo","cost":12,"genderRatio":0.7,"risk":"low","riskLabel":"Bajo","desc":"Cultura y arte. Riesgo bajo,话题 rico.","key":"museo","icon":"🏛️"},
     "bowling":{"name":"Bowling","cost":18,"genderRatio":0.65,"risk":"medium","riskLabel":"Medio","desc":"Diversion clasica. Riesgo moderado.","key":"bowling","icon":"🎳"},
     "teatro":{"name":"Teatro","cost":40,"genderRatio":0.58,"risk":"high","riskLabel":"Alto","desc":"Alta cultura, alto compromiso. Riesgo alto.","key":"teatro","icon":"🎭"}
-  },
-  "actionIcons": {
-    "ir_a_lugar": "📍",
-    "pasar_dia": "⏳",
-    "seguir_saliendo": "💞",
-    "conocer_nuevo": "✨",
-    "cita": "💘",
-    "exito": "✅",
-    "fracaso": "💔",
-    "sabotaje": "👑",
-    "stalkeo": "🕵️",
-    "gaslighting": "🌀",
-    "gym_entrenar": "💪",
-    "gym_socializar": "🤝",
-    "gym_acosador": "⚠️",
-    "dinero": "💵",
-    "animo": "📈",
-    "semana": "🗓️"
   },
   "dialogueOptions": [
     {"text":"Ser directo: \"Me gustaria conocerte mejor, salgamos\"","bonus":10,"moodCost":0},

@@ -56,9 +56,6 @@ button.success:hover{background:var(--success);color:var(--bg)}
 #console-log .log-line.success{color:var(--success)}
 .fade-in{animation:fadeIn .5s ease-in}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.conquest-list{list-style:none;padding:0}
-.conquest-list li{padding:4px 0;border-bottom:1px solid var(--border);font-size:12px}
-.conquest-list li::before{content:'♥ ';color:var(--danger)}
 #mobile-debug{display:none;position:fixed;right:5px;bottom:130px;z-index:60}
 #mobile-debug button{font-size:10px;padding:4px 8px;border-color:var(--dim);color:var(--dim)}
 .empty-msg{color:var(--dim);font-style:italic;padding:20px;text-align:center}

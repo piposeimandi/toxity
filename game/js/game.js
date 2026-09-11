@@ -1,62 +1,141 @@
-/* game.js — Lógica del juego: estado global G, funciones de la Reina
-   (queenAdvanceWeek, getSabotageChance, resolveSabotage), condiciones
-   de victoria/derrota, save/load, y resolución de citas.
-   Puede llamar funciones de ui.js en tiempo de ejecución. */
+/* game.js — Lógica del juego: estado global G, turno de la Reina (queenTurn),
+   condiciones de victoria/derrota, save/load, y resolución de citas.
+   DISEÑO: la salud (healthPoints 0-100) es la ÚNICA fuente de verdad para
+   progresión. El stage es solo etiqueta cosmética derivada de la salud.
+   REGLA DE EMPATE: si jugador y Reina llegan a familia la misma semana,
+   gana EL JUGADOR — por eso checkVictories() siempre corre ANTES que
+   checkDefeats() en todos los paths. Puede llamar funciones de ui.js en
+   tiempo de ejecución. */
 
-var REL_STAGE_THRESHOLDS={citando:3,novio:5,familia:7};
-var QUEEN_CHANCE_PER_WEEK=60;
 var REL_HEALTH_THRESHOLDS={novio:40,familia:70};
 var INFIDELITY_RISK=40;
 var QUEEN_SABOTAGE_CHANCE=60;
 var QUEEN_SABOTAGE_PENALTY={major:15,minor:5};
-var QUEEN_CHOICES_PER_WEEK=2;
 var STAGE_ADVANCE_TEXTS={};
-var QUEEN_ADVANCE_TEXTS={};
 var QUEEN_DEFEAT_TEXTS={};
 
 function loadRelConfig(){
-  if(typeof DATA_LOADED!=='undefined'&&DATA_LOADED&&typeof relStageThresholds!=='undefined'){
-    REL_STAGE_THRESHOLDS=relStageThresholds;
-    QUEEN_CHANCE_PER_WEEK=queenChancePerWeek||60;
+  if(typeof DATA_LOADED!=='undefined'&&DATA_LOADED){
     REL_HEALTH_THRESHOLDS=relHealthThresholds||{novio:40,familia:70};
     INFIDELITY_RISK=(typeof infidelityRisk!=='undefined')?infidelityRisk:40;
     QUEEN_SABOTAGE_CHANCE=(typeof queenSabotageChance!=='undefined')?queenSabotageChance:60;
     QUEEN_SABOTAGE_PENALTY=queenSabotagePenalty||{major:15,minor:5};
-    QUEEN_CHOICES_PER_WEEK=(typeof queenChoicesPerWeek!=='undefined')?queenChoicesPerWeek:2;
     STAGE_ADVANCE_TEXTS=stageAdvanceTexts||{};
-    QUEEN_ADVANCE_TEXTS=queenAdvanceTexts||{};
     QUEEN_DEFEAT_TEXTS=queenDefeatTexts||{};
   }
 }
 
-var G={week:1,day:1,money:100,labia:50,appearance:50,confidence:50,mood:50,pg:0,queenProgress:0,queenNovio:0,consecutiveMen:0,daysWithoutDates:0,weeksWithoutConquests:0,totalConquests:0,consecutiveDaysNoDate:0,consecutiveDaysWithWomen:0,history:[],queensLogs:[],debugLog:[],gymLastEvent:'',gameOver:false,victory:null,relations:[],partner:null,familyDone:false,queenRelation:{stage:'conocer',dates:0,healthPoints:5},dateLog:[],healthPoints:5,weeksWithoutProgress:0};
+var G={week:1,day:1,money:100,labia:50,appearance:50,confidence:50,mood:50,pg:0,consecutiveMen:0,daysWithoutDates:0,history:[],queensLogs:[],gymLastEvent:'',lastGymResetWeek:null,gameOver:false,victory:null,relations:[],partner:null,familyDone:false,queenRelation:{stage:'conocer',dates:0,healthPoints:5},dateLog:[],healthPoints:5,weeksWithoutProgress:0};
 
 function saveGame(){try{localStorage.setItem('reinaFalsaSave',JSON.stringify(G))}catch(e){log('Error al guardar: '+e,'danger')}}
 function loadGame(){
 if(!DATA_LOADED){log('Cargando datos del juego...','highlight');return;}
-try{var s=localStorage.getItem('reinaFalsaSave');if(s){G=JSON.parse(s);G.gameOver=false;G.victory=null;if(!G.gymLastEvent)G.gymLastEvent='';migrateOldSave();loadRelConfig();log('Partida cargada correctamente.','success');showFeed();}}catch(e){log('Error al cargar: '+e,'danger')}
+try{
+  var s=localStorage.getItem('reinaFalsaSave');
+  if(s){
+    G=JSON.parse(s);
+    if(!G.gymLastEvent)G.gymLastEvent='';
+    migrateOldSave();
+    loadRelConfig();
+    log('Partida cargada correctamente.','success');
+    if(G.gameOver){
+      // No resucitar partidas terminadas: se muestra el game over que trae el save.
+      showSavedGameOver();
+    }else{
+      showFeed();
+    }
+  }
+}catch(e){log('Error al cargar: '+e,'danger')}
+}
+/* Muestra la pantalla final que corresponde a una partida ya terminada
+   (victory guarda el código V1/V2/D1/D2/D3 del save). */
+function showSavedGameOver(){
+  var v=G.victory;
+  if(v==='V1'){
+    var pr=G.partner?findRelationById(G.partner):null;
+    showGameOver('victory_family',pr?pr.name:'alguien');
+  }else if(v==='V2'){
+    showGameOver('victory_pg');
+  }else if(v==='D1'){
+    showGameOver('defeat_queen_family');
+  }else if(v==='D3'){
+    showGameOver('defeat_suffocation');
+  }else if(v==='D2'){
+    if(G.partner&&G.healthPoints<=0){showGameOver('defeat_dumped');}
+    else{showGameOver('defeat_isolation');}
+  }else{
+    showGameOver('defeat_isolation');
+  }
 }
 function newGame(){
 if(!DATA_LOADED){log('Cargando datos del juego...','highlight');return;}
-G={week:1,day:1,money:100,labia:50,appearance:50,confidence:50,mood:50,pg:0,queenProgress:0,queenNovio:0,consecutiveMen:0,daysWithoutDates:0,weeksWithoutConquests:0,totalConquests:0,consecutiveDaysNoDate:0,consecutiveDaysWithWomen:0,history:[],queensLogs:[],debugLog:[],gymLastEvent:'',gameOver:false,victory:null,relations:[],partner:null,familyDone:false,queenRelation:{stage:'conocer',dates:0,healthPoints:5},dateLog:[],healthPoints:5,weeksWithoutProgress:0};
+G={week:1,day:1,money:100,labia:50,appearance:50,confidence:50,mood:50,pg:0,consecutiveMen:0,daysWithoutDates:0,history:[],queensLogs:[],gymLastEvent:'',lastGymResetWeek:null,gameOver:false,victory:null,relations:[],partner:null,familyDone:false,queenRelation:{stage:'conocer',dates:0,healthPoints:5},dateLog:[],healthPoints:5,weeksWithoutProgress:0};
 loadRelConfig();
 log('=== NUEVA PARTIDA ===','highlight');
 log('Bienvenido, El Salado. Tu ex te esta observando.');
 showFeed();
 }
+/* Migración campo-por-campo de saves viejos. Cada campo con default explícito
+   (?? valorInicial) para evitar NaN/undefined. El stage del jugador y de la
+   Reina es cosmético: se deriva de la salud, pero se inicializa por compat. */
 function migrateOldSave(){
   if(!G.relations){G.relations=[];}
   if(G.partner===undefined){G.partner=null;}
   if(G.familyDone===undefined){G.familyDone=false;}
   if(!G.queenRelation){G.queenRelation={stage:'conocer',dates:0,healthPoints:5};}
-  if(G.queenRelation.healthPoints===undefined){G.queenRelation.healthPoints=5;}
+  if(G.queenRelation.healthPoints===undefined||G.queenRelation.healthPoints===null){G.queenRelation.healthPoints=5;}
+  if(G.queenRelation.stage===undefined){G.queenRelation.stage='conocer';}
+  if(G.queenRelation.dates===undefined||G.queenRelation.dates===null){G.queenRelation.dates=0;}
   if(!G.dateLog){G.dateLog=[];}
-  if(!G.totalConquests){G.totalConquests=G.conquests||0;}
-  if(G.healthPoints===undefined){G.healthPoints=5;}
-  if(G.weeksWithoutProgress===undefined){G.weeksWithoutProgress=0;}
+  if(!G.history){G.history=[];}
+  if(!G.queensLogs){G.queensLogs=[];}
+  if(G.gymLastEvent===undefined){G.gymLastEvent='';}
+  if(G.lastGymResetWeek===undefined){G.lastGymResetWeek=null;}
+  if(G.gameOver===undefined){G.gameOver=false;}
+  if(G.victory===undefined){G.victory=null;}
+  if(G.week===undefined||G.week===null){G.week=1;}
+  if(G.day===undefined||G.day===null){G.day=1;}
+  if(G.money===undefined||G.money===null){G.money=100;}
+  if(G.mood===undefined||G.mood===null){G.mood=50;}
+  if(G.pg===undefined||G.pg===null){G.pg=0;}
+  if(G.labia===undefined||G.labia===null){G.labia=50;}
+  if(G.appearance===undefined||G.appearance===null){G.appearance=50;}
+  if(G.confidence===undefined||G.confidence===null){G.confidence=50;}
+  if(G.daysWithoutDates===undefined||G.daysWithoutDates===null){G.daysWithoutDates=0;}
+  if(G.consecutiveMen===undefined||G.consecutiveMen===null){G.consecutiveMen=0;}
+  if(G.healthPoints===undefined||G.healthPoints===null){G.healthPoints=5;}
+  if(G.weeksWithoutProgress===undefined||G.weeksWithoutProgress===null){G.weeksWithoutProgress=0;}
   for(var i=0;i<G.relations.length;i++){
-    if(G.relations[i].healthPoints===undefined){G.relations[i].healthPoints=5;}
+    var r=G.relations[i];
+    if(r.healthPoints===undefined||r.healthPoints===null){r.healthPoints=5;}
+    if(r.stage===undefined){r.stage='conocer';}
+    if(r.dates===undefined||r.dates===null){r.dates=0;}
+    if(r.photo===undefined){r.photo=null;}
+    if(r.id===undefined){r.id='rel_'+Date.now()+'_'+i;}
+    if(!r.photo){
+      var found=null;
+      if(typeof FEMALE_CANDIDATES!=='undefined'){
+        for(var j=0;j<FEMALE_CANDIDATES.length;j++){
+          if(FEMALE_CANDIDATES[j].name===r.name){found=FEMALE_CANDIDATES[j].photo;break;}
+        }
+      }
+      if(!found&&typeof MALE_CANDIDATES!=='undefined'){
+        for(var k=0;k<MALE_CANDIDATES.length;k++){
+          if(MALE_CANDIDATES[k].name===r.name){found=MALE_CANDIDATES[k].photo;break;}
+        }
+      }
+      if(found){r.photo=found;}
+    }
+    // Stage cosmético derivado de la salud (única verdad).
+    r.stage=deriveStageFromHealth(r.healthPoints);
   }
+  // Limpieza de contadores/campos muertos del sistema viejo.
+  delete G.totalConquests;delete G.conquests;
+  delete G.queenProgress;delete G.queenNovio;
+  delete G.weeksWithoutConquests;
+  delete G.consecutiveDaysNoDate;delete G.consecutiveDaysWithWomen;
+  delete G.currentCandidate;delete G.currentLocation;delete G.currentBaseChance;
+  delete G.debugLog;
   syncPartnerHealth();
 }
 function getDayName(d){var days=['Lunes','Martes','Miercoles','Jueves','Viernes','Sabado','Domingo'];return days[(d-1)%7];}
@@ -65,7 +144,7 @@ function getOrCreateRelation(name){
   for(var i=0;i<G.relations.length;i++){
     if(G.relations[i].name===name)return G.relations[i];
   }
-  var rel={id:'rel_'+Date.now()+'_'+Math.floor(Math.random()*1000),name:name,stage:'conocer',dates:0,isGay:false,healthPoints:5};
+  var rel={id:'rel_'+Date.now()+'_'+Math.floor(Math.random()*1000),name:name,stage:'conocer',dates:0,healthPoints:5};
   for(var j=0;j<FEMALE_CANDIDATES.length;j++){if(FEMALE_CANDIDATES[j].name===name){rel.photo=FEMALE_CANDIDATES[j].photo;break;}}
   if(!rel.photo){for(var j=0;j<MALE_CANDIDATES.length;j++){if(MALE_CANDIDATES[j].name===name){rel.photo=MALE_CANDIDATES[j].photo;break;}}}
   G.relations.push(rel);
@@ -77,25 +156,29 @@ function findRelation(name){
   }
   return null;
 }
+/* Stage cosmético derivado de la salud (umbrales de REL_HEALTH_THRESHOLDS).
+   La salud es la ÚNICA fuente de verdad: este stage NUNCA decide victorias. */
+function deriveStageFromHealth(hp){
+  if(hp===undefined||hp===null){hp=5;}
+  var novioT=(typeof REL_HEALTH_THRESHOLDS!=='undefined'&&REL_HEALTH_THRESHOLDS&&REL_HEALTH_THRESHOLDS.novio)||40;
+  var famT=(typeof REL_HEALTH_THRESHOLDS!=='undefined'&&REL_HEALTH_THRESHOLDS&&REL_HEALTH_THRESHOLDS.familia)||70;
+  if(hp>=famT)return 'familia';
+  if(hp>=novioT)return 'novio';
+  if(hp>5)return 'citando';
+  return 'conocer';
+}
+/* Avance del jugador SOLO por salud. Sincroniza el stage cosmético y setea
+   la pareja si todavía no hay una. Devuelve el nuevo stage si cambió. */
 function advanceRelation(rel){
-  if(rel.healthPoints===undefined){rel.healthPoints=5;}
-  if(rel.dates>=REL_STAGE_THRESHOLDS.familia&&rel.stage!=='familia'){
-    rel.stage='familia';
-    G.partner=rel.id;
-    G.healthPoints=rel.healthPoints;
-    G.familyDone=true;
-    return 'familia';
-  }else if(rel.dates>=REL_STAGE_THRESHOLDS.novio&&rel.stage!=='novio'){
-    rel.stage='novio';
-    G.partner=rel.id;
-    G.healthPoints=rel.healthPoints;
-    return 'novio';
-  }else if(rel.dates>=REL_STAGE_THRESHOLDS.citando&&rel.stage!=='citando'){
-    rel.stage='citando';
-    G.partner=rel.id;
-    G.healthPoints=rel.healthPoints;
-    return 'citando';
+  if(rel.healthPoints===undefined||rel.healthPoints===null){rel.healthPoints=5;}
+  if(!G.partner){G.partner=rel.id;}
+  var nStage=deriveStageFromHealth(rel.healthPoints);
+  if(nStage!==rel.stage){
+    rel.stage=nStage;
+    syncPartnerHealth();
+    return nStage;
   }
+  syncPartnerHealth();
   return null;
 }
 /* Sistema de salud de relación (puntos 0-100).
@@ -119,23 +202,27 @@ function setPartnerHealth(val){
   if(p){p.healthPoints=val;}
   return val;
 }
+/* Etiqueta y progreso SIEMPRE sobre salud (única verdad). */
 function getRelationLabel(rel){
-  switch(rel.stage){
-    case'conocer':return 'Conocido';
-    case'citando':return 'Saliendo';
-    case'novio':return 'Novios';
-    case'familia':return 'Familia';
-    default:return rel.stage;
-  }
+  var hp=(rel&&rel.healthPoints!==undefined&&rel.healthPoints!==null)?rel.healthPoints:5;
+  return getRelStageText(hp);
 }
 function getRelationProgressText(rel){
-  var next=null;
-  var current=rel.dates;
-  if(rel.stage==='conocer')next=REL_STAGE_THRESHOLDS.citando;
-  else if(rel.stage==='citando')next=REL_STAGE_THRESHOLDS.novio;
-  else if(rel.stage==='novio')next=REL_STAGE_THRESHOLDS.familia;
-  if(next!==null)return getRelationLabel(rel)+' ('+current+'/'+next+')';
-  return getRelationLabel(rel);
+  var hp=(rel&&rel.healthPoints!==undefined&&rel.healthPoints!==null)?rel.healthPoints:5;
+  return getRelationLabel(rel)+' ('+hp+'/100)';
+}
+/* HTML del texto de primer encuentro (stageAdvanceTexts.first_meet) para la
+   primera cita exitosa con alguien nuevo. Vacío si ya hubo éxito previo. */
+function maybeFirstMeetHtml(name){
+  for(var i=0;i<G.dateLog.length;i++){
+    if(G.dateLog[i].name===name&&G.dateLog[i].success)return '';
+  }
+  if(typeof STAGE_ADVANCE_TEXTS!=='undefined'&&STAGE_ADVANCE_TEXTS&&STAGE_ADVANCE_TEXTS.first_meet&&STAGE_ADVANCE_TEXTS.first_meet.length){
+    var arr=STAGE_ADVANCE_TEXTS.first_meet;
+    var t=arr[Math.floor(Math.random()*arr.length)].replace('{name}',name);
+    return '<div style="margin-top:12px;padding:10px;border:1px solid var(--accent);background:var(--panel)"><b style="color:var(--accent)">Primer encuentro:</b> '+t+'</div>';
+  }
+  return '';
 }
 
 function getAvailableKnownPeople(){
@@ -252,14 +339,18 @@ G.appearance+=4;if(G.appearance>100)G.appearance=100;
 G.gymLastEvent='solo';
 var text=GYM_SOLO_TEXTS.length>0?GYM_SOLO_TEXTS[Math.floor(Math.random()*GYM_SOLO_TEXTS.length)]:'Entrenaste solo y te sentiste bien.';
 log('GYM: Entrenamiento solo. (+6 animo, +4 apariencia)','success');
-G.history.push({type:'gym_solo',week:G.week,day:G.day});
-var healthNote='';
-if(getActivePartner()){
-  setPartnerHealth(G.healthPoints+5);
-  G.weeksWithoutProgress=0;
-  healthNote='Tu relación ganó 5 puntos de salud ('+G.healthPoints+'/100). El autocuidado también suma.';
-  log('SALUD: '+healthNote,'success');
-}
+  G.history.push({type:'gym_solo',week:G.week,day:G.day});
+  var healthNote='';
+  // El gym-solo NO da salud: solo resetea el contador de estancamiento, y con
+  // cooldown de 1 vez por semana (cierra el farm de gym).
+  if(G.lastGymResetWeek!==G.week){
+    G.weeksWithoutProgress=0;
+    G.lastGymResetWeek=G.week;
+    healthNote='El autocuidado te despejó (contador de estancamiento reseteado). Esta semana ya contó.';
+    log('SALUD: '+healthNote,'success');
+  }else{
+    healthNote='Ya contaste el gym esta semana (cooldown: 1 reset por semana).';
+  }
 saveGame();
 showGymResult('training',text,[{stat:'Animo',change:'+6'},{stat:'Apariencia',change:'+4'}],healthNote);
 }
@@ -328,12 +419,10 @@ log('Te quedas en casa... otra vez.','danger');
 G.daysWithoutDates++;
 G.mood-=5;
 if(G.mood<0)G.mood=0;
-G.consecutiveDaysNoDate++;
 checkDefeats();advanceDay();
 return;
 }
 G.money-=loc.cost;
-G.consecutiveDaysNoDate=0;
 log('Gastaste $'+loc.cost+' y fuiste al '+loc.name+'.','highlight');
 showCandidateDate(c,loc);
 }
@@ -352,12 +441,10 @@ if(G.money<loc.cost){
   G.daysWithoutDates++;
   G.mood-=5;
   if(G.mood<0)G.mood=0;
-  G.consecutiveDaysNoDate++;
   checkDefeats();advanceDay();
   return;
 }
 G.money-=loc.cost;
-G.consecutiveDaysNoDate=0;
 log('Gastaste $'+loc.cost+' y saliste con '+rel.name+'.','highlight');
 showKnownPersonDate(rel,loc);
 }
@@ -404,19 +491,20 @@ var roll=Math.random()*100;
 showScreen('result');
 var container=document.getElementById('result-content');
 if(roll<chance){
+var firstMeetHtml=maybeFirstMeetHtml(c.name);
 var rel=getOrCreateRelation(c.name);
 var prevStage=rel.stage;
 var newStage=advanceRelation(rel);
 G.mood+=10;if(G.mood>100)G.mood=100;
 G.daysWithoutDates=0;
 G.consecutiveMen=0;
-G.consecutiveDaysWithWomen++;
 G.dateLog.push({name:c.name,week:G.week,day:G.day,success:true});
 log('EXITO: Cita exitosa con '+c.name+'! ('+getRelationProgressText(rel)+')','success');
 G.history.push({type:'date_success',name:c.name,week:G.week,day:G.day,stage:rel.stage,dates:rel.dates});
 saveGame();
 var resultHtml='<div class="result-box success fade-in"><h2>Cita exitosa!</h2><p>'+getSuccessText(c,loc)+'</p>';
 resultHtml+='<p style="margin-top:10px">'+getRelationProgressText(rel)+' | +10 animo</p>';
+resultHtml+=firstMeetHtml;
 if(newStage&&STAGE_ADVANCE_TEXTS[newStage]){
   var texts=STAGE_ADVANCE_TEXTS[newStage];
   var stageText=texts[Math.floor(Math.random()*texts.length)].replace('{name}',c.name);
@@ -424,11 +512,11 @@ if(newStage&&STAGE_ADVANCE_TEXTS[newStage]){
 }
 resultHtml+='</div><button onclick="advanceDay()">Continuar</button>';
 container.innerHTML=resultHtml;
+// Empate: victoria antes que derrota.
 checkVictories();
 }else{
 G.mood-=10;if(G.mood<0)G.mood=0;
 G.daysWithoutDates++;
-G.consecutiveDaysWithWomen=0;
 G.dateLog.push({name:c.name,week:G.week,day:G.day,success:false});
 log('FRACASO: '+c.name+' no interesada. (-10 animo)','danger');
 G.history.push({type:'date_fail',name:c.name,week:G.week,day:G.day});
@@ -452,19 +540,20 @@ var roll=Math.random()*100;
 showScreen('result');
 var container=document.getElementById('result-content');
 if(roll<chance){
+var firstMeetHtml=maybeFirstMeetHtml(c.name);
 var rel=getOrCreateRelation(c.name);
 var prevStage=rel.stage;
 var newStage=advanceRelation(rel);
 G.mood+=10;if(G.mood>100)G.mood=100;
 G.daysWithoutDates=0;
 G.consecutiveMen=0;
-G.consecutiveDaysWithWomen++;
 G.dateLog.push({name:c.name,week:G.week,day:G.day,success:true});
 log('EXITO: Cita exitosa con '+c.name+'! ('+getRelationProgressText(rel)+')','success');
 G.history.push({type:'date_success',name:c.name,week:G.week,day:G.day,stage:rel.stage,dates:rel.dates});
 saveGame();
 var resultHtml='<div class="result-box success fade-in"><h2>Cita exitosa!</h2><p>'+getSuccessText(c,loc)+'</p>';
 resultHtml+='<p style="margin-top:10px">'+getRelationProgressText(rel)+' | +10 animo</p>';
+resultHtml+=firstMeetHtml;
 if(newStage&&STAGE_ADVANCE_TEXTS[newStage]){
   var texts=STAGE_ADVANCE_TEXTS[newStage];
   var stageText=texts[Math.floor(Math.random()*texts.length)].replace('{name}',c.name);
@@ -472,11 +561,11 @@ if(newStage&&STAGE_ADVANCE_TEXTS[newStage]){
 }
 resultHtml+='</div><button onclick="advanceDay()">Continuar</button>';
 container.innerHTML=resultHtml;
+// Empate: victoria antes que derrota.
 checkVictories();
 }else{
 G.mood-=10;if(G.mood<0)G.mood=0;
 G.daysWithoutDates++;
-G.consecutiveDaysWithWomen=0;
 G.dateLog.push({name:c.name,week:G.week,day:G.day,success:false});
 log('FRACASO: '+c.name+' no interesada. (-10 animo)','danger');
 G.history.push({type:'date_fail',name:c.name,week:G.week,day:G.day});
@@ -527,11 +616,8 @@ btn.disabled=disabled;
 if(!disabled){
 btn.onclick=function(){resolveKnownDate(rel,loc,d,baseChance);};
 }
-opts.appendChild(btn);
-});
-G.currentCandidate=rel;
-G.currentLocation=loc;
-G.currentBaseChance=baseChance;
+ opts.appendChild(btn);
+ });
 }
 
 function resolveKnownDate(rel,loc,dialogue,chance){
@@ -545,18 +631,19 @@ var roll=Math.random()*100;
 showScreen('result');
 var container=document.getElementById('result-content');
 if(roll<chance){
+var firstMeetHtml=maybeFirstMeetHtml(rel.name);
 var prevStage=rel.stage;
 var newStage=advanceRelation(rel);
 G.mood+=10;if(G.mood>100)G.mood=100;
 G.daysWithoutDates=0;
 G.consecutiveMen=0;
-G.consecutiveDaysWithWomen++;
 G.dateLog.push({name:rel.name,week:G.week,day:G.day,success:true});
 log('EXITO: Cita exitosa con '+rel.name+'! ('+getRelationProgressText(rel)+')','success');
 G.history.push({type:'date_success',name:rel.name,week:G.week,day:G.day,stage:rel.stage,dates:rel.dates});
 saveGame();
 var resultHtml='<div class="result-box success fade-in"><h2>Cita exitosa!</h2><p>'+getSuccessText(rel,loc)+'</p>';
 resultHtml+='<p style="margin-top:10px">'+getRelationProgressText(rel)+' | +10 animo</p>';
+resultHtml+=firstMeetHtml;
 if(newStage&&STAGE_ADVANCE_TEXTS[newStage]){
   var texts=STAGE_ADVANCE_TEXTS[newStage];
   var stageText=texts[Math.floor(Math.random()*texts.length)].replace('{name}',rel.name);
@@ -564,11 +651,11 @@ if(newStage&&STAGE_ADVANCE_TEXTS[newStage]){
 }
 resultHtml+='</div><button onclick="advanceDay()">Continuar</button>';
 container.innerHTML=resultHtml;
+// Empate: victoria antes que derrota.
 checkVictories();
 }else{
 G.mood-=10;if(G.mood<0)G.mood=0;
 G.daysWithoutDates++;
-G.consecutiveDaysWithWomen=0;
 G.dateLog.push({name:rel.name,week:G.week,day:G.day,success:false});
 log('FRACASO: Cita fallida con '+rel.name+'. (-10 animo)','danger');
 G.history.push({type:'date_fail',name:rel.name,week:G.week,day:G.day});
@@ -592,18 +679,19 @@ var roll=Math.random()*100;
 showScreen('result');
 var container=document.getElementById('result-content');
 if(roll<chance){
+var firstMeetHtml=maybeFirstMeetHtml(rel.name);
 var prevStage=rel.stage;
 var newStage=advanceRelation(rel);
 G.mood+=10;if(G.mood>100)G.mood=100;
 G.daysWithoutDates=0;
 G.consecutiveMen=0;
-G.consecutiveDaysWithWomen++;
 G.dateLog.push({name:rel.name,week:G.week,day:G.day,success:true});
 log('EXITO: Cita exitosa con '+rel.name+'! ('+getRelationProgressText(rel)+')','success');
 G.history.push({type:'date_success',name:rel.name,week:G.week,day:G.day,stage:rel.stage,dates:rel.dates});
 saveGame();
 var resultHtml='<div class="result-box success fade-in"><h2>Cita exitosa!</h2><p>'+getSuccessText(rel,loc)+'</p>';
 resultHtml+='<p style="margin-top:10px">'+getRelationProgressText(rel)+' | +10 animo</p>';
+resultHtml+=firstMeetHtml;
 if(newStage&&STAGE_ADVANCE_TEXTS[newStage]){
   var texts=STAGE_ADVANCE_TEXTS[newStage];
   var stageText=texts[Math.floor(Math.random()*texts.length)].replace('{name}',rel.name);
@@ -611,11 +699,11 @@ if(newStage&&STAGE_ADVANCE_TEXTS[newStage]){
 }
 resultHtml+='</div><button onclick="advanceDay()">Continuar</button>';
 container.innerHTML=resultHtml;
+// Empate: victoria antes que derrota.
 checkVictories();
 }else{
 G.mood-=10;if(G.mood<0)G.mood=0;
 G.daysWithoutDates++;
-G.consecutiveDaysWithWomen=0;
 G.dateLog.push({name:rel.name,week:G.week,day:G.day,success:false});
 log('FRACASO: Cita fallida con '+rel.name+'. (-10 animo)','danger');
 G.history.push({type:'date_fail',name:rel.name,week:G.week,day:G.day});
@@ -638,13 +726,13 @@ var msg=SABOTAGE_MESSAGES[Math.floor(Math.random()*SABOTAGE_MESSAGES.length)];
 G.pg++;
 G.mood-=15;if(G.mood<0)G.mood=0;
 G.daysWithoutDates++;
-G.consecutiveDaysWithWomen=0;
 var logMsg='SABOTAJE: La Reina arruino tu cita con '+c.name+'. (+1 PG oculto, -15 animo)';
 log(logMsg,'danger');
 G.queensLogs.push({type:'sabotage',target:c.name,week:G.week,day:G.day,pg:G.pg});
 G.history.push({type:'sabotage',name:c.name,week:G.week,day:G.day});
 saveGame();
 container.innerHTML='<div class="result-box fail fade-in"><h2 style="color:var(--danger)">Sabotaje</h2><p style="margin:10px 0;line-height:1.6">'+msg+'</p><p style="font-style:italic;margin-top:10px">Tu ex se aseguro de que esto no funcionara.</p><p style="margin-top:10px">-15 animo</p></div><button onclick="advanceDay()">Continuar</button>';
+// Empate: victoria antes que derrota.
 checkVictories();
 checkDefeats();
 }
@@ -661,7 +749,6 @@ return text.replace('{name}',c.name);
 function passDay(){
 if(G.gameOver)return;
 G.daysWithoutDates++;
-G.consecutiveDaysNoDate++;
 G.mood-=3;if(G.mood<0)G.mood=0;
 log('Pasaste el dia en casa. (-3 animo)');
 checkDefeats();
@@ -679,17 +766,14 @@ showFeed();
 function endWeek(){
 showScreen('weekend');
 var container=document.getElementById('weekend-content');
-G.money+=40;
-log('Cobro semanal: +$40. Total: $'+G.money,'success');
-G.weeksWithoutConquests++;
-if(hasProgressionTowardNoviazgo())G.weeksWithoutConquests=0;
-queenAdvanceWeek();
+G.money+=80;
+log('Cobro semanal: +$80. Total: $'+G.money,'success');
 updatePartnerHealthWeekly();
 queenTurn();
 generateWeekEvents();
 var html='<div class="week-summary fade-in">';
 html+='<h3>🗓️ Semana '+G.week+' completada</h3>';
-html+='<p style="margin:10px 0">Dinero: $'+G.money+' (cobro +$40)</p>';
+html+='<p style="margin:10px 0">Dinero: $'+G.money+' (cobro +$80)</p>';
 html+='<p>Animo: '+G.mood+'</p>';
 if(G.partner){
   var partnerRel=findRelationById(G.partner);
@@ -710,6 +794,8 @@ if(G.partner){
 html+='<p style="margin-top:15px;color:var(--dim);font-style:italic">'+WEEK_SUMMARY_GAGS[Math.floor(Math.random()*WEEK_SUMMARY_GAGS.length)]+'</p>';
 html+='</div><button onclick="startNewWeek()">Iniciar Semana '+(G.week+1)+'</button>';
 container.innerHTML=html;
+// REGLA DE EMPATE: victoria antes que derrota — si ambos llegan a familia,
+// gana EL JUGADOR.
 checkVictories();
 checkDefeats();
 updateDebug();
@@ -720,11 +806,13 @@ function findRelationById(id){
   }
   return null;
 }
+/* Progreso real hacia el noviazgo = salud: true si alguna relación llegó a
+   novios (healthPoints>=umbral de novio). Sin uso activo en el loop semanal
+   (D3 usa weeksWithoutProgress); se mantiene como helper de salud. */
 function hasProgressionTowardNoviazgo(){
-  // La asfixia se resetea solo si hay progreso real hacia el noviazgo
-  // (stage citando+). Tener conocidos sin avanzar NO detiene a la Reina.
+  var gate=(REL_HEALTH_THRESHOLDS&&REL_HEALTH_THRESHOLDS.novio)||40;
   for(var i=0;i<G.relations.length;i++){
-    if(G.relations[i].stage==='citando'||G.relations[i].stage==='novio'||G.relations[i].stage==='familia')return true;
+    if(G.relations[i].healthPoints!==undefined&&G.relations[i].healthPoints!==null&&G.relations[i].healthPoints>=gate)return true;
   }
   return false;
 }
@@ -735,14 +823,13 @@ G.day=1;
 saveGame();
 showFeed();
 }
-/* Salud semanal de la pareja activa.
-   Cita exitosa (ánimo>=70 y citas exitosas con ella esta semana): +10.
-   Cita fallida (ánimo<70 o citas fallidas con ella): -3.
-   Si la salud cambió, weeksWithoutProgress=0; si no, ++. */
+/* Salud semanal de la pareja activa (ÚNICA vía de progreso del jugador).
+   Éxito con ella esta semana: +15 si ánimo>=70, +10 si no (SIN gate: el éxito
+   siempre suma). Solo-fallo: -3. Si la salud cambió, weeksWithoutProgress=0. */
 function updatePartnerHealthWeekly(){
   var partnerRel=getActivePartner();
   if(!partnerRel)return;
-  if(partnerRel.healthPoints===undefined){partnerRel.healthPoints=5;}
+  if(partnerRel.healthPoints===undefined||partnerRel.healthPoints===null){partnerRel.healthPoints=5;}
   G.healthPoints=partnerRel.healthPoints;
   var before=G.healthPoints;
   var hadSuccess=false,hadFail=false;
@@ -752,19 +839,24 @@ function updatePartnerHealthWeekly(){
       if(d.success){hadSuccess=true;}else{hadFail=true;}
     }
   }
-  if(hadSuccess&&G.mood>=70){
-    setPartnerHealth(G.healthPoints+10);
-    log('SALUD: Cita exitosa con '+partnerRel.name+'. Tu relación ganó 10 puntos ('+G.healthPoints+'/100).','success');
-  }else if(hadSuccess||hadFail){
+  if(hadSuccess){
+    if(G.mood>=70){
+      setPartnerHealth(G.healthPoints+15);
+      log('SALUD: Cita exitosa con '+partnerRel.name+' y buen ánimo. Tu relación ganó 15 puntos ('+G.healthPoints+'/100).','success');
+    }else{
+      setPartnerHealth(G.healthPoints+10);
+      log('SALUD: Cita exitosa con '+partnerRel.name+'. Tu relación ganó 10 puntos ('+G.healthPoints+'/100).','success');
+    }
+  }else if(hadFail){
     setPartnerHealth(G.healthPoints-3);
     log('SALUD: Cita fallida con '+partnerRel.name+'. Tu relación perdió 3 puntos ('+G.healthPoints+'/100).','danger');
   }
   if(G.healthPoints!==before){G.weeksWithoutProgress=0;}
   else{G.weeksWithoutProgress++;}
 }
-/* Turno semanal de la Reina: elige entre 2 opciones (QUEEN_CHOICES_PER_WEEK).
-   Opción A (60%): avanza su propia relación (+5 salud). Esa semana NO te afecta.
-   Opción B (40%): sabotea tu relación. Dado: éxito mayor (QUEEN_SABOTAGE_CHANCE=60%)
+/* Turno semanal de la Reina (SU ÚNICO track: solo salud, sin etapas/dates).
+   60%: avanza su propia relación (+5 salud). Esa semana NO te afecta.
+   40%: sabotea tu relación. Dado: éxito mayor (QUEEN_SABOTAGE_CHANCE=60%)
    resta major, éxito menor (30%) resta minor, falla (10%) nada.
    SI sabotea, esa semana NO avanza su relación. */
 function queenTurn(){
@@ -800,50 +892,6 @@ function queenTurn(){
     }
   }
 }
-function queenAdvanceWeek(){
-  if(G.familyDone)return;
-  var chance=QUEEN_CHANCE_PER_WEEK;
-  var stage=G.queenRelation.stage;
-  var dates=G.queenRelation.dates;
-  var advance=false;
-  if(stage==='familia')return;
-  if(Math.random()*100<chance){
-    advance=true;
-  }
-  if(advance){
-    dates++;
-    var prevStage=stage;
-    var newStage=null;
-    if(dates>=REL_STAGE_THRESHOLDS.familia&&stage!=='familia'){
-      newStage='familia';
-    }else if(dates>=REL_STAGE_THRESHOLDS.novio&&stage!=='novio'){
-      newStage='novio';
-    }else if(dates>=REL_STAGE_THRESHOLDS.citando&&stage!=='citando'){
-      newStage='citando';
-    }
-    if(newStage){
-      stage=newStage;
-      log('La Reina avanzo a etapa: '+stage+' ('+dates+' citas)','danger');
-      G.queensLogs.push({type:'stage_advance',stage:stage,dates:dates,week:G.week});
-      if(QUEEN_ADVANCE_TEXTS[stage]){
-        var texts=QUEEN_ADVANCE_TEXTS[stage];
-        log(texts[Math.floor(Math.random()*texts.length)],'danger');
-      }
-    }else{
-      log('La Reina tuvo una cita exitosa. Progreso: '+dates+' citas, etapa: '+stage,'danger');
-      G.queensLogs.push({type:'progress',stage:stage,dates:dates,week:G.week});
-    }
-    G.queenRelation.stage=stage;
-    G.queenRelation.dates=dates;
-  }
-  if(G.week>=4&&G.queenRelation.dates===0&&G.queenRelation.stage==='conocer'){
-    G.queenRelation.dates=1;
-    G.queenRelation.stage='conocer';
-    log('La Reina se activo por inercia. Ya conoce a alguien.','danger');
-    G.queensLogs.push({type:'progress',stage:'conocer',dates:1,week:G.week,note:'boost'});
-  }
-}
-
 function generateWeekEvents(){
 if(Math.random()<0.4){
 var evt=STALK_EVENTS[Math.floor(Math.random()*STALK_EVENTS.length)];
@@ -859,8 +907,11 @@ var name=MALE_ENCOUNTER_NAMES[Math.floor(Math.random()*MALE_ENCOUNTER_NAMES.leng
 log('HOMBRE APARECIDO: Te cruzaste con '+name+'. Raro.','danger');
 }
 }
+/* REGLA DE EMPATE: esta función corre ANTES que checkDefeats() en todos los
+   paths. Si jugador y Reina llegan a familia la misma semana, gana EL JUGADOR. */
 function checkVictories(){
 if(G.gameOver)return;
+// V1 (ÚNICA vía): salud de alguna relación >= umbral de familia.
 var famThreshold=(REL_HEALTH_THRESHOLDS&&REL_HEALTH_THRESHOLDS.familia)||70;
 for(var i=0;i<G.relations.length;i++){
   if(G.relations[i].healthPoints!==undefined&&G.relations[i].healthPoints>=famThreshold){
@@ -885,13 +936,8 @@ return;
 function checkDefeats(){
 if(G.gameOver)return;
 var famThreshold=(REL_HEALTH_THRESHOLDS&&REL_HEALTH_THRESHOLDS.familia)||70;
-// D1: la Reina llegó a familia primero (salud>=70 y citas>=7)
-if(G.queenRelation&&G.queenRelation.healthPoints>=famThreshold&&G.queenRelation.dates>=REL_STAGE_THRESHOLDS.familia){
-  G.gameOver=true;G.victory='D1';
-  showGameOver('defeat_queen_family');
-  return;
-}
-if(G.queenRelation.stage==='familia'&&G.queenRelation.dates>=REL_STAGE_THRESHOLDS.familia){
+// D1 UNIFICADA: la Reina llegó a familia (SOLO salud>=70, sin vía por dates).
+if(G.queenRelation&&G.queenRelation.healthPoints>=famThreshold){
   G.gameOver=true;G.victory='D1';
   showGameOver('defeat_queen_family');
   return;
@@ -907,12 +953,7 @@ G.gameOver=true;G.victory='D2';
 showGameOver('defeat_isolation');
 return;
 }
-if(G.weeksWithoutConquests>=8){
-G.gameOver=true;G.victory='D3';
-showGameOver('defeat_suffocation');
-return;
-}
-// D3: asfixia por salud (8 semanas sin subir salud de la relación)
+// D3 (ÚNICA vía de asfixia): 8 semanas sin subir salud de la relación.
 if(G.weeksWithoutProgress>=8){
 G.gameOver=true;G.victory='D3';
 showGameOver('defeat_suffocation');

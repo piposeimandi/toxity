@@ -106,12 +106,27 @@ if(ev.type==='known_person'){
   var canAfford=G.money>=cheapestCost;
   var costNote=canAfford?'':' <span style="color:var(--dim)">(necesitas al menos $'+cheapestCost+')</span>';
   item.innerHTML='<div class="time">💞 Conocido — '+getRelationProgressText(rel)+'</div>'+photoHtml(rel.photo,rel.name)+'<div class="text">'+ev.text+'</div><div class="actions"><button '+(canAfford?'':'disabled')+' onclick="goToDateKnown(\''+rel.id+'\')">'+(canAfford?'💞 Volver a ver a '+rel.name:'Sin plata para salir'+costNote)+'</button></div>';
-}else if(ev.type==='date_opportunity'){
-var canAfford=ev.candidate&&true;
-var cheapestCost=getCheapestLocationCost();
-canAfford=G.money>=cheapestCost;
-var costNote=canAfford?'':' <span style="color:var(--dim)">(necesitas al menos $'+cheapestCost+')</span>';
-item.innerHTML='<div class="time">✨ Oportunidad</div>'+photoHtml(ev.candidate.photo,ev.candidate.name)+'<div class="text">'+ev.text+'</div><div class="actions"><button '+(canAfford?'':'disabled')+' onclick="goToDate(\''+ev.candidate.name+'\')">'+(canAfford?'💘 Ir a ver a '+ev.candidate.name:'Sin plata para salir'+costNote)+'</button></div>';
+}else if(ev.type==='pending_invite'){
+  var irel=findRelationById(ev.relId);
+  var iloc=DATE_LOCATIONS[ev.locationKey];
+  if(irel&&iloc){
+    var canAffordInv=G.money>=iloc.cost;
+    var costNoteInv=canAffordInv?'':' <span style="color:var(--dim)">(necesitas $'+iloc.cost+')</span>';
+    item.innerHTML='<div class="time">💬 Te escribió '+irel.name+'</div>'+photoHtml(irel.photo,irel.name)+'<div class="text">'+ev.text+'</div><div class="text" style="color:var(--dim)">Te propone: '+iloc.icon+' '+iloc.name+' ($'+iloc.cost+')</div><div class="actions"><button '+(canAffordInv?'':'disabled')+' onclick="acceptInvite()">Aceptar plan'+costNoteInv+'</button><button onclick="declineInvite()">Rechazar</button></div>';
+  }else{
+    item.innerHTML='<div class="time">Tu vida</div><div class="text">Un mensaje se perdió en el camino...</div>';
+  }
+}else if(ev.type==='app_match'){
+  var cheapestCost2=getCheapestLocationCost();
+  var canAfford2=G.money>=cheapestCost2;
+  var costNote2=canAfford2?'':' <span style="color:var(--dim)">(necesitas al menos $'+cheapestCost2+')</span>';
+  item.innerHTML='<div class="time">✨ Nuevo match en la app</div>'+photoHtml(ev.candidate.photo,ev.candidate.name)+'<div class="text">'+ev.text+'</div><div class="actions"><button '+(canAfford2?'':'disabled')+' onclick="goToDate(\''+ev.candidate.name+'\',\'app\')">'+(canAfford2?'💘 Ir a ver a '+ev.candidate.name:'Sin plata para salir'+costNote2)+'</button></div>';
+}else if(ev.type==='casual'){
+  var cheapestCost3=getCheapestLocationCost();
+  var canAfford3=G.money>=cheapestCost3;
+  var costNote3=canAfford3?'':' <span style="color:var(--dim)">(necesitas al menos $'+cheapestCost3+')</span>';
+  var cloc=DATE_LOCATIONS[ev.locationKey]?DATE_LOCATIONS[ev.locationKey].name:ev.locationKey;
+  item.innerHTML='<div class="time">✨ Te cruzaste con alguien en el '+cloc+'</div>'+photoHtml(ev.candidate.photo,ev.candidate.name)+'<div class="text">'+ev.text+'</div><div class="actions"><button '+(canAfford3?'':'disabled')+' onclick="goToDate(\''+ev.candidate.name+'\',\'casual\')">'+(canAfford3?'💘 Ir a ver a '+ev.candidate.name:'Sin plata para salir'+costNote3)+'</button></div>';
 }else if(ev.type==='location_hint'){
 var loc=DATE_LOCATIONS[ev.location];
 var canAfford=G.money>=loc.cost;
@@ -135,6 +150,12 @@ warn.className='feed-item fade-in';
 warn.innerHTML='<div class="time" style="color:var(--danger)">Alerta</div><div class="text" style="color:var(--danger)">Llevas '+G.daysWithoutDates+' dias sin salir. Tu animo se esta deteriorando.</div>';
 container.appendChild(warn);
 }
+if(G.relations.length===0&&!G.pendingInvite){
+var empty=document.createElement('div');
+empty.className='feed-item fade-in';
+empty.innerHTML='<div class="time">📱 Todavía no conocés a nadie</div><div class="text">La App de Citas es la puerta de entrada: anda al mapa y revisala para ver perfiles nuevos.</div><div class="actions"><button onclick="showMap()">📍 Ir al mapa</button></div>';
+container.appendChild(empty);
+}
 if(G.partner){
   var prel=findRelationById(G.partner);
   if(prel){
@@ -157,10 +178,16 @@ if(G.partner){
 }
 updateDebug();
 }
-function showCandidateDate(c,loc){
+function showCandidateDate(c,loc,opts){
 showScreen('date');
 document.getElementById('date-title').textContent='Cita en '+loc.name;
 var container=document.getElementById('date-content');
+var originBanner='';
+if(opts&&opts.origin==='casual'){
+originBanner='<div class="candidate fade-in"><div class="text">✨ Te cruzaste con alguien en el '+loc.name+'</div></div>';
+}else if(opts&&opts.origin==='app'){
+originBanner='<div class="candidate fade-in"><div class="text">✨ Nuevo match en la app</div></div>';
+}
 var difficultyBonus=0;
 if(loc.risk==='low')difficultyBonus=10;
 else if(loc.risk==='medium')difficultyBonus=0;
@@ -171,7 +198,7 @@ baseChance=Math.max(5,Math.min(95,baseChance));
 var riskBadge='';
 var badgeCls=loc.risk==='low'?'easy':loc.risk==='medium'?'medium':loc.risk==='high'?'hard':'extreme';
 riskBadge='<span class="badge '+badgeCls+'">Riesgo: '+loc.riskLabel+'</span>';
-container.innerHTML='<div class="candidate fade-in"><div class="name">'+photoHtml(c.photo,c.name)+c.name+' '+riskBadge+'</div><div class="traits">'+c.traits+' | '+c.personality+'</div><div class="desc">Chance de exito estimado: ~'+Math.round(baseChance)+'%</div></div><div class="dialogue-options" id="dialogue-opts"></div>';
+container.innerHTML=originBanner+'<div class="candidate fade-in"><div class="name">'+photoHtml(c.photo,c.name)+c.name+' '+riskBadge+'</div><div class="traits">'+c.traits+' | '+c.personality+'</div><div class="desc">Chance de exito estimado: ~'+Math.round(baseChance)+'%</div></div><div class="dialogue-options" id="dialogue-opts"></div>';
 var _pr=G.partner?findRelationById(G.partner):null;
 var _gate=((typeof REL_HEALTH_THRESHOLDS!=='undefined'&&REL_HEALTH_THRESHOLDS&&REL_HEALTH_THRESHOLDS.novio)||40);
 var _risk=((typeof INFIDELITY_RISK!=='undefined')?INFIDELITY_RISK:40);
@@ -201,8 +228,51 @@ btn.onclick=function(){resolveDate(c,loc,d,baseChance);};
  opts.appendChild(btn);
  });
 }
-function showManResult(loc){
-showScreen('result');
+/* Perfiles de la app: ver NO crea contacto, solo concretar (requestDateFromApp). */
+function showAppProfiles(profiles){
+if(G.gameOver)return;
+showScreen('date');
+document.getElementById('date-title').textContent='App de Citas 📱';
+var container=document.getElementById('date-content');
+var html='<div class="candidate fade-in"><div class="text">Revisaste la app... Mirá tranqui: <b>ver perfiles no crea contacto</b>, solo queda en tus contactos si concretás la cita. Ojo: salir por acá te expone mucho.</div></div>';
+if(!profiles||profiles.length===0){
+html+='<div class="candidate fade-in"><div class="text">No hay perfiles nuevos por hoy. Ya conocés a todo el mundo, campeón.</div></div>';
+html+='<button onclick="showFeed()">Volver</button>';
+container.innerHTML=html;
+return;
+}
+var cheapestCost=getCheapestLocationCost();
+var canAffordAny=G.money>=cheapestCost;
+for(var i=0;i<profiles.length;i++){
+var p=profiles[i];
+html+='<div class="candidate fade-in"><div class="time">✨ Nuevo match en la app</div><div class="name">'+photoHtml(p.photo,p.name)+p.name+'</div><div class="traits">'+p.traits+' | '+p.personality+'</div><div class="actions"><button '+(canAffordAny?'':'disabled')+' onclick="requestDateFromApp(\''+p.name+'\')">'+(canAffordAny?'💘 Pedir cita a '+p.name:'Sin plata para salir (necesitas al menos $'+cheapestCost+')')+'</button></div></div>';
+}
+html+='<button onclick="showFeed()">Volver</button>';
+container.innerHTML=html;
+}
+/* Picker de conocidos en un lugar fijo: sin gente nueva. */
+function showLocationKnownPicker(locKey){
+if(G.gameOver)return;
+var loc=DATE_LOCATIONS[locKey];
+if(!loc){showFeed();return;}
+showScreen('date');
+document.getElementById('date-title').textContent=loc.icon+' '+loc.name;
+var container=document.getElementById('date-content');
+var known=getAvailableKnownPeople();
+var html='<div class="candidate fade-in"><div class="text">Nadie nuevo por acá hoy. Pero podés invitar a alguien que ya conocés al '+loc.name+' ($'+loc.cost+').</div></div>';
+if(known.length===0){
+html+='<div class="candidate fade-in"><div class="text">Todavía no conocés a nadie. La App de Citas 📱 es la puerta de entrada: revisala desde el mapa.</div></div><button onclick="showMap()">Ir al mapa</button>';
+}else{
+for(var i=0;i<known.length;i++){
+var r=known[i];
+var canAfford=G.money>=loc.cost;
+html+='<div class="candidate fade-in">'+photoHtml(r.photo,r.name)+'<div class="name">'+r.name+'</div><div class="traits">Saliendo: '+getRelationProgressText(r)+'</div><div class="actions"><button '+(canAfford?'':'disabled')+' onclick="goToDateKnownAtLocation(\''+r.id+'\',\''+locKey+'\')">'+(canAfford?'💞 Invitar al '+loc.name:'Sin plata ($'+loc.cost+')')+'</button></div></div>';
+}
+html+='<button onclick="showMap()">Volver al mapa</button>';
+}
+container.innerHTML=html;
+}
+function showManResult(loc){showScreen('result');
 var c=MALE_CANDIDATES[Math.floor(Math.random()*MALE_CANDIDATES.length)];
 var container=document.getElementById('result-content');
 log('HOMBRE GAY: Te cruzaste con '+c.name+'. Algo no cerro...','danger');

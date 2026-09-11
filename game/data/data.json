@@ -9,6 +9,16 @@
     "major": 15,
     "minor": 5
   },
+  "appProfilesPerVisit": 4,
+  "casualEncounterChance": 15,
+  "messageChance": 50,
+  "inviteTexts": [
+    "Hola perdido 😏 Anoche la pasé genial... ¿qué te parece si seguimos en {lugar}? Elegí yo, vos solo vení lindo 💋",
+    "Che, no dejo de pensar en vos 🙈 ¿Te animás a {lugar} conmigo? Prometo portarme... más o menos 😇",
+    "Bebé, tengo ganas de verte 👀 ¿Mañana en {lugar}? No acepto un no como respuesta... bueno, sí lo acepto, pero me pongo triste 🥺",
+    "Escuchame una cosa, bombón 💅 Me quedé con ganas de más... ¿{lugar}, vos y yo? Dale, no seas aburrido 😜",
+    "Holaaa 🌙 Soñé con vos... cosas lindas, tranqui jaja. ¿Lo hacemos realidad en {lugar}? Te espero 😘"
+  ],
   "stageAdvanceTexts": {
     "first_meet": [
       "Conociste a {name}. Algo en esa mirada te hizo quedarte un rato mas.",

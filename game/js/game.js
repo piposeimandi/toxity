@@ -25,7 +25,7 @@ function loadRelConfig(){
   }
 }
 
-var G={week:1,day:1,money:100,labia:50,appearance:50,confidence:50,mood:50,pg:0,consecutiveMen:0,daysWithoutDates:0,history:[],queensLogs:[],gymLastEvent:'',lastGymResetWeek:null,gameOver:false,victory:null,relations:[],partner:null,familyDone:false,queenRelation:{stage:'conocer',dates:0,healthPoints:5},dateLog:[],healthPoints:5,weeksWithoutProgress:0};
+var G={week:1,day:1,money:100,labia:50,appearance:50,confidence:50,mood:50,pg:0,consecutiveMen:0,daysWithoutDates:0,history:[],queensLogs:[],gymLastEvent:'',lastGymResetWeek:null,gameOver:false,victory:null,relations:[],partner:null,familyDone:false,queenRelation:{stage:'conocer',dates:0,healthPoints:5},dateLog:[],healthPoints:5,weeksWithoutProgress:0,pendingInvite:null};
 
 function saveGame(){try{localStorage.setItem('reinaFalsaSave',JSON.stringify(G))}catch(e){log('Error al guardar: '+e,'danger')}}
 function loadGame(){
@@ -69,7 +69,7 @@ function showSavedGameOver(){
 }
 function newGame(){
 if(!DATA_LOADED){log('Cargando datos del juego...','highlight');return;}
-G={week:1,day:1,money:100,labia:50,appearance:50,confidence:50,mood:50,pg:0,consecutiveMen:0,daysWithoutDates:0,history:[],queensLogs:[],gymLastEvent:'',lastGymResetWeek:null,gameOver:false,victory:null,relations:[],partner:null,familyDone:false,queenRelation:{stage:'conocer',dates:0,healthPoints:5},dateLog:[],healthPoints:5,weeksWithoutProgress:0};
+G={week:1,day:1,money:100,labia:50,appearance:50,confidence:50,mood:50,pg:0,consecutiveMen:0,daysWithoutDates:0,history:[],queensLogs:[],gymLastEvent:'',lastGymResetWeek:null,gameOver:false,victory:null,relations:[],partner:null,familyDone:false,queenRelation:{stage:'conocer',dates:0,healthPoints:5},dateLog:[],healthPoints:5,weeksWithoutProgress:0,pendingInvite:null};
 loadRelConfig();
 log('=== NUEVA PARTIDA ===','highlight');
 log('Bienvenido, El Salado. Tu ex te esta observando.');
@@ -80,6 +80,7 @@ showFeed();
    Reina es cosmético: se deriva de la salud, pero se inicializa por compat. */
 function migrateOldSave(){
   if(!G.relations){G.relations=[];}
+  if(G.pendingInvite===undefined){G.pendingInvite=null;}
   if(G.partner===undefined){G.partner=null;}
   if(G.familyDone===undefined){G.familyDone=false;}
   if(!G.queenRelation){G.queenRelation={stage:'conocer',dates:0,healthPoints:5};}
@@ -244,32 +245,61 @@ function getNewCandidates(){
   }
   return result;
 }
+/* Candidatos desconocidos para la app: FEMALE + MALE no conocidos.
+   Único uso: visitApp (puerta de entrada de gente nueva). */
+function getUnknownCandidates(){
+  var known={};
+  for(var i=0;i<G.relations.length;i++){known[G.relations[i].name]=true;}
+  var result=[];
+  for(var i=0;i<FEMALE_CANDIDATES.length;i++){
+    if(!known[FEMALE_CANDIDATES[i].name])result.push(FEMALE_CANDIDATES[i]);
+  }
+  if(typeof MALE_CANDIDATES!=='undefined'){
+    for(var j=0;j<MALE_CANDIDATES.length;j++){
+      if(!known[MALE_CANDIDATES[j].name])result.push(MALE_CANDIDATES[j]);
+    }
+  }
+  return result;
+}
+function findCandidateByName(name){
+  for(var i=0;i<FEMALE_CANDIDATES.length;i++){if(FEMALE_CANDIDATES[i].name===name)return FEMALE_CANDIDATES[i];}
+  if(typeof MALE_CANDIDATES!=='undefined'){
+    for(var j=0;j<MALE_CANDIDATES.length;j++){if(MALE_CANDIDATES[j].name===name)return MALE_CANDIDATES[j];}
+  }
+  return null;
+}
 
+/* Feed: YA NO inventa gente nueva de la nada. Solo muestra: invitación
+   pendiente (mensajería), conocidos, sugerencias de lugar y ambiente.
+   Los matches nuevos vienen de visitar la app; los casuales del 15% en
+   bar/café/parque (ver goToLocation/visitApp). */
 function generateFeedEvents(){
 var events=[];
-var numEvents=Math.floor(Math.random()*3)+1;
+if(G.pendingInvite){
+  var invRel=findRelationById(G.pendingInvite.relId);
+  var invLoc=DATE_LOCATIONS[G.pendingInvite.locationKey];
+  if(invRel&&invLoc){
+    var txts=(typeof inviteTexts!=='undefined'&&inviteTexts&&inviteTexts.length)?inviteTexts:['¿Nos vemos en {lugar}? 😏'];
+    var t=txts[Math.floor(Math.random()*txts.length)];
+    t=t.split('{nombre}').join(invRel.name).split('{lugar}').join(invLoc.name);
+    events.push({type:'pending_invite',relId:invRel.id,locationKey:G.pendingInvite.locationKey,text:t});
+  }else{
+    G.pendingInvite=null;
+  }
+}
 var knownPeople=getAvailableKnownPeople();
-var newCandidates=getNewCandidates();
-var hasKnown=knownPeople.length>0;
-var hasNew=newCandidates.length>0;
-for(var i=0;i<numEvents;i++){
-var r=Math.random();
-if(hasKnown&&(!hasNew||r<0.4)){
-  var rel=knownPeople[Math.floor(Math.random()*knownPeople.length)];
+var shuffled=knownPeople.slice();
+for(var s=shuffled.length-1;s>0;s--){var r2=Math.floor(Math.random()*(s+1));var tmp=shuffled[s];shuffled[s]=shuffled[r2];shuffled[r2]=tmp;}
+var numKnown=Math.min(shuffled.length,Math.floor(Math.random()*3)+1);
+for(var i=0;i<numKnown;i++){
+  var rel=shuffled[i];
   var stageLabel=getRelationProgressText(rel);
   events.push({type:'known_person',relation:rel,text:'Seguir saliendo con '+rel.name+' — '+stageLabel});
-}else if(hasNew){
-  var c=newCandidates[Math.floor(Math.random()*newCandidates.length)];
-  events.push({type:'date_opportunity',gender:'female',candidate:c,text:c.name+' fue vista por tu zona. '+c.traits+'.'});
-}else{
-  var c=FEMALE_CANDIDATES[Math.floor(Math.random()*FEMALE_CANDIDATES.length)];
-  events.push({type:'date_opportunity',gender:'female',candidate:c,text:c.name+' fue vista por tu zona. '+c.traits+'.'});
 }
-if(i===numEvents-1&&Math.random()<0.3){
+if(Math.random()<0.3){
   var locs=Object.keys(DATE_LOCATIONS);
   var loc=locs[Math.floor(Math.random()*locs.length)];
   events.push({type:'location_hint',location:loc,text:'Alguien te recomienda ir al '+DATE_LOCATIONS[loc].name+' hoy.'});
-}
 }
 if(Math.random()<0.25){
   events.push({type:'ambient',text:getAmbientEvent()});
@@ -279,8 +309,16 @@ return events;
 function getAmbientEvent(){
 return AMBIENT_EVENTS[Math.floor(Math.random()*AMBIENT_EVENTS.length)];
 }
+/* Visitas a lugares (mapa y sugerencias del feed).
+   - app: puerta de entrada — muestra 3-4 perfiles nuevos (visitApp), sin crear contactos.
+   - bar/café/parque: ~15% (casualEncounterChance) de encuentro casual con alguien
+     nuevo; si no sale, el lugar sirve para citas con conocidos.
+   - resto: solo citas con conocidos. Ningún otro lugar genera gente nueva.
+   Se conserva el evento de hombre (genderRatio/consecutiveMen) como hoy. */
 function goToLocation(locKey){
 var loc=DATE_LOCATIONS[locKey];
+if(!loc){log('Ese lugar no existe.','danger');return;}
+if(locKey==='app'){visitApp();return;}
 if(G.money<loc.cost){
 log('No tenes plata para ir al '+loc.name+'. Necesitas $'+loc.cost+'.','danger');
 return;
@@ -296,13 +334,53 @@ if(Math.random()<gayChance){
 showManResult(loc);
 return;
 }
-var c=FEMALE_CANDIDATES[Math.floor(Math.random()*FEMALE_CANDIDATES.length)];
-showCandidateDate(c,loc);
 }else{
 G.consecutiveMen=0;
-var c=FEMALE_CANDIDATES[Math.floor(Math.random()*FEMALE_CANDIDATES.length)];
-showCandidateDate(c,loc);
 }
+// Encuentro casual: SOLO bar/café/parque generan gente nueva fuera de la app.
+if(locKey==='bar'||locKey==='cafe'||locKey==='parque'){
+var casualChance=(typeof casualEncounterChance!=='undefined')?casualEncounterChance:15;
+var unknowns=getNewCandidates();
+if(unknowns.length>0&&Math.random()*100<casualChance){
+var c=unknowns[Math.floor(Math.random()*unknowns.length)];
+getOrCreateRelation(c.name);
+saveGame();
+log('Te cruzaste con '+c.name+' en el '+loc.name+'.','success');
+showCandidateDate(c,loc,{origin:'casual'});
+return;
+}
+}
+// Sin casual (o lugar sin casuales): el lugar sirve para citas con conocidos.
+showLocationKnownPicker(locKey);
+}
+/* App de Citas: fuente principal de gente nueva. Muestra hasta
+   appProfilesPerVisit perfiles desconocidos (FEMALE+MALE) para elegir.
+   Ver perfiles NO crea contactos: solo concretar la cita (requestDateFromApp).
+   Su costo de diseño se mantiene: las citas que salgan de acá resuelven con el
+   riesgo de cada lugar (ver resolveDate/resolveKnownDate). */
+function visitApp(){
+var loc=DATE_LOCATIONS.app;
+if(loc&&G.money<loc.cost){
+log('No tenes plata para la app. Necesitas $'+loc.cost+'.','danger');
+return;
+}
+if(loc&&loc.cost>0){G.money-=loc.cost;}
+var n=(typeof appProfilesPerVisit!=='undefined')?appProfilesPerVisit:4;
+var pool=getUnknownCandidates();
+for(var s=pool.length-1;s>0;s--){var r2=Math.floor(Math.random()*(s+1));var tmp=pool[s];pool[s]=pool[r2];pool[r2]=tmp;}
+var profiles=pool.slice(0,n);
+log('Revisaste la app: '+profiles.length+' perfiles nuevos.','highlight');
+saveGame();
+showAppProfiles(profiles);
+}
+/* Concretar cita desde la app: ACÁ se crea el contacto (no al ver el perfil). */
+function requestDateFromApp(candidateName){
+var c=findCandidateByName(candidateName);
+if(!c){log('Ese perfil ya no está disponible.','danger');showFeed();return;}
+getOrCreateRelation(c.name);
+saveGame();
+log('Concretaste cita con '+c.name+' por la app. Ya quedó en tus contactos.','success');
+goToDate(c.name,'app');
 }
 function isLocationSafe(loc){
 return loc.safe===true||loc.risk==='low';
@@ -405,11 +483,8 @@ saveGame();
 showGymResult('harasser',c,[{stat:'Animo',change:'-5'},{stat:'Apariencia',change:'+3'}],harasserHealthNote);
 }
 
-function goToDate(candidateName){
-var c=null;
-for(var i=0;i<FEMALE_CANDIDATES.length;i++){
-if(FEMALE_CANDIDATES[i].name===candidateName){c=FEMALE_CANDIDATES[i];break;}
-}
+function goToDate(candidateName,origin){
+var c=findCandidateByName(candidateName);
 if(!c){log('No encontraste a esa persona.','danger');return;}
 var locKey=Object.keys(DATE_LOCATIONS)[Math.floor(Math.random()*Object.keys(DATE_LOCATIONS).length)];
 var loc=DATE_LOCATIONS[locKey];
@@ -423,8 +498,12 @@ checkDefeats();advanceDay();
 return;
 }
 G.money-=loc.cost;
+/* Concreción: el contacto se crea al aceptar ir a ver a alguien,
+   antes de resolver la cita (queda aunque la cita falle). */
+getOrCreateRelation(c.name);
+saveGame();
 log('Gastaste $'+loc.cost+' y fuiste al '+loc.name+'.','highlight');
-showCandidateDate(c,loc);
+showCandidateDate(c,loc,{origin:origin||'feed'});
 }
 
 function goToDateKnown(relationId){
@@ -447,6 +526,68 @@ if(G.money<loc.cost){
 G.money-=loc.cost;
 log('Gastaste $'+loc.cost+' y saliste con '+rel.name+'.','highlight');
 showKnownPersonDate(rel,loc);
+}
+
+/* Cita con un conocido en un lugar FIJO (picker del mapa). Sin gente nueva. */
+function goToDateKnownAtLocation(relationId,locKey){
+var rel=null;
+for(var i=0;i<G.relations.length;i++){
+  if(G.relations[i].id===relationId){rel=G.relations[i];break;}
+}
+if(!rel){log('No encontraste a esa persona.','danger');return;}
+var loc=DATE_LOCATIONS[locKey];
+if(!loc){log('Ese lugar no existe.','danger');return;}
+if(G.money<loc.cost){
+  log('No tenes plata para salir con '+rel.name+' al '+loc.name+'. Necesitas $'+loc.cost+'.','danger');
+  showLocationKnownPicker(locKey);
+  return;
+}
+G.money-=loc.cost;
+log('Gastaste $'+loc.cost+' y saliste con '+rel.name+' al '+loc.name+'.','highlight');
+showKnownPersonDate(rel,loc);
+}
+
+/* Mensajería: tras una cita EXITOSA, messageChance% de que ELLA te escriba al
+   día siguiente proponiendo un plan. El lugar lo elige ella: random entre TODOS
+   los dateLocations (puede ser caro o riesgoso, esa es la gracia).
+   Solo puede haber 1 invitación pendiente a la vez. */
+function maybeGenerateInvite(name){
+if(G.pendingInvite)return;
+var chance=(typeof messageChance!=='undefined')?messageChance:50;
+if(Math.random()*100>=chance)return;
+var rel=findRelation(name);
+if(!rel)return;
+var keys=Object.keys(DATE_LOCATIONS);
+if(!keys.length)return;
+var locKey=keys[Math.floor(Math.random()*keys.length)];
+G.pendingInvite={relId:rel.id,locationKey:locKey};
+saveGame();
+}
+/* Aceptar: cita normal con su lugar (cuesta su dinero, % éxito estándar,
+   cuenta para salud/infidelidad igual que cualquier cita). */
+function acceptInvite(){
+if(!G.pendingInvite){showFeed();return;}
+var inv=G.pendingInvite;
+var rel=findRelationById(inv.relId);
+var loc=DATE_LOCATIONS[inv.locationKey];
+if(!rel||!loc){G.pendingInvite=null;saveGame();showFeed();return;}
+if(G.money<loc.cost){
+log('No tenés plata para el plan de '+rel.name+' en el '+loc.name+' (necesitas $'+loc.cost+'). La invitación sigue en pie.','danger');
+showFeed();
+return;
+}
+G.money-=loc.cost;
+log('Aceptaste el plan de '+rel.name+': '+loc.name+' ($'+loc.cost+').','highlight');
+G.pendingInvite=null;
+saveGame();
+showKnownPersonDate(rel,loc);
+}
+/* Rechazar: sin castigo, solo se pierde la oportunidad. */
+function declineInvite(){
+G.pendingInvite=null;
+saveGame();
+log('Rechazaste el plan. "Quizás en otro momento..."','highlight');
+showFeed();
 }
 
 /* Infidelidad: salir con alguien más teniendo pareja con salud>=novio (40)
@@ -502,6 +643,7 @@ G.dateLog.push({name:c.name,week:G.week,day:G.day,success:true});
 log('EXITO: Cita exitosa con '+c.name+'! ('+getRelationProgressText(rel)+')','success');
 G.history.push({type:'date_success',name:c.name,week:G.week,day:G.day,stage:rel.stage,dates:rel.dates});
 saveGame();
+maybeGenerateInvite(c.name);
 var resultHtml='<div class="result-box success fade-in"><h2>Cita exitosa!</h2><p>'+getSuccessText(c,loc)+'</p>';
 resultHtml+='<p style="margin-top:10px">'+getRelationProgressText(rel)+' | +10 animo</p>';
 resultHtml+=firstMeetHtml;
@@ -551,6 +693,7 @@ G.dateLog.push({name:c.name,week:G.week,day:G.day,success:true});
 log('EXITO: Cita exitosa con '+c.name+'! ('+getRelationProgressText(rel)+')','success');
 G.history.push({type:'date_success',name:c.name,week:G.week,day:G.day,stage:rel.stage,dates:rel.dates});
 saveGame();
+maybeGenerateInvite(c.name);
 var resultHtml='<div class="result-box success fade-in"><h2>Cita exitosa!</h2><p>'+getSuccessText(c,loc)+'</p>';
 resultHtml+='<p style="margin-top:10px">'+getRelationProgressText(rel)+' | +10 animo</p>';
 resultHtml+=firstMeetHtml;
@@ -641,6 +784,7 @@ G.dateLog.push({name:rel.name,week:G.week,day:G.day,success:true});
 log('EXITO: Cita exitosa con '+rel.name+'! ('+getRelationProgressText(rel)+')','success');
 G.history.push({type:'date_success',name:rel.name,week:G.week,day:G.day,stage:rel.stage,dates:rel.dates});
 saveGame();
+maybeGenerateInvite(rel.name);
 var resultHtml='<div class="result-box success fade-in"><h2>Cita exitosa!</h2><p>'+getSuccessText(rel,loc)+'</p>';
 resultHtml+='<p style="margin-top:10px">'+getRelationProgressText(rel)+' | +10 animo</p>';
 resultHtml+=firstMeetHtml;
@@ -689,6 +833,7 @@ G.dateLog.push({name:rel.name,week:G.week,day:G.day,success:true});
 log('EXITO: Cita exitosa con '+rel.name+'! ('+getRelationProgressText(rel)+')','success');
 G.history.push({type:'date_success',name:rel.name,week:G.week,day:G.day,stage:rel.stage,dates:rel.dates});
 saveGame();
+maybeGenerateInvite(rel.name);
 var resultHtml='<div class="result-box success fade-in"><h2>Cita exitosa!</h2><p>'+getSuccessText(rel,loc)+'</p>';
 resultHtml+='<p style="margin-top:10px">'+getRelationProgressText(rel)+' | +10 animo</p>';
 resultHtml+=firstMeetHtml;

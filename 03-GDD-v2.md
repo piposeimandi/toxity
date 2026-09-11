@@ -106,12 +106,13 @@ La exmarida acechadora que sabotea y controla.
 - No hay número fijo de acciones por semana
 - Guardado manual al final de cada semana
 
-### Flujo de un "Día"
-1. **Feed:** Aparecen eventos/disponibles en el timeline
-2. **Elegir:** Ir a un lugar, ignorar, o hacer otra cosa
-3. **Resolver:** Si vas a un lugar, aparecen candidatos
-4. **Decidir:** Interactuar o no con cada candidato
-5. **Consecuencias:** Éxito/fracaso + posibles sabotajes de la Reina
+### Flujo de citas (v2)
+1. **App de Citas = puerta de entrada:** visitar la app muestra 4 perfiles nuevos (random, aún no conocidos, de ambos pools) para elegir con quién pedir cita. Mantiene su riesgo alto de sabotaje/exposición como costo de diseño.
+2. **Ver ≠ contacto:** ver un perfil no crea contacto; la relación se crea al CONCRETAR la cita (aceptar ir a ver a alguien). El contacto queda tras la cita, salga bien o mal.
+3. **Encuentros casuales raros:** solo bar/café/parque tienen ~15% de encuentro casual con alguien nuevo al visitarlos. El resto de lugares (y esos tres cuando no sale el casual) solo sirven para citas con conocidos.
+4. **Feed con origen:** "✨ Nuevo match en la app" (vino de la app), "✨ Te cruzaste con alguien en el {lugar}" (casual), "💞 Conocido" (conocidos). El feed ya no inventa gente nueva de la nada.
+5. **Ella propone plan (mensajería):** tras cita exitosa, 50% de que al día siguiente te escriba proponiendo lugar (lo elige ella: random entre todos los lugares, puede ser caro o riesgoso).
+6. **Invitación pendiente:** tarjeta "💬 Te escribió {nombre}" con Aceptar (cita normal: cuesta el dinero del lugar, % éxito estándar, cuenta para salud/infidelidad) / Rechazar (sin castigo). Solo 1 pendiente a la vez; persiste en el save.
 
 ---
 

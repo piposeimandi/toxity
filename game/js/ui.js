@@ -362,7 +362,7 @@ function showManResult(loc){showScreen('result');
 var c=MALE_CANDIDATES[Math.floor(Math.random()*MALE_CANDIDATES.length)];
 var container=document.getElementById('result-content');
 log('HOMBRE GAY: Te cruzaste con '+c.name+'. Algo no cerro...','danger');
-G.daysWithoutDates++;
+/* Saliste igual: el encuentro fallido no cuenta como aislamiento. */
 G.history.push({type:'gay_encounter',name:c.name,week:G.week,day:G.day});
 saveGame();
 container.innerHTML='<div class="result-box info fade-in"><h2 style="color:var(--fg)">Algo no cerro...</h2>'+photoHtml(c.photo,c.name)+'<p style="margin:10px 0;line-height:1.6">Te cruzaste con '+c.name+' en el '+loc.name+'. Hablaron un rato pero algo no se sentia bien. La vibe era... diferente.</p><p style="font-style:italic;margin-top:10px;color:var(--dim)">Perdiste el dia y el dinero. No sabes bien que paso.</p></div><button onclick="advanceDay()">Continuar</button>';

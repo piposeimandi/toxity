@@ -392,6 +392,8 @@ log('No tenes plata para ir al gym. Necesitas $'+loc.cost+'.','danger');
 return;
 }
 G.money-=loc.cost;
+/* Ir al gym ES salir: resetea el contador de aislamiento. */
+G.daysWithoutDates=0;
 G.gymLastEvent='';
 log('Gastaste $'+loc.cost+' en el Gimnasio. REFUGIO SEGURO.','success');
 var r=Math.random()*100;
@@ -660,7 +662,6 @@ container.innerHTML=resultHtml;
 checkVictories();
 }else{
 G.mood-=10;if(G.mood<0)G.mood=0;
-G.daysWithoutDates++;
 G.dateLog.push({name:c.name,week:G.week,day:G.day,success:false});
 log('FRACASO: '+c.name+' no interesada. (-10 animo)','danger');
 G.history.push({type:'date_fail',name:c.name,week:G.week,day:G.day});
@@ -710,7 +711,6 @@ container.innerHTML=resultHtml;
 checkVictories();
 }else{
 G.mood-=10;if(G.mood<0)G.mood=0;
-G.daysWithoutDates++;
 G.dateLog.push({name:c.name,week:G.week,day:G.day,success:false});
 log('FRACASO: '+c.name+' no interesada. (-10 animo)','danger');
 G.history.push({type:'date_fail',name:c.name,week:G.week,day:G.day});
@@ -801,7 +801,6 @@ container.innerHTML=resultHtml;
 checkVictories();
 }else{
 G.mood-=10;if(G.mood<0)G.mood=0;
-G.daysWithoutDates++;
 G.dateLog.push({name:rel.name,week:G.week,day:G.day,success:false});
 log('FRACASO: Cita fallida con '+rel.name+'. (-10 animo)','danger');
 G.history.push({type:'date_fail',name:rel.name,week:G.week,day:G.day});
@@ -850,7 +849,6 @@ container.innerHTML=resultHtml;
 checkVictories();
 }else{
 G.mood-=10;if(G.mood<0)G.mood=0;
-G.daysWithoutDates++;
 G.dateLog.push({name:rel.name,week:G.week,day:G.day,success:false});
 log('FRACASO: Cita fallida con '+rel.name+'. (-10 animo)','danger');
 G.history.push({type:'date_fail',name:rel.name,week:G.week,day:G.day});
@@ -872,7 +870,6 @@ var container=document.getElementById('result-content');
 var msg=SABOTAGE_MESSAGES[Math.floor(Math.random()*SABOTAGE_MESSAGES.length)];
 G.pg++;
 G.mood-=15;if(G.mood<0)G.mood=0;
-G.daysWithoutDates++;
 var logMsg='SABOTAJE: La Reina arruino tu cita con '+c.name+'. (+1 PG oculto, -15 animo)';
 log(logMsg,'danger');
 G.queensLogs.push({type:'sabotage',target:c.name,week:G.week,day:G.day,pg:G.pg});

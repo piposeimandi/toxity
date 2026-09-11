@@ -297,7 +297,7 @@ for(var i=0;i<numKnown;i++){
   events.push({type:'known_person',relation:rel,text:'Seguir saliendo con '+rel.name+' — '+stageLabel});
 }
 if(Math.random()<0.3){
-  var locs=Object.keys(DATE_LOCATIONS);
+  var locs=Object.keys(DATE_LOCATIONS).filter(function(k){return DATE_LOCATIONS[k].mapVisible!==false && k!=='app';});
   var loc=locs[Math.floor(Math.random()*locs.length)];
   events.push({type:'location_hint',location:loc,text:'Alguien te recomienda ir al '+DATE_LOCATIONS[loc].name+' hoy.'});
 }
@@ -318,7 +318,7 @@ return AMBIENT_EVENTS[Math.floor(Math.random()*AMBIENT_EVENTS.length)];
 function goToLocation(locKey){
 var loc=DATE_LOCATIONS[locKey];
 if(!loc){log('Ese lugar no existe.','danger');return;}
-if(locKey==='app'){visitApp();return;}
+if(locKey==='app'){showPhone('app');return;}
 if(G.money<loc.cost){
 log('No tenes plata para ir al '+loc.name+'. Necesitas $'+loc.cost+'.','danger');
 return;
@@ -486,7 +486,8 @@ showGymResult('harasser',c,[{stat:'Animo',change:'-5'},{stat:'Apariencia',change
 function goToDate(candidateName,origin){
 var c=findCandidateByName(candidateName);
 if(!c){log('No encontraste a esa persona.','danger');return;}
-var locKey=Object.keys(DATE_LOCATIONS)[Math.floor(Math.random()*Object.keys(DATE_LOCATIONS).length)];
+var physKeys=Object.keys(DATE_LOCATIONS).filter(function(k){return DATE_LOCATIONS[k].mapVisible!==false && k!=='app';});
+var locKey=physKeys[Math.floor(Math.random()*physKeys.length)];
 var loc=DATE_LOCATIONS[locKey];
 if(G.money<loc.cost){
 log('No tenes plata para salir. Necesitas $'+loc.cost+' minimo.','danger');
@@ -512,10 +513,11 @@ for(var i=0;i<G.relations.length;i++){
   if(G.relations[i].id===relationId){rel=G.relations[i];break;}
 }
 if(!rel){log('No encontraste a esa persona.','danger');return;}
-var locKey=Object.keys(DATE_LOCATIONS)[Math.floor(Math.random()*Object.keys(DATE_LOCATIONS).length)];
+var physKeys2=Object.keys(DATE_LOCATIONS).filter(function(k){return DATE_LOCATIONS[k].mapVisible!==false && k!=='app';});
+var locKey=physKeys2[Math.floor(Math.random()*physKeys2.length)];
 var loc=DATE_LOCATIONS[locKey];
 if(G.money<loc.cost){
-  log('No tenes plata para salir con '+rel.name+'. Necesitas $'+loc.cost+' minimo.','danger');
+log('No tenes plata para salir con '+rel.name+'. Necesitas $'+loc.cost+' minimo.','danger');
   log('Te quedas en casa... otra vez.','danger');
   G.daysWithoutDates++;
   G.mood-=5;
@@ -557,7 +559,7 @@ var chance=(typeof messageChance!=='undefined')?messageChance:50;
 if(Math.random()*100>=chance)return;
 var rel=findRelation(name);
 if(!rel)return;
-var keys=Object.keys(DATE_LOCATIONS);
+var keys=Object.keys(DATE_LOCATIONS).filter(function(k){return DATE_LOCATIONS[k].mapVisible!==false && k!=='app';});
 if(!keys.length)return;
 var locKey=keys[Math.floor(Math.random()*keys.length)];
 G.pendingInvite={relId:rel.id,locationKey:locKey};

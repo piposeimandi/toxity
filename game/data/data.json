@@ -109,7 +109,7 @@
     "cafe":{"name":"Cafe","cost":10,"genderRatio":0.7,"risk":"medium","riskLabel":"Medio","desc":"Citas relajadas. Riesgo moderado.","key":"cafe","icon":"☕"},
     "bar":{"name":"Bar","cost":20,"genderRatio":0.6,"risk":"high","riskLabel":"Alto","desc":"Citas nocturnas. Alto riesgo.","key":"bar","icon":"🍺"},
     "gym":{"name":"Gimnasio","cost":15,"genderRatio":0.65,"risk":"low","riskLabel":"Bajo","desc":"Actividad fisica. Riesgo bajo. REFUGIO SEGURO.","key":"gym","safe":true,"icon":"🏋️"},
-    "app":{"name":"App de Citas","cost":0,"genderRatio":0.55,"risk":"extreme","riskLabel":"MUY ALTO","desc":"Digital y expuesto. Riesgo extremo.","key":"app","icon":"📱"},
+    "app":{"name":"App de Citas","cost":0,"genderRatio":0.55,"risk":"extreme","riskLabel":"MUY ALTO","desc":"Digital y expuesto. Riesgo extremo.","key":"app","icon":"📱","mapVisible":false},
     "parque":{"name":"Parque","cost":5,"genderRatio":0.68,"risk":"low","riskLabel":"Bajo","desc":"Al aire libre, relajado. Riesgo bajo.","key":"parque","icon":"🌳"},
     "restaurante":{"name":"Restaurante","cost":35,"genderRatio":0.62,"risk":"medium","riskLabel":"Medio","desc":"Cena elegante. Inversion alta, riesgo medio.","key":"restaurante","icon":"🍽️"},
     "libreria":{"name":"Libreria","cost":8,"genderRatio":0.72,"risk":"low","riskLabel":"Bajo","desc":"Ambiente tranquilo. Ideal para conversar.","key":"libreria","icon":"📚"},

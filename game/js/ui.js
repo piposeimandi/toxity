@@ -61,7 +61,7 @@ if(G.gameOver)return;
 showScreen('map');
 var container=document.getElementById('map-locations');
 container.innerHTML='';
-var keys=Object.keys(DATE_LOCATIONS);
+var keys=Object.keys(DATE_LOCATIONS).filter(function(k){return DATE_LOCATIONS[k].mapVisible!==false && k!=='app';});
 keys.forEach(function(key){
 var loc=DATE_LOCATIONS[key];
 var canAfford=G.money>=loc.cost;
@@ -153,7 +153,7 @@ container.appendChild(warn);
 if(G.relations.length===0&&!G.pendingInvite){
 var empty=document.createElement('div');
 empty.className='feed-item fade-in';
-empty.innerHTML='<div class="time">📱 Todavía no conocés a nadie</div><div class="text">La App de Citas es la puerta de entrada: anda al mapa y revisala para ver perfiles nuevos.</div><div class="actions"><button onclick="showMap()">📍 Ir al mapa</button></div>';
+empty.innerHTML='<div class="time">📱 Todavía no conocés a nadie</div><div class="text">La App de Citas es la puerta de entrada: abrí el teléfono 📱 y mirá la pestaña App para ver perfiles nuevos.</div><div class="actions"><button onclick="showPhone(\'app\')">📱 Abrir la App</button></div>';
 container.appendChild(empty);
 }
 if(G.partner){
@@ -261,7 +261,7 @@ var container=document.getElementById('date-content');
 var known=getAvailableKnownPeople();
 var html='';
 if(known.length===0){
-html+='<div class="candidate fade-in"><div class="text">Todavía no conocés a nadie. La App de Citas 📱 es la puerta de entrada: revisala desde el mapa.</div></div><button onclick="showMap()">Ir al mapa</button>';
+html+='<div class="candidate fade-in"><div class="text">Todavía no conocés a nadie. La App de Citas 📱 es la puerta de entrada: abrí el teléfono 📱 y mirá la pestaña App.</div></div><button onclick="showPhone(\'app\')">📱 Abrir la App</button>';
 }else{
 html+='<div class="candidate fade-in"><div class="text">Nadie nuevo por acá hoy. Pero podés invitar a alguien que ya conocés al '+loc.name+' ($'+loc.cost+').</div></div>';
 for(var i=0;i<known.length;i++){
@@ -349,7 +349,7 @@ document.getElementById('phone-tabs').innerHTML='<button onclick="showPhone(\'co
 +'<button onclick="showPhone(\'app\')">📱 App</button>';
 var container=document.getElementById('phone-content');
 var html='<div class="candidate fade-in">'+photoHtml(rel.photo,rel.name)+'<div class="text">¿A dónde invitás a '+rel.name+'? ('+getRelationProgressText(rel)+')</div></div>';
-var keys=Object.keys(DATE_LOCATIONS);
+var keys=Object.keys(DATE_LOCATIONS).filter(function(k){return DATE_LOCATIONS[k].mapVisible!==false && k!=='app';});
 for(var i=0;i<keys.length;i++){
 var loc=DATE_LOCATIONS[keys[i]];
 var canAfford=G.money>=loc.cost;

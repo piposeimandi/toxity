@@ -259,10 +259,11 @@ showScreen('date');
 document.getElementById('date-title').textContent=loc.icon+' '+loc.name;
 var container=document.getElementById('date-content');
 var known=getAvailableKnownPeople();
-var html='<div class="candidate fade-in"><div class="text">Nadie nuevo por acá hoy. Pero podés invitar a alguien que ya conocés al '+loc.name+' ($'+loc.cost+').</div></div>';
+var html='';
 if(known.length===0){
 html+='<div class="candidate fade-in"><div class="text">Todavía no conocés a nadie. La App de Citas 📱 es la puerta de entrada: revisala desde el mapa.</div></div><button onclick="showMap()">Ir al mapa</button>';
 }else{
+html+='<div class="candidate fade-in"><div class="text">Nadie nuevo por acá hoy. Pero podés invitar a alguien que ya conocés al '+loc.name+' ($'+loc.cost+').</div></div>';
 for(var i=0;i<known.length;i++){
 var r=known[i];
 var canAfford=G.money>=loc.cost;
@@ -270,6 +271,91 @@ html+='<div class="candidate fade-in">'+photoHtml(r.photo,r.name)+'<div class="n
 }
 html+='<button onclick="showMap()">Volver al mapa</button>';
 }
+container.innerHTML=html;
+}
+/* 📱 Teléfono simulado: puerta de entrada a flujos EXISTENTES (no duplica lógica).
+   tab = 'contactos' | 'mensajes' | 'app'. */
+function showPhone(tab){
+if(G.gameOver)return;
+tab=tab||'contactos';
+showScreen('phone');
+document.getElementById('phone-title').textContent='📱 Teléfono';
+var tabs=document.getElementById('phone-tabs');
+tabs.innerHTML='<button'+(tab==='contactos'?' class="active"':'')+' onclick="showPhone(\'contactos\')">👥 Contactos</button>'
++'<button'+(tab==='mensajes'?' class="active"':'')+' onclick="showPhone(\'mensajes\')">💬 Mensajes</button>'
++'<button'+(tab==='app'?' class="active"':'')+' onclick="showPhone(\'app\')">📱 App</button>';
+var container=document.getElementById('phone-content');
+var html='';
+if(tab==='mensajes'){
+if(G.pendingInvite){
+var irel=findRelationById(G.pendingInvite.relId);
+var iloc=DATE_LOCATIONS[G.pendingInvite.locationKey];
+if(irel&&iloc){
+var txts=(typeof inviteTexts!=='undefined'&&inviteTexts&&inviteTexts.length)?inviteTexts:['¿Nos vemos en {lugar}? 😏'];
+var t=txts[Math.floor(Math.random()*txts.length)];
+t=t.split('{nombre}').join(irel.name).split('{lugar}').join(iloc.name);
+var canAffordInv=G.money>=iloc.cost;
+html+='<div class="message-card fade-in"><div class="time">💬 Te escribió '+irel.name+'</div>'+photoHtml(irel.photo,irel.name)+'<div class="text">'+t+'</div><div class="text" style="color:var(--dim)">Te propone: '+iloc.icon+' '+iloc.name+' ($'+iloc.cost+')</div><div class="actions"><button '+(canAffordInv?'':'disabled')+' onclick="acceptInvite()">Aceptar plan</button><button onclick="declineInvite()">Rechazar</button></div></div>';
+}
+}
+var feed=G.history.slice(-10).reverse();
+var shown=0;
+for(var i=0;i<feed.length;i++){
+var h=feed[i];
+var txt='';
+if(h.type==='sabotage'){txt='👑 La Reina arruinó tu cita con '+(h.name||'alguien')+'.';}
+else if(h.type==='infidelity_caught'){txt='💔 Tu pareja se enteró de que salís con '+(h.name||'alguien')+' (-15 salud).';}
+else if(h.type==='infidelity_dumped'){txt='💔 Tu pareja se enteró de que salís con '+(h.name||'alguien')+' y te dejó.';}
+else if(h.type==='infidelity_safe'){txt='🤫 Saliste con '+(h.name||'alguien')+' sin que nadie se entere.';}
+else if(h.type==='date_success'){txt='💞 Cita exitosa con '+(h.name||'alguien')+'.';}
+else if(h.type==='date_fail'){txt='💔 No funcionó con '+(h.name||'alguien')+'.';}
+else if(h.type==='gay_encounter'){txt='🌙 Te cruzaste con '+(h.name||'alguien')+' y la vibe era rara.';}
+if(txt){
+html+='<div class="message-card fade-in"><div class="time">Semana '+h.week+', Día '+h.day+'</div><div class="text">'+txt+'</div></div>';
+shown++;
+}
+}
+if(!G.pendingInvite&&shown===0){
+html+='<div class="candidate fade-in"><div class="text">Sin mensajes. Salí, conocé gente, y que suene ese teléfono... 📱</div></div>';
+}
+html+='<button onclick="showFeed()">Volver</button>';
+}else if(tab==='app'){
+html+='<div class="candidate fade-in"><div class="text">La puerta de entrada: 4 perfiles nuevos por visita. Ojo, la Reina también mira la app... 👑</div></div>';
+html+='<div class="actions"><button onclick="visitApp()">Abrir App de Citas 📱</button></div>';
+html+='<button onclick="showFeed()">Volver</button>';
+}else{
+if(!G.relations||G.relations.length===0){
+html+='<div class="candidate fade-in"><div class="text">Todavía no conocés a nadie. Andá a la pestaña App 📱 para hacer match.</div></div>';
+}else{
+for(var j=0;j<G.relations.length;j++){
+var r=G.relations[j];
+html+='<div class="contact-card fade-in">'+photoHtml(r.photo,r.name)+'<div class="info"><div class="name">'+r.name+'</div><div class="desc">'+getRelationProgressText(r)+'</div></div><div><button onclick="showPhoneInvitePicker(\''+r.id+'\')">💞 Invitar</button></div></div>';
+}
+}
+html+='<button onclick="showFeed()">Volver</button>';
+}
+container.innerHTML=html;
+}
+/* Selector de lugar para invitar a un conocido desde el teléfono.
+   Al elegir, reutiliza goToDateKnownAtLocation (sin duplicar lógica de citas). */
+function showPhoneInvitePicker(relId){
+if(G.gameOver)return;
+var rel=findRelationById(relId);
+if(!rel){showPhone('contactos');return;}
+showScreen('phone');
+document.getElementById('phone-title').textContent='💞 Invitar a '+rel.name;
+document.getElementById('phone-tabs').innerHTML='<button onclick="showPhone(\'contactos\')">👥 Contactos</button>'
++'<button onclick="showPhone(\'mensajes\')">💬 Mensajes</button>'
++'<button onclick="showPhone(\'app\')">📱 App</button>';
+var container=document.getElementById('phone-content');
+var html='<div class="candidate fade-in">'+photoHtml(rel.photo,rel.name)+'<div class="text">¿A dónde invitás a '+rel.name+'? ('+getRelationProgressText(rel)+')</div></div>';
+var keys=Object.keys(DATE_LOCATIONS);
+for(var i=0;i<keys.length;i++){
+var loc=DATE_LOCATIONS[keys[i]];
+var canAfford=G.money>=loc.cost;
+html+='<div class="location-card fade-in"><div class="info"><div class="name">'+loc.icon+' '+loc.name+'</div><div class="desc">$'+loc.cost+' | Riesgo: '+loc.riskLabel+'</div></div><div><button '+(canAfford?'':'disabled')+' onclick="goToDateKnownAtLocation(\''+rel.id+'\',\''+keys[i]+'\')">'+(canAfford?'💞 Invitar':'Sin plata')+'</button></div></div>';
+}
+html+='<button onclick="showPhone(\'contactos\')">Volver a contactos</button>';
 container.innerHTML=html;
 }
 function showManResult(loc){showScreen('result');

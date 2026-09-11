@@ -68,5 +68,16 @@ button:disabled .price-note{color:var(--danger);font-size:11px}
 .badge.hard{border-color:#e07020;color:#e07020}
 .badge.extreme{border-color:var(--danger);color:var(--danger)}
 .candidate-photo{width:60px;height:60px;border-radius:50%;border:1px solid var(--border);margin-right:10px;vertical-align:middle;object-fit:cover}
+.phone-tabs{display:flex;gap:4px;margin:8px 0}
+.phone-tabs button{flex:1;text-align:center}
+.phone-tabs button.active{background:var(--accent);color:var(--bg)}
+.contact-card{border:1px solid var(--border);padding:12px;margin:6px 0;background:var(--panel);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.contact-card .info{flex:1}
+.contact-card .name{color:var(--accent);font-size:15px}
+.contact-card .desc{font-size:12px;color:var(--dim);margin-top:4px}
+.message-card{border:1px solid var(--accent);padding:12px;margin:8px 0;background:var(--panel)}
+.message-card .time{font-size:11px;color:var(--dim)}
+.message-card .text{margin:6px 0;line-height:1.5}
+.message-card .actions{margin-top:8px}
 #status-bar{flex-wrap:wrap;gap:4px 12px}
 #s-relation-wrap{font-size:11px}

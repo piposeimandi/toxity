@@ -10,6 +10,7 @@ import { updatePartnerHealthWeekly, findRelationById, getRelationProgressText } 
 import { queenTurn, type QueenTurnResult } from '../models/QueenAI';
 import { generateWeekEvents, type WeekEvent } from '../models/EventSystem';
 import { checkVictories, checkDefeats } from '../models/VictoryChecker';
+import { addDesk, COLORS, FONTS } from '../theme';
 
 export class WeekEndScene extends Phaser.Scene {
   private state!: GameState;
@@ -28,13 +29,7 @@ export class WeekEndScene extends Phaser.Scene {
     // === DESK / PAPERS AESTHETIC ===
 
     // Desk background (warm wood tone)
-    this.add.rectangle(width / 2, height / 2, width, height, 0x3d2b1f);
-
-    // Wood grain texture lines
-    for (let i = 0; i < 12; i++) {
-      const y = 30 + i * 50;
-      this.add.rectangle(width / 2, y, width, 1, 0x4a3728, 0.3);
-    }
+    addDesk(this, width, height);
 
     // Main paper stack (slightly rotated for realism)
     this.renderPaper(width / 2, height / 2 - 20, 500, 420, 0xf5f0e8, -1.5);
@@ -45,15 +40,15 @@ export class WeekEndScene extends Phaser.Scene {
 
     // Title on top paper
     this.add.text(width / 2, 55, 'RESUMEN SEMANAL', {
-      fontFamily: '"Press Start 2P", monospace',
+      fontFamily: FONTS.TITLE,
       fontSize: '14px',
-      color: '#2a1a0a',
+      color: '#3d2a16',
     }).setOrigin(0.5);
 
     // Week line (like printed on paper)
     this.add.text(width / 2, 80, `Semana ${this.state.week} completada`, {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '9px',
+      fontFamily: FONTS.BODY,
+      fontSize: '13px',
       color: '#5a4a3a',
     }).setOrigin(0.5);
 
@@ -84,7 +79,8 @@ export class WeekEndScene extends Phaser.Scene {
         // Health bar on paper
         const barX = width / 2 - 100;
         const barY = 265;
-        this.add.rectangle(barX + 100, barY, 200, 10, 0xddd0c0);
+        const barBg = this.add.rectangle(barX + 100, barY, 200, 10, 0xe8dcc8);
+        barBg.setStrokeStyle(1, COLORS.paperEdge);
         const hpPct = rel.healthPoints / 100;
         const barColor = hpPct > 0.6 ? 0x4ecdc4 : hpPct > 0.3 ? 0xffaa00 : 0xff6b6b;
         this.add.rectangle(barX + 100, barY, 200 * hpPct, 10, barColor);
@@ -115,10 +111,10 @@ export class WeekEndScene extends Phaser.Scene {
     // Week gag (at bottom of paper)
     const gag = pick(this.dataService.weekSummaryGags);
     this.add.text(width / 2, height - 120, `"${gag}"`, {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '7px',
-      color: '#8a7a6a',
+      fontFamily: FONTS.BODY,
+      fontSize: '12px',
       fontStyle: 'italic',
+      color: '#8a7a6a',
       wordWrap: { width: 400 },
       align: 'center',
     }).setOrigin(0.5);
@@ -143,8 +139,8 @@ export class WeekEndScene extends Phaser.Scene {
         '→ Ver resultado',
         280,
         50,
-        resultType && resultType.startsWith('V') ? 0x4ecdc4 : 0xff6b6b,
-        '12px',
+        resultType && resultType.startsWith('V') ? COLORS.accentTeal : COLORS.danger,
+        '13px',
       );
       gameOverBtn.on('pointerdown', () => {
         this.scene.start('GameOverScene', { victoryType: resultType });
@@ -157,8 +153,8 @@ export class WeekEndScene extends Phaser.Scene {
         '→ Semana siguiente',
         280,
         50,
-        0x6c63ff,
-        '12px',
+        COLORS.accentPurple,
+        '13px',
       );
       continueBtn.on('pointerdown', () => {
         this.scene.start('WorldScene');
@@ -180,8 +176,8 @@ export class WeekEndScene extends Phaser.Scene {
 
   private renderPaperLine(x: number, y: number, text: string, color: string): void {
     this.add.text(x, y, text, {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '9px',
+      fontFamily: FONTS.BODY,
+      fontSize: '13px',
       color,
       wordWrap: { width: 420 },
       align: 'center',

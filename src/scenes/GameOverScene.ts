@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import type { VictoryType } from '../types/game';
 import { Button } from '../components/Button';
 import { deleteSave } from '../models/SaveSystem';
+import { addDesk, addPaper, addLabel, COLORS, FONTS } from '../theme';
 
 interface GameOverData {
   victoryType: VictoryType;
@@ -91,13 +92,7 @@ export class GameOverScene extends Phaser.Scene {
     deleteSave();
 
     // ── Wooden desk background ──
-    this.add.rectangle(width / 2, height / 2, width, height, 0x2a1a0e);
-
-    // Wood grain
-    for (let i = 0; i < 14; i++) {
-      const y = 20 + i * 45;
-      this.add.rectangle(width / 2, y, width, 1, 0x3a2a1a, 0.4);
-    }
+    addDesk(this, width, height);
 
     // ── Main document (official looking) ──
     const docW = 520;
@@ -105,12 +100,7 @@ export class GameOverScene extends Phaser.Scene {
     const docX = width / 2;
     const docY = height / 2 - 10;
 
-    // Document shadow
-    this.add.rectangle(docX + 5, docY + 5, docW, docH, 0x000000, 0.4);
-
-    // Document paper
-    this.add.rectangle(docX, docY, docW, docH, 0xf5f0e8);
-    this.add.rectangle(docX, docY, docW, docH).setStrokeStyle(2, 0xc9b99a);
+    addPaper(this, docX, docY, docW, docH);
 
     // ── Red CONFIDENTIAL stamp (rotated) ──
     const stampW = 200;
@@ -121,7 +111,7 @@ export class GameOverScene extends Phaser.Scene {
 
     const stampLabel = ending.bgColor === 0x2a1a2a ? 'APROBADO' : 'CONFIDENCIAL';
     const stampText = this.add.text(docX + 80, docY - 140, stampLabel, {
-      fontFamily: '"Press Start 2P", monospace',
+      fontFamily: FONTS.TITLE,
       fontSize: '12px',
       color: ending.bgColor === 0x2a1a2a ? '#ff69b4' : '#ff4444',
     }).setOrigin(0.5);
@@ -134,7 +124,7 @@ export class GameOverScene extends Phaser.Scene {
 
     // ── Title ──
     this.add.text(docX, docY - 55, ending.title, {
-      fontFamily: '"Press Start 2P", monospace',
+      fontFamily: FONTS.TITLE,
       fontSize: '13px',
       color: ending.color,
       wordWrap: { width: docW - 60 },
@@ -147,10 +137,11 @@ export class GameOverScene extends Phaser.Scene {
     // ── Partner name (if applicable) ──
     let textStartY = docY - 10;
     if (data.partnerName) {
-      this.add.text(docX, textStartY, `Relación: ${data.partnerName}`, {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '10px',
+      addLabel(this, docX, textStartY, `Relación: ${data.partnerName}`, {
+        fontSize: 14,
+        bold: true,
         color: '#8a2a4a',
+        align: 'center',
       }).setOrigin(0.5);
       textStartY += 25;
     }
@@ -158,8 +149,8 @@ export class GameOverScene extends Phaser.Scene {
     // ── Ending text lines ──
     ending.lines.forEach((line, i) => {
       this.add.text(docX, textStartY + i * 28, line, {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '9px',
+        fontFamily: FONTS.BODY,
+        fontSize: '13px',
         color: '#3e2712',
         wordWrap: { width: docW - 80 },
         align: 'center',
@@ -170,10 +161,10 @@ export class GameOverScene extends Phaser.Scene {
     const statsY = docY + docH / 2 - 55;
     this.add.rectangle(docX, statsY - 10, 400, 1, 0xccc0b0);
 
-    this.add.text(docX, statsY + 10, `Resultado: ${victoryType}`, {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
+    addLabel(this, docX, statsY + 10, `Resultado: ${victoryType}`, {
+      fontSize: 13,
       color: '#8a7a6a',
+      align: 'center',
     }).setOrigin(0.5);
 
     // ── "Volver a empezar" button ──
@@ -184,8 +175,8 @@ export class GameOverScene extends Phaser.Scene {
       'Volver a empezar',
       280,
       50,
-      0x6c63ff,
-      '12px',
+      COLORS.accentPurple,
+      '13px',
     );
     restartBtn.on('pointerdown', () => {
       this.scene.start('MenuScene');

@@ -34,9 +34,23 @@ const config: Phaser.Types.Core.GameConfig = {
   ],
 };
 
-const game = new Phaser.Game(config);
+/**
+ * Wait for the web fonts to be ready before creating the game so every
+ * Text object renders with the intended typefaces (Nunito body + pixel titles).
+ */
+async function boot(): Promise<void> {
+  try {
+    await document.fonts.load('12px "Press Start 2P"');
+    await document.fonts.load('700 14px Nunito');
+  } catch {
+    // Font loading is not critical — fall back to system fonts.
+  }
+  const game = new Phaser.Game(config);
 
-// Debug hook (dev only) — enables automated layout inspection via puppeteer
-if (import.meta.env.DEV) {
-  (window as unknown as Record<string, unknown>).__toxityGame = game;
+  // Debug hook (dev only) — enables automated layout inspection via puppeteer
+  if (import.meta.env.DEV) {
+    (window as unknown as Record<string, unknown>).__toxityGame = game;
+  }
 }
+
+void boot();

@@ -4,6 +4,7 @@ import type { Candidate, Location } from '../types/data';
 import { DataService } from '../data/DataService';
 import { gameData } from '../data/gameData';
 import { pick } from '../utils/math';
+import { addDesk, addPaper, addSticky, photoFrame, COLORS, FONTS } from '../theme';
 
 const LOCATION_ICONS: Record<string, string> = {
   cafe: '☕', bar: '🍺', gym: '🏋️', parque: '🌳', app: '📱',
@@ -29,28 +30,24 @@ export class LocationScene extends Phaser.Scene {
     const { width, height } = this.cameras.main;
 
     // ── Desk background ──
-    this.add.rectangle(width / 2, height / 2, width, height, 0x3d2b1f);
-    for (let i = 0; i < 18; i++) {
-      this.add.rectangle(width / 2, 20 + i * 35, width, 1, 0x4a3525, 0.4);
-    }
+    addDesk(this, width, height);
 
     // ── Title sticky note (below HUD bar) ──
     const locIcon = LOCATION_ICONS[this.locKey] ?? '📍';
-    this.add.rectangle(width / 2 + 2, 48, 240, 36, 0x000000, 0.2);
-    this.add.rectangle(width / 2, 46, 240, 36, 0xfff9b0);
-    this.add.text(width / 2, 46, `${locIcon} ${this.location.name}`, {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '10px',
-      color: '#5a3e1b',
-    }).setOrigin(0.5);
+    addSticky(this, width / 2, 46, 240, 36, COLORS.stickyYellow, {
+      text: `${locIcon} ${this.location.name}`,
+      fontSize: 15,
+      rotation: 0,
+    });
 
     // Risk
-    const riskColor = this.location.risk === 'low' ? '#4ecdc4' :
-                      this.location.risk === 'medium' ? '#ffcc00' :
-                      this.location.risk === 'high' ? '#ff8844' : '#ff4444';
+    const riskColor = this.location.risk === 'low' ? '#2aa79b' :
+                      this.location.risk === 'medium' ? '#cf9418' :
+                      this.location.risk === 'high' ? '#e07b1f' : '#d43a34';
     this.add.text(width / 2, 70, `Riesgo: ${this.location.riskLabel}`, {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '7px',
+      fontFamily: FONTS.BODY,
+      fontSize: '13px',
+      fontStyle: 'bold',
       color: riskColor,
     }).setOrigin(0.5);
 
@@ -78,17 +75,22 @@ export class LocationScene extends Phaser.Scene {
     // Shadow
     this.add.rectangle(folderX + 4, folderY + 4, folderW, folderH, 0x000000, 0.3);
 
+    // Back panel (manila frame)
+    this.add.rectangle(folderX + 3, folderY + 3, folderW, folderH, 0xdcc9a8);
+
     // Tab
-    this.add.rectangle(folderX - 80, folderY - folderH / 2 - 10, 100, 20, 0xd4c4a0);
+    const tab = this.add.rectangle(folderX - 80, folderY - folderH / 2 - 10, 100, 20, 0xd4c4a0);
+    tab.setStrokeStyle(1, 0xaa9a78);
     this.add.text(folderX - 80, folderY - folderH / 2 - 10, 'EXPEDIENTE', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '6px',
-      color: '#5a3e1b',
+      fontFamily: FONTS.BODY,
+      fontSize: '11px',
+      fontStyle: 'bold',
+      color: '#3d2a16',
     }).setOrigin(0.5);
 
     // Folder paper
-    this.add.rectangle(folderX, folderY, folderW, folderH, 0xfaf3e0);
-    this.add.rectangle(folderX, folderY, folderW, folderH).setStrokeStyle(2, 0xc9b99a);
+    this.add.rectangle(folderX, folderY, folderW, folderH, COLORS.paper);
+    this.add.rectangle(folderX, folderY, folderW, folderH).setStrokeStyle(2, COLORS.paperEdge);
 
     // ── Photo ──
     const photoX = folderX;
@@ -96,41 +98,38 @@ export class LocationScene extends Phaser.Scene {
     const photoW = 90;
     const photoH = 100;
 
-    // Photo frame
-    this.add.rectangle(photoX, photoY, photoW + 6, photoH + 6, 0x8a7a62);
-    this.add.rectangle(photoX, photoY, photoW, photoH, 0xe8dcc8);
-
-    // Real photo (fallback: initial letter)
+    // Wooden photo frame + real photo (fallback: initial letter)
     const photoKey = this.dataService.getPhotoKey(candidate);
-    if (photoKey && this.textures.exists(photoKey)) {
-      const size = Math.min(photoW, photoH) - 8;
-      this.add.image(photoX, photoY, photoKey).setOrigin(0.5).setDisplaySize(size, size);
-    } else {
+    const hasPhoto = photoKey !== null && this.textures.exists(photoKey);
+    photoFrame(this, photoX, photoY, 92, hasPhoto ? photoKey : undefined);
+    if (!hasPhoto) {
       this.add.text(photoX, photoY, candidate.name.charAt(0), {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '32px',
+        fontFamily: FONTS.BODY,
+        fontSize: '36px',
+        fontStyle: 'bold',
         color: '#7a5c3a',
       }).setOrigin(0.5);
     }
 
     // ── Candidate info ──
     this.add.text(folderX, photoY + photoH / 2 + 30, candidate.name, {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '12px',
-      color: '#3e2712',
+      fontFamily: FONTS.BODY,
+      fontSize: '16px',
+      fontStyle: 'bold',
+      color: '#3d2a16',
     }).setOrigin(0.5);
 
     this.add.text(folderX, photoY + photoH / 2 + 52, candidate.traits, {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '7px',
+      fontFamily: FONTS.BODY,
+      fontSize: '13px',
       color: '#6b5b42',
       wordWrap: { width: folderW - 40 },
       align: 'center',
     }).setOrigin(0.5);
 
     this.add.text(folderX, photoY + photoH / 2 + 74, `Personalidad: ${candidate.personality}`, {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '6px',
+      fontFamily: FONTS.BODY,
+      fontSize: '13px',
       color: '#8a7a62',
     }).setOrigin(0.5);
 
@@ -142,8 +141,9 @@ export class LocationScene extends Phaser.Scene {
     dateBg.setStrokeStyle(1, 0xd4738a);
     dateBtn.add(dateBg);
     dateBtn.add(this.add.text(0, 0, '💘 Ir a la cita', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
+      fontFamily: FONTS.BODY,
+      fontSize: '12px',
+      fontStyle: 'bold',
       color: '#6b1a2a',
     }).setOrigin(0.5));
     const dateZone = this.add.zone(0, 0, 140, 38).setInteractive({ useHandCursor: true });
@@ -158,12 +158,13 @@ export class LocationScene extends Phaser.Scene {
     // "Volver" — blue note
     const backBtn = this.add.container(folderX + 80, folderY + folderH / 2 - 36);
     backBtn.add(this.add.rectangle(3, 3, 120, 38, 0x000000, 0.2).setOrigin(0.5));
-    const backBg = this.add.rectangle(0, 0, 120, 38, 0xd4e6f1).setOrigin(0.5);
-    backBg.setStrokeStyle(1, 0x8aaabb);
+    const backBg = this.add.rectangle(0, 0, 120, 38, COLORS.stickyBlue).setOrigin(0.5);
+    backBg.setStrokeStyle(1, 0x9db8cc);
     backBtn.add(backBg);
     backBtn.add(this.add.text(0, 0, '← Volver', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
+      fontFamily: FONTS.BODY,
+      fontSize: '12px',
+      fontStyle: 'bold',
       color: '#2c3e50',
     }).setOrigin(0.5));
     const backZone = this.add.zone(0, 0, 120, 38).setInteractive({ useHandCursor: true });
@@ -188,32 +189,31 @@ export class LocationScene extends Phaser.Scene {
     const paperX = width / 2;
     const paperY = height / 2 + 30;
 
-    this.add.rectangle(paperX + 4, paperY + 4, paperW, paperH, 0x000000, 0.3);
-    this.add.rectangle(paperX, paperY, paperW, paperH, 0xfaf3e0);
-    this.add.rectangle(paperX, paperY, paperW, paperH).setStrokeStyle(2, 0xc9b99a);
+    addPaper(this, paperX, paperY, paperW, paperH);
 
     // Stamp
-    this.add.rectangle(paperX, paperY - 50, 180, 26);
-    this.add.rectangle(paperX, paperY - 50, 180, 26).setStrokeStyle(2, 0x4ecdc4);
+    this.add.rectangle(paperX, paperY - 50, 180, 26, 0xffffff).setAlpha(0.5);
+    this.add.rectangle(paperX, paperY - 50, 180, 26).setStrokeStyle(2, COLORS.accentTeal);
     this.add.text(paperX, paperY - 50, 'REFUGIO SEGURO', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '9px',
-      color: '#4ecdc4',
+      fontFamily: FONTS.TITLE,
+      fontSize: '10px',
+      color: '#2aa79b',
     }).setOrigin(0.5);
 
     const eventText = pick(this.dataService.gymSoloTexts);
     this.add.text(paperX, paperY + 10, eventText, {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
-      color: '#3e2712',
+      fontFamily: FONTS.BODY,
+      fontSize: '13px',
+      color: '#3d2a16',
       wordWrap: { width: paperW - 40 },
       align: 'center',
     }).setOrigin(0.5);
 
     this.add.text(paperX, paperY + 50, 'Ganaste +5 confianza', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
-      color: '#4ecdc4',
+      fontFamily: FONTS.BODY,
+      fontSize: '13px',
+      fontStyle: 'bold',
+      color: '#1f7a5a',
     }).setOrigin(0.5);
 
     this.state.confidence = Math.min(100, this.state.confidence + 5);
@@ -224,10 +224,11 @@ export class LocationScene extends Phaser.Scene {
     // Back button
     const backBtn = this.add.container(paperX, paperY + paperH / 2 + 36);
     backBtn.add(this.add.rectangle(3, 3, 160, 34, 0x000000, 0.2).setOrigin(0.5));
-    backBtn.add(this.add.rectangle(0, 0, 160, 34, 0xd4e6f1).setOrigin(0.5).setStrokeStyle(1, 0x8aaabb));
+    backBtn.add(this.add.rectangle(0, 0, 160, 34, COLORS.stickyBlue).setOrigin(0.5).setStrokeStyle(1, 0x9db8cc));
     backBtn.add(this.add.text(0, 0, '← Volver al mapa', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '7px',
+      fontFamily: FONTS.BODY,
+      fontSize: '12px',
+      fontStyle: 'bold',
       color: '#2c3e50',
     }).setOrigin(0.5));
     const backZone = this.add.zone(0, 0, 160, 34).setInteractive({ useHandCursor: true });
@@ -247,21 +248,20 @@ export class LocationScene extends Phaser.Scene {
     const paperX = width / 2;
     const paperY = height / 2 + 30;
 
-    this.add.rectangle(paperX + 4, paperY + 4, paperW, paperH, 0x000000, 0.3);
-    this.add.rectangle(paperX, paperY, paperW, paperH, 0xfaf3e0);
-    this.add.rectangle(paperX, paperY, paperW, paperH).setStrokeStyle(2, 0xc9b99a);
+    addPaper(this, paperX, paperY, paperW, paperH);
 
     this.add.text(paperX, paperY - 25, 'No hay nadie aquí...', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '11px',
-      color: '#6b5b42',
+      fontFamily: FONTS.BODY,
+      fontSize: '15px',
+      fontStyle: 'bold',
+      color: '#3d2a16',
     }).setOrigin(0.5);
 
     if (Math.random() < 0.5) {
       const event = pick(this.dataService.ambientEvents);
       this.add.text(paperX, paperY + 15, event, {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '7px',
+        fontFamily: FONTS.BODY,
+        fontSize: '13px',
         color: '#8a7a62',
         wordWrap: { width: paperW - 40 },
         align: 'center',
@@ -274,10 +274,11 @@ export class LocationScene extends Phaser.Scene {
 
     const backBtn = this.add.container(paperX, paperY + paperH / 2 + 32);
     backBtn.add(this.add.rectangle(3, 3, 160, 30, 0x000000, 0.2).setOrigin(0.5));
-    backBtn.add(this.add.rectangle(0, 0, 160, 30, 0xd4e6f1).setOrigin(0.5).setStrokeStyle(1, 0x8aaabb));
+    backBtn.add(this.add.rectangle(0, 0, 160, 30, COLORS.stickyBlue).setOrigin(0.5).setStrokeStyle(1, 0x9db8cc));
     backBtn.add(this.add.text(0, 0, '← Volver al mapa', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '7px',
+      fontFamily: FONTS.BODY,
+      fontSize: '12px',
+      fontStyle: 'bold',
       color: '#2c3e50',
     }).setOrigin(0.5));
     const backZone = this.add.zone(0, 0, 160, 30).setInteractive({ useHandCursor: true });

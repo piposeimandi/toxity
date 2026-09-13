@@ -6,6 +6,7 @@ import { gameData } from '../data/gameData';
 import { clamp, pick } from '../utils/math';
 import { Button } from '../components/Button';
 import { renderQueenPortrait } from '../components/QueenPortrait';
+import { addDesk, photoFrame, COLORS, FONTS } from '../theme';
 
 export class DateScene extends Phaser.Scene {
   private state!: GameState;
@@ -28,7 +29,7 @@ export class DateScene extends Phaser.Scene {
     const { width, height } = this.cameras.main;
 
     // ── Background ──
-    this.add.rectangle(width / 2, height / 2, width, height, 0x1a0a1a);
+    addDesk(this, width, height);
 
     // ── Swipe card ──
     const cardW = 280;
@@ -39,47 +40,43 @@ export class DateScene extends Phaser.Scene {
     const card = this.add.container(cardX, cardY);
 
     // Card shadow
-    card.add(this.add.rectangle(5, 5, cardW, cardH, 0x000000, 0.4).setOrigin(0.5));
+    card.add(this.add.rectangle(6, 6, cardW, cardH, 0x000000, 0.35).setOrigin(0.5));
 
-    // Card base
-    const cardBg = this.add.rectangle(0, 0, cardW, cardH, 0x2a2a3e).setOrigin(0.5);
-    cardBg.setStrokeStyle(2, 0x444466);
+    // Card base (cream paper)
+    const cardBg = this.add.rectangle(0, 0, cardW, cardH, COLORS.paper).setOrigin(0.5);
+    cardBg.setStrokeStyle(2, COLORS.paperEdge);
     card.add(cardBg);
 
-    // ── Photo area ──
-    const photoW = cardW - 30;
+    // ── Photo area (wooden frame) ──
     const photoH = 160;
     const photoY = -100;
 
-    // Photo background
-    const photoBg = this.add.rectangle(0, photoY, photoW, photoH, 0x3a3a5e).setOrigin(0.5);
-    photoBg.setStrokeStyle(1, 0x555577);
-    card.add(photoBg);
-
-    // Initial letter
+    // Frame + real photo (fallback: initial letter)
     const photoKey = this.dataService.getPhotoKey(this.candidate);
-    if (photoKey && this.textures.exists(photoKey)) {
-      card.add(this.add.image(0, photoY, photoKey).setOrigin(0.5).setDisplaySize(photoH - 10, photoH - 10));
-    } else {
+    const hasPhoto = photoKey !== null && this.textures.exists(photoKey);
+    card.add(photoFrame(this, 0, photoY, photoH, hasPhoto ? photoKey : undefined));
+    if (!hasPhoto) {
       card.add(this.add.text(0, photoY, this.candidate.name.charAt(0), {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '42px',
-        color: '#ff69b4',
+        fontFamily: FONTS.BODY,
+        fontSize: '36px',
+        fontStyle: 'bold',
+        color: '#c2257e',
       }).setOrigin(0.5));
     }
 
     // ── Name ──
     card.add(this.add.text(0, photoY + photoH / 2 + 20, this.candidate.name, {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '14px',
-      color: '#ffffff',
+      fontFamily: FONTS.BODY,
+      fontSize: '18px',
+      fontStyle: 'bold',
+      color: '#3d2a16',
     }).setOrigin(0.5));
 
     // ── Traits ──
     card.add(this.add.text(0, photoY + photoH / 2 + 44, this.candidate.traits, {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '7px',
-      color: '#aaaacc',
+      fontFamily: FONTS.BODY,
+      fontSize: '13px',
+      color: '#6b5b42',
       wordWrap: { width: cardW - 40 },
       align: 'center',
     }).setOrigin(0.5));
@@ -96,39 +93,28 @@ export class DateScene extends Phaser.Scene {
       const sx = -70 + i * 70;
       card.add(this.add.text(sx, statsY, statsIcons[i], { fontSize: '12px' }).setOrigin(0.5));
       card.add(this.add.text(sx, statsY + 16, statsLabels[i], {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '5px',
-        color: '#8888aa',
+        fontFamily: FONTS.BODY,
+        fontSize: '10px',
+        color: '#7a5c3a',
+        wordWrap: { width: 66 },
+        align: 'center',
       }).setOrigin(0.5));
     }
 
     // ── Location info ──
     card.add(this.add.text(0, statsY + 36, `${this.loc.icon} ${this.loc.name}`, {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '7px',
-      color: '#ffcc00',
+      fontFamily: FONTS.BODY,
+      fontSize: '12px',
+      fontStyle: 'bold',
+      color: '#996a00',
     }).setOrigin(0.5));
 
     // ── Action buttons ──
     const btnY = height - 60;
 
     // ❌ RECHAZAR
-    const rejectBtn = this.add.container(cardX - 75, btnY);
-    rejectBtn.add(this.add.rectangle(3, 3, 100, 44, 0x000000, 0.3).setOrigin(0.5));
-    const rejectBg = this.add.rectangle(0, 0, 100, 44, 0xcc3333).setOrigin(0.5);
-    rejectBg.setStrokeStyle(2, 0xff4444);
-    rejectBtn.add(rejectBg);
-    rejectBtn.add(this.add.text(0, 0, '❌ NOPE', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
-      color: '#ffffff',
-    }).setOrigin(0.5));
-    const rejectZone = this.add.zone(0, 0, 100, 44).setInteractive({ useHandCursor: true });
-    rejectBtn.add(rejectZone);
-
-    rejectZone.on('pointerover', () => this.tweens.add({ targets: rejectBtn, scaleX: 1.1, scaleY: 1.1, duration: 80 }));
-    rejectZone.on('pointerout', () => this.tweens.add({ targets: rejectBtn, scaleX: 1, scaleY: 1, duration: 80 }));
-    rejectZone.on('pointerdown', () => {
+    const rejectBtn = new Button(this, cardX - 75, btnY, '❌ NOPE', 100, 44, COLORS.danger, '13px');
+    rejectBtn.on('pointerdown', () => {
       this.tweens.add({
         targets: card, x: cardX - 500, angle: -25, alpha: 0,
         duration: 350, ease: 'Quad.easeIn',
@@ -137,22 +123,8 @@ export class DateScene extends Phaser.Scene {
     });
 
     // 💘 SALIR
-    const acceptBtn = this.add.container(cardX + 75, btnY);
-    acceptBtn.add(this.add.rectangle(3, 3, 100, 44, 0x000000, 0.3).setOrigin(0.5));
-    const acceptBg = this.add.rectangle(0, 0, 100, 44, 0xd4a017).setOrigin(0.5);
-    acceptBg.setStrokeStyle(2, 0xffcc00);
-    acceptBtn.add(acceptBg);
-    acceptBtn.add(this.add.text(0, 0, '💘 LIKE', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
-      color: '#ffffff',
-    }).setOrigin(0.5));
-    const acceptZone = this.add.zone(0, 0, 100, 44).setInteractive({ useHandCursor: true });
-    acceptBtn.add(acceptZone);
-
-    acceptZone.on('pointerover', () => this.tweens.add({ targets: acceptBtn, scaleX: 1.1, scaleY: 1.1, duration: 80 }));
-    acceptZone.on('pointerout', () => this.tweens.add({ targets: acceptBtn, scaleX: 1, scaleY: 1, duration: 80 }));
-    acceptZone.on('pointerdown', () => {
+    const acceptBtn = new Button(this, cardX + 75, btnY, '💘 LIKE', 100, 44, 0xd4a017, '13px');
+    acceptBtn.on('pointerdown', () => {
       this.tweens.add({
         targets: card, x: cardX + 500, angle: 25, alpha: 0,
         duration: 350, ease: 'Quad.easeIn',
@@ -184,7 +156,7 @@ export class DateScene extends Phaser.Scene {
       const btn = new Button(
         this, width / 2, y,
         `${opt.text.substring(0, 48)}${opt.text.length > 48 ? '...' : ''} [${opt.bonus > 0 ? '+' : ''}${opt.bonus}]`,
-        680, 30, canAfford ? 0x3a2a5a : 0x222233, '6px',
+        680, 30, canAfford ? 0x3a2a5a : 0x222233, '13px',
       );
       if (!canAfford) {
         btn.setAlpha(0.4);
@@ -193,7 +165,7 @@ export class DateScene extends Phaser.Scene {
       }
     });
 
-    new Button(this, width / 2, height - 28, '← Volver', 180, 28, 0x444466, '7px')
+    new Button(this, width / 2, height - 28, '← Volver', 180, 28, 0x4a3220, '12px')
       .on('pointerdown', () => {
         this.state.day += 1;
         this.state.daysWithoutDates += 1;
@@ -217,7 +189,11 @@ export class DateScene extends Phaser.Scene {
     }
 
     this.children.removeAll();
-    this.add.rectangle(width / 2, height / 2, width, height, 0x1a0a1a);
+    addDesk(this, width, height);
+
+    // Dark notice board behind the result
+    const plaque = this.add.rectangle(width / 2, height / 2, 560, 460, 0x2a1a12).setAlpha(0.96);
+    plaque.setStrokeStyle(2, COLORS.paperEdge);
 
     if (success) {
       this.showResult(width, height, true, sabotaged);
@@ -245,7 +221,7 @@ export class DateScene extends Phaser.Scene {
       }
 
       this.add.text(width / 2, 60, '¡MATCH!', {
-        fontFamily: '"Press Start 2P", monospace',
+        fontFamily: FONTS.TITLE,
         fontSize: '28px',
         color: '#ff69b4',
       }).setOrigin(0.5);
@@ -253,8 +229,8 @@ export class DateScene extends Phaser.Scene {
       const texts = this.dataService.successTexts;
       const msg = (texts[this.loc.key]?.[0] ?? 'La cita fue bien.').replace(/{name}/g, this.candidate.name);
       this.add.text(width / 2, 120, msg, {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '9px',
+        fontFamily: FONTS.BODY,
+        fontSize: '14px',
         color: '#ffffff',
         wordWrap: { width: 600 },
         align: 'center',
@@ -266,7 +242,7 @@ export class DateScene extends Phaser.Scene {
     } else {
       this.add.text(width / 2, 80, '💔', { fontSize: '42px' }).setOrigin(0.5);
       this.add.text(width / 2, 140, 'CITA FALLIDA', {
-        fontFamily: '"Press Start 2P", monospace',
+        fontFamily: FONTS.TITLE,
         fontSize: '18px',
         color: '#ff6b6b',
       }).setOrigin(0.5);
@@ -274,8 +250,8 @@ export class DateScene extends Phaser.Scene {
       const texts = this.dataService.failTexts;
       const msg = (texts[this.loc.key]?.[0] ?? 'No funcionó...').replace(/{name}/g, this.candidate.name);
       this.add.text(width / 2, 200, msg, {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '9px',
+        fontFamily: FONTS.BODY,
+        fontSize: '14px',
         color: '#ffffff',
         wordWrap: { width: 600 },
         align: 'center',
@@ -289,16 +265,17 @@ export class DateScene extends Phaser.Scene {
       renderQueenPortrait(this, width / 2, 280, 60);
 
       this.add.text(width / 2, 330, '⚠ SABOTAJE DE LA REINA', {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '10px',
-        color: '#ff4444',
+        fontFamily: FONTS.BODY,
+        fontSize: '13px',
+        fontStyle: 'bold',
+        color: '#ff6b6b',
       }).setOrigin(0.5);
 
       const sabotageMsg = pick(this.dataService.sabotageMessages);
       this.add.text(width / 2, 355, sabotageMsg, {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '7px',
-        color: '#ff8888',
+        fontFamily: FONTS.BODY,
+        fontSize: '12px',
+        color: '#ffb0b0',
         wordWrap: { width: 500 },
         align: 'center',
       }).setOrigin(0.5);
@@ -315,7 +292,7 @@ export class DateScene extends Phaser.Scene {
     this.state.day += 1;
     this.registry.set('gameState', this.state);
 
-    new Button(this, width / 2, height - 50, 'Continuar', 180, 36, 0x6c63ff, '10px')
+    new Button(this, width / 2, height - 50, 'Continuar', 180, 36, COLORS.accentPurple, '13px')
       .on('pointerdown', () => {
         if (this.state.day > 7) {
           this.scene.start('WeekEndScene');

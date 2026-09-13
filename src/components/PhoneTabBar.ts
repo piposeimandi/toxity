@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { FONTS } from '../theme';
 
 export type PhoneTab = 'contacts' | 'messages' | 'app';
 
@@ -25,13 +26,15 @@ export class PhoneTabBar extends Phaser.GameObjects.Container {
       const tx = i * tabWidth + tabWidth / 2;
       const isActive = tab.key === this.activeTab;
 
-      const bg = scene.add.rectangle(tx, 0, tabWidth, tabHeight, isActive ? 0x4a90d9 : 0x2a2a4a);
+      const bg = scene.add.rectangle(tx, 0, tabWidth, tabHeight, isActive ? 0x6c63ff : 0x1d140d);
       bg.setOrigin(0.5);
+      bg.setStrokeStyle(1, 0x000000, 0.25);
 
       const label = scene.add.text(tx, 0, `${tab.icon} ${tab.label}`, {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '8px',
-        color: isActive ? '#ffffff' : '#888888',
+        fontFamily: FONTS.BODY,
+        fontSize: '13px',
+        fontStyle: 'bold',
+        color: isActive ? '#ffffff' : '#8a7a6a',
       });
       label.setOrigin(0.5);
 
@@ -53,8 +56,8 @@ export class PhoneTabBar extends Phaser.GameObjects.Container {
     this.activeTab = tab;
     this.tabs.forEach(t => {
       const isActive = t.key === tab;
-      t.bg.setFillStyle(isActive ? 0x4a90d9 : 0x2a2a4a);
-      t.label.setColor(isActive ? '#ffffff' : '#888888');
+      t.bg.setFillStyle(isActive ? 0x6c63ff : 0x1d140d);
+      t.label.setColor(isActive ? '#ffffff' : '#8a7a6a');
     });
   }
 

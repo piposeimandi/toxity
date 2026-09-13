@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { addDesk, addPaper, addLabel, COLORS, FONTS } from '../theme';
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -8,34 +9,22 @@ export class BootScene extends Phaser.Scene {
   create(): void {
     const { width, height } = this.cameras.main;
 
-    // ── Dark retro background ──
-    this.add.rectangle(width / 2, height / 2, width, height, 0x0a0a1a);
+    // ── Warm desk background ──
+    addDesk(this, width, height);
 
-    // Scanline effect
-    for (let i = 0; i < height; i += 3) {
-      this.add.rectangle(width / 2, i, width, 1, 0x000000, 0.15);
-    }
-
-    // ── CRT vignette corners ──
-    this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.0);
-
-    // ── Pixel art border ──
+    // ── Paper card with the boot panel ──
     const borderW = 420;
     const borderH = 280;
     const borderX = width / 2;
     const borderY = height / 2;
 
-    this.add.rectangle(borderX, borderY, borderW, borderH, 0x1a1a3a);
-    this.add.rectangle(borderX, borderY, borderW - 4, borderH - 4, 0x0a0a2a);
-
-    // Inner glow
-    this.add.rectangle(borderX, borderY, borderW - 8, borderH - 8).setStrokeStyle(1, 0x3333aa);
+    addPaper(this, borderX, borderY, borderW, borderH);
 
     // ── Title ──
     const titleText = this.add.text(borderX, borderY - 80, 'TOXITY', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '36px',
-      color: '#ff6b6b',
+      fontFamily: FONTS.TITLE,
+      fontSize: '34px',
+      color: '#ff69b4',
     });
     titleText.setOrigin(0.5);
 
@@ -49,10 +38,10 @@ export class BootScene extends Phaser.Scene {
     });
 
     // ── Loading text ──
-    const loadingText = this.add.text(borderX, borderY - 30, 'INICIALIZANDO SISTEMAS...', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '10px',
-      color: '#4ecdc4',
+    const loadingText = addLabel(this, borderX, borderY - 30, 'INICIALIZANDO SISTEMAS...', {
+      fontSize: 14,
+      bold: true,
+      align: 'center',
     });
     loadingText.setOrigin(0.5);
 
@@ -67,27 +56,27 @@ export class BootScene extends Phaser.Scene {
       },
     });
 
-    // ── Loading bar background (retro style) ──
+    // ── Loading bar ──
     const barW = 300;
     const barH = 20;
     const barX = borderX - barW / 2;
     const barY = borderY + 10;
 
     // Outer border
-    this.add.rectangle(borderX, barY, barW + 4, barH + 4, 0x333366);
+    this.add.rectangle(borderX, barY, barW + 4, barH + 4, COLORS.paperEdge);
 
     // Bar background
-    this.add.rectangle(borderX, barY, barW, barH, 0x111133);
+    this.add.rectangle(borderX, barY, barW, barH, 0x000000).setAlpha(0.08);
 
     // Bar fill (animated)
-    const barFill = this.add.rectangle(barX, barY, 0, barH - 4, 0x6c63ff);
+    const barFill = this.add.rectangle(barX, barY, 0, barH - 4, COLORS.accentPurple);
     barFill.setOrigin(0, 0.5);
 
     // ── Percentage text ──
-    const pctText = this.add.text(borderX, barY, '0%', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
-      color: '#ffffff',
+    const pctText = addLabel(this, borderX, barY, '0%', {
+      fontSize: 13,
+      bold: true,
+      align: 'center',
     });
     pctText.setOrigin(0.5);
 
@@ -110,17 +99,17 @@ export class BootScene extends Phaser.Scene {
     });
 
     // ── Version text ──
-    this.add.text(borderX, borderY + 100, 'v1.0 — Phaser + TypeScript', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '7px',
-      color: '#444466',
+    addLabel(this, borderX, borderY + 100, 'v1.0 — Phaser + TypeScript', {
+      fontSize: 12,
+      color: '#8a7a6a',
+      align: 'center',
     }).setOrigin(0.5);
 
     // ── Bottom credit ──
-    this.add.text(borderX, height - 20, 'Gentle AI × Toxity', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '7px',
-      color: '#333355',
+    addLabel(this, borderX, height - 20, 'Gentle AI × Toxity', {
+      fontSize: 12,
+      color: '#8a7a6a',
+      align: 'center',
     }).setOrigin(0.5);
   }
 }

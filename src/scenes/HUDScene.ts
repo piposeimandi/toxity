@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import type { GameState } from '../types/game';
 import { getDayName, formatMoney } from '../utils/text';
+import { FONTS, COLORS } from '../theme';
 
 export class HUDScene extends Phaser.Scene {
   private weekText!: Phaser.GameObjects.Text;
@@ -9,9 +10,11 @@ export class HUDScene extends Phaser.Scene {
   private moodText!: Phaser.GameObjects.Text;
   private moodBar!: Phaser.GameObjects.Rectangle;
   private moodBarBg!: Phaser.GameObjects.Rectangle;
+  private moodBarGlow!: Phaser.GameObjects.Rectangle;
   private partnerText!: Phaser.GameObjects.Text;
   private partnerBar!: Phaser.GameObjects.Rectangle;
   private partnerBarBg!: Phaser.GameObjects.Rectangle;
+  private partnerBarGlow!: Phaser.GameObjects.Rectangle;
 
   constructor() {
     super({ key: 'HUDScene' });
@@ -20,52 +23,62 @@ export class HUDScene extends Phaser.Scene {
   create(): void {
     const { width } = this.cameras.main;
 
-    // HUD background bar — thinner, semi-transparent, at very top
-    this.add.rectangle(width / 2, 12, width, 24, 0x000000, 0.7);
+    // HUD background bar — thin, semi-transparent dark ink, at very top
+    this.add.rectangle(width / 2, 12, width, 24, 0x1a1008).setAlpha(0.88);
+    this.add.rectangle(width / 2, 12, width, 24).setStrokeStyle(1, COLORS.paperEdge, 0.25);
 
     // Week + Day
     this.weekText = this.add.text(10, 5, 'Sem 1', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '7px',
-      color: '#ffcc00',
+      fontFamily: FONTS.BODY,
+      fontSize: '11px',
+      fontStyle: 'bold',
+      color: '#ffffff',
     });
 
     this.dayText = this.add.text(80, 5, 'Lun', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '7px',
+      fontFamily: FONTS.BODY,
+      fontSize: '11px',
+      fontStyle: 'bold',
       color: '#ffffff',
     });
 
     // Money
     this.moneyText = this.add.text(140, 5, '$100', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '7px',
-      color: '#4ecdc4',
+      fontFamily: FONTS.BODY,
+      fontSize: '11px',
+      fontStyle: 'bold',
+      color: '#8de8dc',
     });
 
     // Mood
     this.moodText = this.add.text(220, 5, 'Ánimo', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '6px',
-      color: '#aaaaaa',
+      fontFamily: FONTS.BODY,
+      fontSize: '11px',
+      color: '#ffffff',
     });
 
-    this.moodBarBg = this.add.rectangle(270, 10, 60, 8, 0x333333);
+    this.moodBarBg = this.add.rectangle(270, 10, 60, 8, 0x0a0503);
     this.moodBarBg.setOrigin(0, 0.5);
-    this.moodBar = this.add.rectangle(270, 10, 60, 8, 0x4ecdc4);
+    this.moodBarBg.setAlpha(0.6);
+    this.moodBarBg.setStrokeStyle(1, COLORS.paperEdge, 0.35);
+    this.moodBar = this.add.rectangle(270, 10, 60, 6, COLORS.accentTeal);
     this.moodBar.setOrigin(0, 0.5);
+    this.moodBarGlow = this.add.rectangle(270, 8, 60, 2, 0xffffff).setOrigin(0, 0.5).setAlpha(0.25);
 
     // Partner
     this.partnerText = this.add.text(370, 5, '', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '6px',
-      color: '#ff69b4',
+      fontFamily: FONTS.BODY,
+      fontSize: '10px',
+      color: '#ffb0d4',
     });
 
-    this.partnerBarBg = this.add.rectangle(470, 10, 60, 8, 0x333333);
+    this.partnerBarBg = this.add.rectangle(470, 10, 60, 8, 0x0a0503);
     this.partnerBarBg.setOrigin(0, 0.5);
-    this.partnerBar = this.add.rectangle(470, 10, 60, 8, 0xff69b4);
+    this.partnerBarBg.setAlpha(0.6);
+    this.partnerBarBg.setStrokeStyle(1, COLORS.paperEdge, 0.35);
+    this.partnerBar = this.add.rectangle(470, 10, 60, 6, COLORS.accentPink);
     this.partnerBar.setOrigin(0, 0.5);
+    this.partnerBarGlow = this.add.rectangle(470, 8, 60, 2, 0xffffff).setOrigin(0, 0.5).setAlpha(0.25);
 
     // Listen for updates
     this.events.on('hud-update', () => this.refresh());
@@ -85,9 +98,10 @@ export class HUDScene extends Phaser.Scene {
     // Mood bar
     const moodPct = state.mood / 100;
     this.moodBar.width = Math.max(0, 60 * moodPct);
-    if (moodPct > 0.6) this.moodBar.setFillStyle(0x4ecdc4);
+    this.moodBarGlow.width = this.moodBar.width;
+    if (moodPct > 0.6) this.moodBar.setFillStyle(COLORS.accentTeal);
     else if (moodPct > 0.3) this.moodBar.setFillStyle(0xffaa00);
-    else this.moodBar.setFillStyle(0xff6b6b);
+    else this.moodBar.setFillStyle(COLORS.danger);
 
     // Partner bar
     if (state.partner) {
@@ -96,8 +110,10 @@ export class HUDScene extends Phaser.Scene {
         this.partnerText.setText(rel.name);
         const hpPct = rel.healthPoints / 100;
         this.partnerBar.width = Math.max(0, 60 * hpPct);
+        this.partnerBarGlow.width = this.partnerBar.width;
         this.partnerBarBg.setVisible(true);
         this.partnerBar.setVisible(true);
+        this.partnerBarGlow.setVisible(true);
         this.partnerText.setVisible(true);
         return;
       }
@@ -105,5 +121,6 @@ export class HUDScene extends Phaser.Scene {
     this.partnerText.setText('');
     this.partnerBarBg.setVisible(false);
     this.partnerBar.setVisible(false);
+    this.partnerBarGlow.setVisible(false);
   }
 }

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { gameData } from '../data/gameData';
 import { DataService } from '../data/DataService';
+import { addDesk, addPaper, COLORS, FONTS } from '../theme';
 
 interface ValidationStep {
   name: string;
@@ -21,30 +22,23 @@ export class PreloadScene extends Phaser.Scene {
   create(): void {
     const { width, height } = this.cameras.main;
 
-    // ── Dark background ──
-    this.add.rectangle(width / 2, height / 2, width, height, 0x0a0a1a);
+    // ── Warm desk background ──
+    addDesk(this, width, height);
 
-    // Scanlines
-    for (let i = 0; i < height; i += 3) {
-      this.add.rectangle(width / 2, i, width, 1, 0x000000, 0.1);
-    }
-
-    // ── Terminal-style window ──
+    // ── "Data validator" printout paper ──
     const termW = 500;
     const termH = 400;
     const termX = width / 2;
     const termY = height / 2;
 
-    this.add.rectangle(termX, termY, termW, termH, 0x111122);
-    this.add.rectangle(termX, termY, termW - 4, termH - 4, 0x0a0a18);
-    this.add.rectangle(termX, termY, termW - 8, termH - 8).setStrokeStyle(1, 0x222244);
+    addPaper(this, termX, termY, termW, termH);
 
-    // Title bar
-    this.add.rectangle(termX, termY - termH / 2 + 15, termW - 8, 30, 0x1a1a3a);
+    // Title bar (pixel font only here)
+    this.add.rectangle(termX, termY - termH / 2 + 15, termW - 8, 30, COLORS.paperEdge);
     this.add.text(termX, termY - termH / 2 + 15, '▸ TOXITY — DATA VALIDATOR', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
-      color: '#4ecdc4',
+      fontFamily: FONTS.TITLE,
+      fontSize: '10px',
+      color: '#3d2a16',
     }).setOrigin(0.5);
 
     // ── Run validation steps with animation ──
@@ -55,20 +49,21 @@ export class PreloadScene extends Phaser.Scene {
     steps.forEach((step, i) => {
       this.time.delayedCall(i * 180, () => {
         const icon = step.ok ? '✓' : '✗';
-        const color = step.ok ? '#4ecdc4' : '#ff6b6b';
-        const statusColor = step.ok ? '#88ff88' : '#ff8888';
+        const color = step.ok ? '#1f7a4a' : '#d43a34';
+        const statusColor = step.ok ? '#2a5a3a' : '#a02620';
 
         // Step line
         this.add.text(termX - 220, startY + i * lineHeight, `${icon} ${step.name}`, {
-          fontFamily: '"Press Start 2P", monospace',
-          fontSize: '8px',
+          fontFamily: FONTS.BODY,
+          fontSize: '13px',
+          fontStyle: 'bold',
           color,
         });
 
         // Detail
         this.add.text(termX + 220, startY + i * lineHeight, step.detail, {
-          fontFamily: '"Press Start 2P", monospace',
-          fontSize: '7px',
+          fontFamily: FONTS.BODY,
+          fontSize: '13px',
           color: statusColor,
         }).setOrigin(1, 0);
       });
@@ -80,28 +75,29 @@ export class PreloadScene extends Phaser.Scene {
 
     this.time.delayedCall(steps.length * 180 + 200, () => {
       // Separator
-      this.add.rectangle(termX, summaryY - 5, termW - 40, 1, 0x222244);
+      this.add.rectangle(termX, summaryY - 5, termW - 40, 1, COLORS.paperEdge);
 
       if (allOk) {
         const dataService = new DataService(gameData);
         this.registry.set('dataService', dataService);
 
         this.add.text(termX, summaryY + 10, `✓ ${dataService.femaleCandidates.length} candidatas, ${dataService.maleCandidates.length} candidatos cargados`, {
-          fontFamily: '"Press Start 2P", monospace',
-          fontSize: '8px',
-          color: '#88ff88',
+          fontFamily: FONTS.BODY,
+          fontSize: '13px',
+          color: '#1f7a4a',
         }).setOrigin(0.5);
 
         this.add.text(termX, summaryY + 30, 'Todos los sistemas operativos.', {
-          fontFamily: '"Press Start 2P", monospace',
-          fontSize: '8px',
-          color: '#4ecdc4',
+          fontFamily: FONTS.BODY,
+          fontSize: '13px',
+          color: '#2a6a62',
         }).setOrigin(0.5);
 
         // Blinking "press any key" style
         const readyText = this.add.text(termX, summaryY + 60, '▸ Presioná para continuar...', {
-          fontFamily: '"Press Start 2P", monospace',
-          fontSize: '8px',
+          fontFamily: FONTS.BODY,
+          fontSize: '14px',
+          fontStyle: 'bold',
           color: '#6c63ff',
         }).setOrigin(0.5);
 
@@ -123,15 +119,16 @@ export class PreloadScene extends Phaser.Scene {
       } else {
         const failed = steps.filter(s => !s.ok).map(s => s.name).join(', ');
         this.add.text(termX, summaryY + 10, `✗ Error: ${failed}`, {
-          fontFamily: '"Press Start 2P", monospace',
-          fontSize: '8px',
-          color: '#ff4444',
+          fontFamily: FONTS.BODY,
+          fontSize: '13px',
+          fontStyle: 'bold',
+          color: '#d43a34',
         }).setOrigin(0.5);
 
         this.add.text(termX, summaryY + 30, 'No se pudo cargar el juego.', {
-          fontFamily: '"Press Start 2P", monospace',
-          fontSize: '8px',
-          color: '#ff6b6b',
+          fontFamily: FONTS.BODY,
+          fontSize: '13px',
+          color: '#a02620',
         }).setOrigin(0.5);
       }
     });

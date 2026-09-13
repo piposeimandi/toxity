@@ -1,7 +1,7 @@
 # 🗺️ Toxity (Reina Falsa) — Roadmap
 
 Guía de evolución del proyecto. Cada etapa se construye sobre la anterior.
-Última actualización: 2026-09-11.
+Última actualización: 2026-09-13.
 
 ---
 
@@ -35,37 +35,79 @@ game/
 
 ---
 
-## 🔨 En curso — El teléfono como centro
+## ✅ Etapa 0.5 — Teléfono como centro (COMPLETADA)
 
-- [ ] **App de Citas sale del mapa** → vive solo dentro del teléfono (pestaña App). El mapa queda con 9 lugares físicos.
-- [ ] Revisar textos que mencionen "ir a la app desde el mapa".
-- [ ] Playtesting del flujo completo: app → cita → contacto → invitar desde teléfono → mensaje de ella.
-
----
-
-## 💡 Ideas en backlog (del diseñador, sin implementar)
-
-- [ ] **Balance fino**: la subida a 70 lleva varias semanas — vigilar si se siente lento o justo; gym-solo vs D3 (nerfear si se farmea).
-- [ ] **Economía**: +$80/sem alcanza para ~2 citas caras; vigilar si el jugador activo se funde.
-- [ ] **Gate de ánimo**: éxito +10 siempre (+15 con ánimo alto); vigilar que no sea ni trivial ni imposible.
-- [ ] **Reina más expresiva**: que sus sabotajes se sientan personales (mensajes con nombre, escenas).
-- [ ] **Más lugares con identidad**: cada lugar con evento propio (hoy solo gym y app tienen mecánica única).
-- [ ] **Finales narrativos**: textos de victoria/derrota más largos, epílogo según con quién formaste familia.
-- [ ] **Fotos propias**: reemplazar randomuser por arte generado cuando haya estilo definido (Etapa 3).
+- [x] App de Citas sale del mapa → vive dentro del teléfono (pestaña App)
+- [x] Mapa con 9 lugares físicos + selector desde la app
+- [x] warnings de infidelidad en feed, contactos, y picker de invitaciones
 
 ---
 
-## 🔒 Etapa 1 — Cuentas y Nube (PLANIFICADO)
+## ✅ Etapa 0.6 — Arte y Sonido (COMPLETADA)
+
+- [x] Tema visual púrpura/rosa vibrante (CSS variables)
+- [x] Retrato SVG de la Reina (queenPortrait)
+- [x] Reina integrada en resumen semanal, mensajes, y game over
+
+---
+
+## ✅ Etapa 1 — RPG Rewrite (COMPLETADA)
+
+Reescritura completa del juego usando **Phaser 3 + Vite + TypeScript**.
+
+**Stack:**
+- Phaser 3.85 — motor de juego 2D
+- Vite 6 — bundler y dev server
+- TypeScript 5 — type safety
+
+**Escenas (10):**
+- Boot → Preload → Menu → World ⇄ Phone
+- World → Location → Date
+- WeekEnd → GameOver
+- HUD (overlay paralelo)
+
+**Estética visual:**
+- Menú/Mapa: "That's Not My Neighbor" — escritorio retro, papeles, sticky notes
+- Citas: Tinder — swipe cards con foto, like/nope
+- Teléfono: Smartphone moderno con pestañas
+- Resumen semanal: Papeles apilados en escritorio
+
+**Cómo correrlo:**
+```bash
+./run.sh
+# o
+npm install && npm run dev
+```
+Abrir http://localhost:5173/
+
+---
+
+## 🔨 En curso
+
+- [ ] Probar el juego completo y reportar bugs
+- [ ] Keyboard navigation (flechas/WASD)
+- [ ] Arte real: reemplazar placeholders con pixel art
+
+---
+
+## 💡 Ideas en backlog
+
+- [ ] **Balance fino**: la subida a 70 lleva varias semanas — vigilar si se siente lento o justo
+- [ ] **Economía**: +$80/sem alcanza para ~2 citas caras; vigilar si el jugador activo se funde
+- [ ] **Reina más expresiva**: que sus sabotajes se sientan personales (mensajes con nombre, escenas)
+- [ ] **Más lugares con identidad**: cada lugar con evento propio
+- [ ] **Finales narrativos**: textos de victoria/derrota más largos, epílogo según con quién formaste familia
+- [ ] **Sonido**: efectos de audio para acciones, música ambiental
+
+---
+
+## 🔒 Etapa 2 — Cuentas y Nube (PLANIFICADO)
 
 Sin esto no hay progresión ni multiplayer. Incluye: registro/login, saves en servidor, múltiples ranuras. Decidir: backend propio vs Supabase/Firebase.
 
-## 🌐 Etapa 2 — Multiplayer (PLANIFICADO)
+## 🌐 Etapa 3 — Multiplayer (PLANIFICADO)
 
 "La Reina de Carne y Hueso": 1v1 online (Salado vs Reina humanos), matchmaking anónimo, WebSockets, timer de turnos. La Reina IA queda como modo práctica.
-
-## 🎨 Etapa 3 — Arte y Sonido (PLANIFICADO)
-
-Estilo final (pixel art, visual novel, etc.), sprites de candidatos/lugares/Reina, animaciones, música. Acá se reemplazan las fotos randomuser.
 
 ## 🏆 Etapa 4 — Progresión (PLANIFICADO)
 
@@ -80,12 +122,13 @@ Host definitivo, dominio propio, analítica, anti-trampas, PWA instalable.
 ## 📊 Resumen
 
 ```
-Etapa 0: Prototipo Mecánico      ████████░░ COMPLETO (jugable, en Pages)
-En curso: Teléfono como centro   ██████░░░░ (falta: app sale del mapa)
-Ideas backlog                    ░░░░░░░░░░ (7 ideas del diseñador)
-Etapa 1: Cuentas y Nube          ░░░░░░░░░░ PLANIFICADO (siguiente grande)
-Etapa 2: Multiplayer Online      ░░░░░░░░░░ PLANIFICADO
-Etapa 3: Arte, Sonido y Look     ░░░░░░░░░░ PLANIFICADO
+Etapa 0: Prototipo Mecánico      ██████████ COMPLETO (jugable, en Pages)
+Etapa 0.5: Teléfono centro       ██████████ COMPLETO
+Etapa 0.6: Arte y Sonido         ██████████ COMPLETO
+Etapa 1: RPG Rewrite             ██████████ COMPLETO (Phaser + Vite + TS)
+En curso: Testing + Polish       ████░░░░░░ EN PROGRESO
+Etapa 2: Cuentas y Nube          ░░░░░░░░░░ PLANIFICADO
+Etapa 3: Multiplayer Online      ░░░░░░░░░░ PLANIFICADO
 Etapa 4: Progresión y Premios    ░░░░░░░░░░ PLANIFICADO
 Etapa 5: Distribución y Escala   ░░░░░░░░░░ PLANIFICADO
 ```

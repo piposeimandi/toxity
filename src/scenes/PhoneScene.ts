@@ -258,14 +258,18 @@ export class PhoneScene extends Phaser.Scene {
       card.setOrigin(0.5);
       card.setStrokeStyle(1, 0x4a90d9);
 
-      // Photo placeholder (first letter)
+      // Photo (real image, fallback: first letter)
       const avatar = this.add.rectangle(-130, y, 50, 50, 0x4a3a6a);
       avatar.setOrigin(0.5);
-      const initial = this.add.text(-130, y, c.name.charAt(0), {
+      const photoKey = this.dataService.getPhotoKey(c);
+      let avatarContent: Phaser.GameObjects.GameObject = this.add.text(-130, y, c.name.charAt(0), {
         fontFamily: '"Press Start 2P", monospace',
         fontSize: '18px',
         color: '#ff69b4',
       }).setOrigin(0.5);
+      if (photoKey && this.textures.exists(photoKey)) {
+        avatarContent = this.add.image(-130, y, photoKey).setOrigin(0.5).setDisplaySize(48, 48);
+      }
 
       // Info
       const nameText = this.add.text(-95, y - 20, c.name, {
@@ -299,7 +303,7 @@ export class PhoneScene extends Phaser.Scene {
         this.scene.start('LocationScene', { locKey });
       });
 
-      this.contentContainer.add([card, avatar, initial, nameText, traits, personality, matchBtn]);
+      this.contentContainer.add([card, avatar, avatarContent, nameText, traits, personality, matchBtn]);
     });
   }
 }

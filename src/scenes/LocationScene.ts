@@ -100,19 +100,18 @@ export class LocationScene extends Phaser.Scene {
     this.add.rectangle(photoX, photoY, photoW + 6, photoH + 6, 0x8a7a62);
     this.add.rectangle(photoX, photoY, photoW, photoH, 0xe8dcc8);
 
-    // Initial letter
-    this.add.text(photoX, photoY, candidate.name.charAt(0), {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '32px',
-      color: '#7a5c3a',
-    }).setOrigin(0.5);
-
-    // Photo label
-    this.add.text(photoX, photoY + photoH / 2 + 10, '[ foto ]', {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '6px',
-      color: '#a0937a',
-    }).setOrigin(0.5);
+    // Real photo (fallback: initial letter)
+    const photoKey = this.dataService.getPhotoKey(candidate);
+    if (photoKey && this.textures.exists(photoKey)) {
+      const size = Math.min(photoW, photoH) - 8;
+      this.add.image(photoX, photoY, photoKey).setOrigin(0.5).setDisplaySize(size, size);
+    } else {
+      this.add.text(photoX, photoY, candidate.name.charAt(0), {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '32px',
+        color: '#7a5c3a',
+      }).setOrigin(0.5);
+    }
 
     // ── Candidate info ──
     this.add.text(folderX, photoY + photoH / 2 + 30, candidate.name, {

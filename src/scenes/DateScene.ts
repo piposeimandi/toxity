@@ -57,11 +57,16 @@ export class DateScene extends Phaser.Scene {
     card.add(photoBg);
 
     // Initial letter
-    card.add(this.add.text(0, photoY, this.candidate.name.charAt(0), {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '42px',
-      color: '#ff69b4',
-    }).setOrigin(0.5));
+    const photoKey = this.dataService.getPhotoKey(this.candidate);
+    if (photoKey && this.textures.exists(photoKey)) {
+      card.add(this.add.image(0, photoY, photoKey).setOrigin(0.5).setDisplaySize(photoH - 10, photoH - 10));
+    } else {
+      card.add(this.add.text(0, photoY, this.candidate.name.charAt(0), {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '42px',
+        color: '#ff69b4',
+      }).setOrigin(0.5));
+    }
 
     // ── Name ──
     card.add(this.add.text(0, photoY + photoH / 2 + 20, this.candidate.name, {
@@ -81,8 +86,12 @@ export class DateScene extends Phaser.Scene {
 
     // ── Stats row ──
     const statsY = photoY + photoH / 2 + 72;
-    const statsIcons = ['🎂', '💼', '🎮'];
-    const statsLabels = ['25', this.loc.name, 'Gamer'];
+    const statsIcons = ['⭑', '📍', '🎭'];
+    const statsLabels = [
+      this.candidate.appeal != null ? `${this.candidate.appeal}` : '?',
+      this.loc.name,
+      this.candidate.personality,
+    ];
     for (let i = 0; i < 3; i++) {
       const sx = -70 + i * 70;
       card.add(this.add.text(sx, statsY, statsIcons[i], { fontSize: '12px' }).setOrigin(0.5));

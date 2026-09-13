@@ -13,6 +13,11 @@ export class PreloadScene extends Phaser.Scene {
     super({ key: 'PreloadScene' });
   }
 
+  preload(): void {
+    const dataService = new DataService(gameData);
+    dataService.loadAllPhotos(this);
+  }
+
   create(): void {
     const { width, height } = this.cameras.main;
 

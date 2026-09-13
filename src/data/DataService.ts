@@ -1,3 +1,4 @@
+import type Phaser from 'phaser';
 import type { Candidate, Location, DialogueOption, StalkEvent, GameData } from '../types/data';
 
 export class DataService {
@@ -121,5 +122,32 @@ export class DataService {
     ];
     const filtered = allCandidates.filter(() => Math.random() < genderThreshold);
     return filtered.length > 0 ? filtered : allCandidates.slice(0, 3);
+  }
+
+  /** Derives a stable Phaser texture key from a randomuser photo URL. */
+  getPhotoKey(c: Candidate): string {
+    const m = c.photo.match(/med\/(women|men)\/(\d+)\.jpg$/);
+    if (!m) return '';
+    return `photo-${m[1]}-${m[2]}`;
+  }
+
+  /** Local path for the photo (served from public/photos). */
+  getPhotoPath(c: Candidate): string {
+    const m = c.photo.match(/med\/(women|men)\/(\d+)\.jpg$/);
+    if (!m) return '';
+    return `photos/${m[1]}/${m[2]}.jpg`;
+  }
+
+  /** Registers every unique candidate photo as a Phaser texture. */
+  loadAllPhotos(scene: Phaser.Scene): void {
+    const seen = new Set<string>();
+    const all: Candidate[] = [...this.data.femaleCandidates, ...this.data.maleCandidates];
+    for (const c of all) {
+      const key = this.getPhotoKey(c);
+      if (key && !seen.has(key)) {
+        seen.add(key);
+        scene.load.image(key, this.getPhotoPath(c));
+      }
+    }
   }
 }

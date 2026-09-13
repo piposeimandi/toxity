@@ -1,9 +1,11 @@
 # Dependencias
 node_modules/
 
+# Build output
+dist/
+
 # OpenCode / herramientas locales
 .atl/
-.opencode/
 .opencode/
 
 # Sistema
@@ -13,5 +15,4 @@ Desktop.ini
 
 # Logs y temporales
 *.log
-*.tmpdist/
-node_modules/
+*.tmp

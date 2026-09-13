@@ -56,32 +56,35 @@ export class DateScene extends Phaser.Scene {
     const photoH = 180;
     const photoY = -110;
 
-    this.add.rectangle(0, photoY, photoW, photoH, 0x3a3a5e);
-    this.add.rectangle(0, photoY, photoW, photoH).setStrokeStyle(1, 0x555577);
+    const photoBg = this.add.rectangle(0, photoY, photoW, photoH, 0x3a3a5e);
+    photoBg.setOrigin(0.5);
+    const photoBorder = this.add.rectangle(0, photoY, photoW, photoH);
+    photoBorder.setOrigin(0.5);
+    photoBorder.setStrokeStyle(1, 0x555577);
 
     // Initial letter (big)
-    this.add.text(0, photoY, this.candidate.name.charAt(0), {
+    const initialText = this.add.text(0, photoY, this.candidate.name.charAt(0), {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '48px',
       color: '#ff69b4',
     }).setOrigin(0.5);
 
     // "Foto" label
-    this.add.text(0, photoY + photoH / 2 - 12, '[ foto ]', {
+    const fotoLabel = this.add.text(0, photoY + photoH / 2 - 12, '[ foto ]', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '7px',
       color: '#6666aa',
     }).setOrigin(0.5);
 
     // ── Name (large) ──
-    this.add.text(0, photoY + photoH / 2 + 24, this.candidate.name, {
+    const nameText = this.add.text(0, photoY + photoH / 2 + 24, this.candidate.name, {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '16px',
       color: '#ffffff',
     }).setOrigin(0.5);
 
     // ── Traits ──
-    this.add.text(0, photoY + photoH / 2 + 50, this.candidate.traits, {
+    const traitsText = this.add.text(0, photoY + photoH / 2 + 50, this.candidate.traits, {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '8px',
       color: '#aaaacc',
@@ -116,7 +119,12 @@ export class DateScene extends Phaser.Scene {
       color: '#ffcc00',
     }).setOrigin(0.5);
 
-    card.add([cardShadow, cardBg]);
+    // ── Add ALL elements to card container ──
+    card.add([
+      cardShadow, cardBg,
+      photoBg, photoBorder, initialText, fotoLabel,
+      nameText, traitsText,
+    ]);
 
     // ── Action buttons (bottom) ──
     // ❌ RECHAZAR (red, left)
@@ -213,7 +221,6 @@ export class DateScene extends Phaser.Scene {
     acceptBtn.add([acceptShadow, acceptBg, acceptText, acceptZone]);
 
     // ── Dialogue options (shown after accept) ──
-    // We store references so we can show them later
     this.data.set('card', card);
     this.data.set('cardX', cardX);
     this.data.set('rejectBtn', rejectBtn);

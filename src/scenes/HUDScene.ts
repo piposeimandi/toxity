@@ -20,51 +20,51 @@ export class HUDScene extends Phaser.Scene {
   create(): void {
     const { width } = this.cameras.main;
 
-    // HUD background bar
-    this.add.rectangle(width / 2, 20, width, 40, 0x000000, 0.8);
+    // HUD background bar — thinner, semi-transparent, at very top
+    this.add.rectangle(width / 2, 12, width, 24, 0x000000, 0.7);
 
     // Week + Day
-    this.weekText = this.add.text(15, 12, 'Sem 1', {
+    this.weekText = this.add.text(10, 5, 'Sem 1', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '10px',
+      fontSize: '7px',
       color: '#ffcc00',
     });
 
-    this.dayText = this.add.text(95, 12, 'Lun', {
+    this.dayText = this.add.text(80, 5, 'Lun', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '10px',
+      fontSize: '7px',
       color: '#ffffff',
     });
 
     // Money
-    this.moneyText = this.add.text(185, 12, '$100', {
+    this.moneyText = this.add.text(140, 5, '$100', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '10px',
+      fontSize: '7px',
       color: '#4ecdc4',
     });
 
     // Mood
-    this.moodText = this.add.text(280, 12, 'Ánimo', {
+    this.moodText = this.add.text(220, 5, 'Ánimo', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
+      fontSize: '6px',
       color: '#aaaaaa',
     });
 
-    this.moodBarBg = this.add.rectangle(340, 18, 80, 12, 0x333333);
+    this.moodBarBg = this.add.rectangle(270, 10, 60, 8, 0x333333);
     this.moodBarBg.setOrigin(0, 0.5);
-    this.moodBar = this.add.rectangle(340, 18, 80, 12, 0x4ecdc4);
+    this.moodBar = this.add.rectangle(270, 10, 60, 8, 0x4ecdc4);
     this.moodBar.setOrigin(0, 0.5);
 
     // Partner
-    this.partnerText = this.add.text(460, 12, '', {
+    this.partnerText = this.add.text(370, 5, '', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
+      fontSize: '6px',
       color: '#ff69b4',
     });
 
-    this.partnerBarBg = this.add.rectangle(560, 18, 80, 12, 0x333333);
+    this.partnerBarBg = this.add.rectangle(470, 10, 60, 8, 0x333333);
     this.partnerBarBg.setOrigin(0, 0.5);
-    this.partnerBar = this.add.rectangle(560, 18, 80, 12, 0xff69b4);
+    this.partnerBar = this.add.rectangle(470, 10, 60, 8, 0xff69b4);
     this.partnerBar.setOrigin(0, 0.5);
 
     // Listen for updates
@@ -84,7 +84,7 @@ export class HUDScene extends Phaser.Scene {
 
     // Mood bar
     const moodPct = state.mood / 100;
-    this.moodBar.width = Math.max(0, 80 * moodPct);
+    this.moodBar.width = Math.max(0, 60 * moodPct);
     if (moodPct > 0.6) this.moodBar.setFillStyle(0x4ecdc4);
     else if (moodPct > 0.3) this.moodBar.setFillStyle(0xffaa00);
     else this.moodBar.setFillStyle(0xff6b6b);
@@ -95,7 +95,7 @@ export class HUDScene extends Phaser.Scene {
       if (rel) {
         this.partnerText.setText(rel.name);
         const hpPct = rel.healthPoints / 100;
-        this.partnerBar.width = Math.max(0, 80 * hpPct);
+        this.partnerBar.width = Math.max(0, 60 * hpPct);
         this.partnerBarBg.setVisible(true);
         this.partnerBar.setVisible(true);
         this.partnerText.setVisible(true);

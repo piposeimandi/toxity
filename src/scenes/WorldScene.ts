@@ -69,9 +69,9 @@ export class WorldScene extends Phaser.Scene {
     // ── Week / Day label (corner tag) ──
     const dayNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
     const tagW = 160;
-    const tagH = 36;
+    const tagH = 30;
     const tagX = width - tagW / 2 - 12;
-    const tagY = tagH / 2 + 12;
+    const tagY = tagH / 2 + 8;
 
     this.add.rectangle(tagX + 2, tagY + 2, tagW, tagH, 0x000000, 0.2);
     this.add.rectangle(tagX, tagY, tagW, tagH, 0xf0e6c8);

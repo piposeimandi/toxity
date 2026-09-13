@@ -20,11 +20,21 @@ export class MenuScene extends Phaser.Scene {
       this.add.rectangle(width / 2, y, width, 1, 0x4a3525, 0.4);
     }
 
+    // ── Sticky notes scattered on desk ──
+    // Note 1: Top left
+    this.renderStickyNote(120, 80, 140, 100, '☕ Café\n💕 Citas\n📱 Teléfono', 0xfff9b0, -3);
+
+    // Note 2: Top right
+    this.renderStickyNote(680, 90, 130, 90, '🏋️ Gym\n💪 Stats\n📈 Nivel', 0xf0e6ff, 2);
+
+    // Note 3: Bottom left
+    this.renderStickyNote(100, 420, 120, 80, '🌳 Parque\n🍺 Bar\n🌙 Noche', 0xe6f0ff, -1);
+
     // ── Center paper (title card) ──
-    const paperW = 400;
-    const paperH = 320;
+    const paperW = 360;
+    const paperH = 280;
     const paperX = width / 2;
-    const paperY = height / 2 - 30;
+    const paperY = height / 2;
 
     // Shadow
     this.add.rectangle(paperX + 4, paperY + 4, paperW, paperH, 0x000000, 0.35);
@@ -33,26 +43,26 @@ export class MenuScene extends Phaser.Scene {
     this.add.rectangle(paperX, paperY, paperW, paperH).setStrokeStyle(2, 0xc9b99a);
 
     // Title
-    const title = this.add.text(paperX, paperY - 100, 'TOXITY', {
+    const title = this.add.text(paperX, paperY - 90, 'TOXITY', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '42px',
+      fontSize: '38px',
       color: '#ff6b6b',
     });
     title.setOrigin(0.5);
 
     // Subtitle
-    const subtitle = this.add.text(paperX, paperY - 55, 'RPG', {
+    const subtitle = this.add.text(paperX, paperY - 50, 'RPG', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '16px',
+      fontSize: '14px',
       color: '#5a3e1b',
     });
     subtitle.setOrigin(0.5);
 
     // Separator
-    this.add.rectangle(paperX, paperY - 30, 300, 1, 0xccc0b0);
+    this.add.rectangle(paperX, paperY - 30, 260, 1, 0xccc0b0);
 
     // Flavor text
-    this.add.text(paperX, paperY - 10, 'Reina Falsa Simulator', {
+    this.add.text(paperX, paperY - 12, 'Reina Falsa Simulator', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '8px',
       color: '#8a7a6a',
@@ -62,12 +72,12 @@ export class MenuScene extends Phaser.Scene {
     const newGameBtn = new Button(
       this,
       paperX,
-      paperY + 50,
+      paperY + 40,
       'Nueva Partida',
-      260,
-      50,
+      240,
+      46,
       0x6c63ff,
-      '13px',
+      '12px',
     );
 
     newGameBtn.on('pointerdown', () => {
@@ -86,12 +96,12 @@ export class MenuScene extends Phaser.Scene {
       const continueBtn = new Button(
         this,
         paperX,
-        paperY + 120,
+        paperY + 100,
         label,
-        260,
-        50,
+        240,
+        46,
         0x4ecdc4,
-        '12px',
+        '11px',
       );
 
       continueBtn.on('pointerdown', () => {
@@ -114,10 +124,29 @@ export class MenuScene extends Phaser.Scene {
     }
 
     // ── Bottom tag ──
-    this.add.text(paperX, paperY + paperH / 2 - 20, 'v1.0 — Phaser + TypeScript', {
+    this.add.text(paperX, paperY + paperH / 2 - 16, 'v1.0 — Phaser + TypeScript', {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '6px',
+      color: '#aaa090',
+    }).setOrigin(0.5);
+  }
+
+  private renderStickyNote(
+    x: number, y: number, w: number, h: number,
+    text: string, color: number, angle: number,
+  ): void {
+    // Shadow
+    this.add.rectangle(x + 3, y + 3, w, h, 0x000000, 0.2);
+    // Note
+    const note = this.add.rectangle(x, y, w, h, color);
+    note.setAngle(angle);
+    // Text
+    this.add.text(x, y, text, {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '7px',
-      color: '#aaa090',
+      color: '#5a3e1b',
+      align: 'center',
+      lineSpacing: 6,
     }).setOrigin(0.5);
   }
 }

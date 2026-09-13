@@ -34,4 +34,9 @@ const config: Phaser.Types.Core.GameConfig = {
   ],
 };
 
-new Phaser.Game(config);
+const game = new Phaser.Game(config);
+
+// Debug hook (dev only) — enables automated layout inspection via puppeteer
+if (import.meta.env.DEV) {
+  (window as unknown as Record<string, unknown>).__toxityGame = game;
+}

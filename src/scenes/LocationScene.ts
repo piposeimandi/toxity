@@ -34,11 +34,11 @@ export class LocationScene extends Phaser.Scene {
       this.add.rectangle(width / 2, 20 + i * 35, width, 1, 0x4a3525, 0.4);
     }
 
-    // ── Title sticky note ──
+    // ── Title sticky note (below HUD bar) ──
     const locIcon = LOCATION_ICONS[this.locKey] ?? '📍';
-    this.add.rectangle(width / 2 + 2, 32, 240, 36, 0x000000, 0.2);
-    this.add.rectangle(width / 2, 30, 240, 36, 0xfff9b0);
-    this.add.text(width / 2, 30, `${locIcon} ${this.location.name}`, {
+    this.add.rectangle(width / 2 + 2, 48, 240, 36, 0x000000, 0.2);
+    this.add.rectangle(width / 2, 46, 240, 36, 0xfff9b0);
+    this.add.text(width / 2, 46, `${locIcon} ${this.location.name}`, {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '10px',
       color: '#5a3e1b',
@@ -48,7 +48,7 @@ export class LocationScene extends Phaser.Scene {
     const riskColor = this.location.risk === 'low' ? '#4ecdc4' :
                       this.location.risk === 'medium' ? '#ffcc00' :
                       this.location.risk === 'high' ? '#ff8844' : '#ff4444';
-    this.add.text(width / 2, 54, `Riesgo: ${this.location.riskLabel}`, {
+    this.add.text(width / 2, 70, `Riesgo: ${this.location.riskLabel}`, {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '7px',
       color: riskColor,

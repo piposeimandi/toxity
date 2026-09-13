@@ -13,4 +13,5 @@ Desktop.ini
 
 # Logs y temporales
 *.log
-*.tmp
+*.tmpdist/
+node_modules/

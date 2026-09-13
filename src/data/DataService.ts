@@ -79,6 +79,10 @@ export class DataService {
     return this.data.gymHarasserTexts;
   }
 
+  get gymInterestTexts(): string[] {
+    return this.data.gymInterestTexts;
+  }
+
   get relHealthThresholds(): { novio: number; familia: number } {
     return this.data.relHealthThresholds;
   }

@@ -14,7 +14,7 @@ const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.CANVAS,
   width: 800,
   height: 600,
-  parent: document.body,
+  parent: 'game-container',
   backgroundColor: '#1a1a2e',
   scale: {
     mode: Phaser.Scale.FIT,

@@ -24,56 +24,129 @@ export class WorldScene extends Phaser.Scene {
 
     const { width, height } = this.cameras.main;
 
-    // Background
-    this.add.rectangle(width / 2, height / 2, width, height, 0x1a1a2e);
+    // ── Wooden desk background ──
+    this.add.rectangle(width / 2, height / 2, width, height, 0x3d2b1f);
 
-    // Title
-    this.add.text(width / 2, 40, 'MAPA DEL MUNDO', {
+    // Wood grain lines (subtle)
+    for (let i = 0; i < 18; i++) {
+      const y = 20 + i * 35;
+      this.add.rectangle(width / 2, y, width, 1, 0x4a3525, 0.4);
+    }
+
+    // ── Paper map spread on desk ──
+    const mapW = 560;
+    const mapH = 340;
+    const mapX = width / 2;
+    const mapY = height / 2 - 10;
+
+    // Paper shadow
+    this.add.rectangle(mapX + 4, mapY + 4, mapW, mapH, 0x1a0f05, 0.5);
+
+    // Paper base (cream / manila)
+    this.add.rectangle(mapX, mapY, mapW, mapH, 0xf5ecd7);
+    // Subtle border
+    const mapBorder = this.add.rectangle(mapX, mapY, mapW, mapH);
+    mapBorder.setStrokeStyle(2, 0xc9b99a);
+
+    // ── Handwritten title (sticky note style) ──
+    const stickyW = 220;
+    const stickyH = 50;
+    const stickyX = width / 2;
+    const stickyY = height - 60;
+
+    // Sticky note shadow
+    this.add.rectangle(stickyX + 3, stickyY + 3, stickyW, stickyH, 0x000000, 0.25);
+    // Sticky note
+    this.add.rectangle(stickyX, stickyY, stickyW, stickyH, 0xfff9b0);
+
+    this.add.text(stickyX, stickyY, '¿A dónde hoy?', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '16px',
-      color: '#ffcc00',
+      fontSize: '13px',
+      color: '#5a3e1b',
     }).setOrigin(0.5);
 
-    // Day + Week info
-    this.add.text(width / 2, 70, `Semana ${this.state.week} — ${['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'][this.state.day - 1]}`, {
+    // ── Week / Day label (corner tag) ──
+    const dayNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+    const tagW = 160;
+    const tagH = 36;
+    const tagX = width - tagW / 2 - 12;
+    const tagY = tagH / 2 + 12;
+
+    this.add.rectangle(tagX + 2, tagY + 2, tagW, tagH, 0x000000, 0.2);
+    this.add.rectangle(tagX, tagY, tagW, tagH, 0xf0e6c8);
+    this.add.rectangle(tagX, tagY, tagW, tagH).setStrokeStyle(1, 0xc9b99a);
+
+    this.add.text(tagX, tagY, `Sem ${this.state.week} — ${dayNames[this.state.day - 1]}`, {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '10px',
-      color: '#aaaaaa',
+      fontSize: '9px',
+      color: '#5a3e1b',
     }).setOrigin(0.5);
 
-    // Location hotspots
+    // ── Location cards on the map ──
     for (const loc of MAP_LOCATIONS) {
+      const cardW = 110;
+      const cardH = 80;
+
       const container = this.add.container(loc.x, loc.y);
 
-      const rect = this.add.rectangle(0, 0, 160, 120, loc.color);
-      rect.setOrigin(0.5);
-      rect.setStrokeStyle(2, 0xffffff);
+      // Card shadow
+      const shadow = this.add.rectangle(3, 3, cardW, cardH, 0x000000, 0.3);
+      shadow.setOrigin(0.5);
 
-      const icon = this.add.text(0, -20, loc.icon, {
-        fontSize: '28px',
+      // Card (cream paper)
+      const card = this.add.rectangle(0, 0, cardW, cardH, 0xfaf3e0);
+      card.setOrigin(0.5);
+      card.setStrokeStyle(1, 0xc9b99a);
+
+      // Location icon
+      const icon = this.add.text(0, -16, loc.icon, {
+        fontSize: '22px',
       }).setOrigin(0.5);
 
-      const label = this.add.text(0, 15, loc.label, {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '11px',
-        color: '#ffffff',
-      }).setOrigin(0.5);
-
-      const locData = this.dataService.dateLocations[loc.key];
-      const costText = this.add.text(0, 35, `$${locData.cost}`, {
+      // Location name
+      const label = this.add.text(0, 10, loc.label, {
         fontFamily: '"Press Start 2P", monospace',
         fontSize: '9px',
-        color: '#ffcc00',
+        color: '#3e2712',
       }).setOrigin(0.5);
 
-      const zone = this.add.zone(0, 0, 160, 120);
+      // Cost
+      const locData = this.dataService.dateLocations[loc.key];
+      const costText = this.add.text(0, 28, `$${locData.cost}`, {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '8px',
+        color: '#7a5c3a',
+      }).setOrigin(0.5);
+
+      const zone = this.add.zone(0, 0, cardW, cardH);
       zone.setInteractive({ useHandCursor: true });
 
-      zone.on('pointerover', () => rect.setFillStyle(loc.color + 0x222222));
-      zone.on('pointerout', () => rect.setFillStyle(loc.color));
+      // Hover: card lifts up (shadow grows, card moves up)
+      zone.on('pointerover', () => {
+        this.tweens.add({
+          targets: container,
+          y: loc.y - 6,
+          duration: 120,
+          ease: 'Quad.easeOut',
+        });
+        card.setFillStyle(0xfff5d6);
+        card.setStrokeStyle(2, 0x8b6914);
+      });
+
+      zone.on('pointerout', () => {
+        this.tweens.add({
+          targets: container,
+          y: loc.y,
+          duration: 120,
+          ease: 'Quad.easeOut',
+        });
+        card.setFillStyle(0xfaf3e0);
+        card.setStrokeStyle(1, 0xc9b99a);
+      });
+
       zone.on('pointerdown', () => {
         if (this.state.money < locData.cost) {
-          this.showMessage('No tenés plata suficiente', width / 2, height - 60);
+          this.showMessage('No tenés plata suficiente', width / 2, height - 110);
           this.time.delayedCall(1200, () => {
             this.state.mood = Math.max(0, this.state.mood - 3);
             this.state.day += 1;
@@ -88,30 +161,32 @@ export class WorldScene extends Phaser.Scene {
         this.scene.start('LocationScene', { locKey: loc.key });
       });
 
-      container.add([rect, icon, label, costText, zone]);
+      container.add([shadow, card, icon, label, costText, zone]);
     }
 
-    // Phone button
-    const phoneZone = this.add.zone(width - 60, height - 40, 100, 50);
+    // ── Phone button (sticky note style) ──
+    const phoneZone = this.add.zone(width - 60, height - 115, 100, 44);
     phoneZone.setInteractive({ useHandCursor: true });
-    this.add.rectangle(width - 60, height - 40, 100, 50, 0x333355);
-    this.add.text(width - 60, height - 40, '📱 Teléfono', {
+    this.add.rectangle(width - 60, height - 115, 100, 44, 0xd4e6f1);
+    this.add.rectangle(width - 60, height - 115, 100, 44).setStrokeStyle(1, 0x8aaabb);
+    this.add.text(width - 60, height - 115, '📱 Teléfono', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
-      color: '#00ccff',
+      fontSize: '7px',
+      color: '#2c3e50',
     }).setOrigin(0.5);
     phoneZone.on('pointerdown', () => {
       this.scene.start('PhoneScene');
     });
 
-    // Advance day button (skip action)
-    const skipZone = this.add.zone(width / 2, height - 40, 140, 40);
+    // ── Advance day button (sticky note style) ──
+    const skipZone = this.add.zone(width / 2, height - 115, 140, 44);
     skipZone.setInteractive({ useHandCursor: true });
-    this.add.rectangle(width / 2, height - 40, 140, 40, 0x555555);
-    this.add.text(width / 2, height - 40, '⏭ Avanzar día', {
+    this.add.rectangle(width / 2, height - 115, 140, 44, 0xf5e6cc);
+    this.add.rectangle(width / 2, height - 115, 140, 44).setStrokeStyle(1, 0xc9b99a);
+    this.add.text(width / 2, height - 115, '⏭ Avanzar día', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
-      color: '#cccccc',
+      fontSize: '7px',
+      color: '#5a3e1b',
     }).setOrigin(0.5);
     skipZone.on('pointerdown', () => {
       this.state.mood = Math.max(0, this.state.mood - 3);

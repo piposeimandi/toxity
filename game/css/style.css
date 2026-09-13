@@ -1,91 +1,99 @@
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0a0a0a;--fg:#e8e8e8;--accent:#ffd34d;--danger:#ff5c5c;--success:#4ade80;--dim:#9a9a9a;--panel:#141414;--border:#3a3a3a}
-body{background:#050505;color:var(--fg);font-family:'Courier New',monospace;font-size:14px;min-height:100vh;overflow-x:hidden}
+:root{--bg:#1a1025;--fg:#f0e8f5;--accent:#ff6b9d;--danger:#ff6b6b;--success:#6bffb8;--dim:#9a8aaa;--panel:#2a1a3e;--border:#4a3a6e;--gold:#ffd34d;--pink:#ff6b9d;--teal:#4ecdc4}
+body{background:var(--bg);color:var(--fg);font-family:'Courier New',monospace;font-size:14px;min-height:100vh;overflow-x:hidden}
 .screen{display:none;padding:20px 20px 150px;max-width:800px;margin:0 auto;min-height:100vh}
 .screen.active{display:block}
 h1,h2,h3{color:var(--accent);margin-bottom:10px;font-weight:normal}
 h1{font-size:28px;text-align:center;border-bottom:1px solid var(--border);padding-bottom:15px}
 h2{font-size:18px;border-bottom:1px solid var(--border);padding-bottom:8px}
 h3{font-size:15px;color:var(--fg)}
-button{background:var(--panel);color:var(--accent);border:1px solid var(--accent);padding:8px 16px;font-family:inherit;cursor:pointer;font-size:13px;margin:4px;transition:all .2s}
-button:hover{background:var(--accent);color:var(--bg)}
-button:disabled{opacity:.4;cursor:default;border-color:var(--dim);color:var(--dim)}
+button{background:var(--panel);color:var(--accent);border:1px solid var(--accent);padding:8px 16px;font-family:inherit;cursor:pointer;font-size:13px;margin:4px;transition:all .2s;border-radius:6px}
+button:hover{background:var(--accent);color:var(--bg);transform:translateY(-1px);box-shadow:0 4px 12px rgba(255,107,157,.3)}
+button:disabled{opacity:.4;cursor:default;border-color:var(--dim);color:var(--dim);transform:none;box-shadow:none}
 button:disabled:hover{background:var(--panel);color:var(--dim)}
 button.danger{border-color:var(--danger);color:var(--danger)}
-button.danger:hover{background:var(--danger);color:var(--bg)}
+button.danger:hover{background:var(--danger);color:var(--bg);box-shadow:0 4px 12px rgba(255,107,107,.3)}
 button.success{border-color:var(--success);color:var(--success)}
-button.success:hover{background:var(--success);color:var(--bg)}
+button.success:hover{background:var(--success);color:var(--bg);box-shadow:0 4px 12px rgba(107,255,184,.3)}
 .stat-bar{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border);font-size:13px}
 .stat-name{width:100px;color:var(--dim)}
 .stat-val{width:50px;text-align:right;color:var(--accent)}
-.stat-track{flex:1;height:6px;background:var(--border);margin:0 10px;position:relative}
-.stat-fill{height:100%;background:var(--accent);transition:width .3s}
+.stat-track{flex:1;height:6px;background:var(--border);margin:0 10px;position:relative;border-radius:3px}
+.stat-fill{height:100%;background:linear-gradient(90deg,var(--pink),var(--teal));transition:width .3s;border-radius:3px}
 .stat-fill.low{background:var(--danger)}
-#status-bar{display:flex;justify-content:space-between;padding:10px 20px;border-bottom:1px solid var(--border);background:var(--panel);position:sticky;top:0;z-index:10}
+#status-bar{display:flex;justify-content:space-between;padding:10px 20px;border-bottom:1px solid var(--border);background:var(--panel);position:sticky;top:0;z-index:10;border-radius:0 0 12px 12px}
 #status-bar span{font-size:12px;color:var(--dim)}
 #status-bar span b{color:var(--accent);font-weight:normal}
-.feed-item{border:1px solid var(--border);padding:12px;margin:8px 0;background:var(--panel);position:relative}
+.feed-item{border:1px solid var(--border);padding:12px;margin:8px 0;background:var(--panel);position:relative;border-radius:10px;transition:border-color .2s}
+.feed-item:hover{border-color:var(--accent)}
 .feed-item .time{font-size:11px;color:var(--dim)}
 .feed-item .text{margin:6px 0;line-height:1.5}
 .feed-item .actions{margin-top:8px}
-.location-card{border:1px solid var(--border);padding:12px;margin:6px 0;background:var(--panel);display:flex;justify-content:space-between;align-items:center}
+.location-card{border:1px solid var(--border);padding:12px;margin:6px 0;background:var(--panel);display:flex;justify-content:space-between;align-items:center;border-radius:10px;transition:all .2s}
+.location-card:hover{border-color:var(--teal);transform:translateX(4px)}
 .location-card .info{flex:1}
-.location-card .name{color:var(--accent);margin-bottom:4px}
+.location-card .name{color:var(--gold);margin-bottom:4px}
 .location-card .desc{font-size:12px;color:var(--dim)}
-.candidate{border:1px solid var(--border);padding:12px;margin:8px 0;background:var(--panel)}
+.candidate{border:1px solid var(--border);padding:12px;margin:8px 0;background:var(--panel);border-radius:10px}
 .candidate .name{color:var(--accent);font-size:15px}
 .candidate .traits{font-size:12px;color:var(--dim);margin:4px 0}
 .candidate .desc{margin:6px 0;line-height:1.4;font-style:italic}
 .dialogue-options{margin-top:10px}
-.dialogue-options button{display:block;width:100%;text-align:left;margin:4px 0;padding:10px;font-size:13px;background:var(--bg);border:1px solid var(--border)}
-.dialogue-options button:hover{border-color:var(--accent)}
-.result-box{padding:12px;margin:10px 0;border:1px solid var(--border)}
-.result-box.success{border-color:var(--success);color:var(--success)}
-.result-box.fail{border-color:var(--danger);color:var(--danger)}
-.result-box.info{border-color:var(--accent);color:var(--accent)}
-.debug-panel{display:none;position:fixed;right:10px;top:10px;width:300px;background:var(--panel);border:1px solid var(--accent);padding:12px;z-index:100;font-size:12px;max-height:80vh;overflow-y:auto}
+.dialogue-options button{display:block;width:100%;text-align:left;margin:4px 0;padding:10px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:8px}
+.dialogue-options button:hover{border-color:var(--accent);background:rgba(255,107,157,.1)}
+.result-box{padding:12px;margin:10px 0;border:1px solid var(--border);border-radius:10px}
+.result-box.success{border-color:var(--success);color:var(--success);background:rgba(107,255,184,.05)}
+.result-box.fail{border-color:var(--danger);color:var(--danger);background:rgba(255,107,107,.05)}
+.result-box.info{border-color:var(--accent);color:var(--accent);background:rgba(255,107,157,.05)}
+.debug-panel{display:none;position:fixed;right:10px;top:10px;width:300px;background:var(--panel);border:1px solid var(--accent);padding:12px;z-index:100;font-size:12px;max-height:80vh;overflow-y:auto;border-radius:12px}
 .debug-panel.open{display:block}
 .debug-panel h3{font-size:14px;margin-bottom:8px}
 .debug-entry{border-bottom:1px solid var(--border);padding:4px 0;font-size:11px;color:var(--dim)}
 .debug-entry b{color:var(--accent);font-weight:normal}
-.week-summary{padding:20px;border:1px solid var(--accent);margin:10px 0;background:var(--panel)}
+.week-summary{padding:20px;border:1px solid var(--gold);margin:10px 0;background:var(--panel);border-radius:10px}
 #console-log{position:fixed;left:0;bottom:0;width:100%;height:120px;background:var(--panel);border-top:1px solid var(--border);overflow-y:auto;padding:8px 20px;font-size:12px;color:var(--dim);z-index:50}
 #console-log .log-line{margin:1px 0}
-#console-log .log-line.highlight{color:var(--accent)}
+#console-log .log-line.highlight{color:var(--gold)}
 #console-log .log-line.danger{color:var(--danger)}
 #console-log .log-line.success{color:var(--success)}
-.fade-in{animation:fadeIn .5s ease-in}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.fade-in{animation:fadeIn .4s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,107,157,.4)}50%{box-shadow:0 0 0 8px rgba(255,107,157,0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 #mobile-debug{display:none;position:fixed;right:5px;bottom:130px;z-index:60}
 #mobile-debug button{font-size:10px;padding:4px 8px;border-color:var(--dim);color:var(--dim)}
 .empty-msg{color:var(--dim);font-style:italic;padding:20px;text-align:center}
 button:disabled .price-note{color:var(--danger);font-size:11px}
 .choice-group{margin:10px 0}
 .choice-group button{display:block;width:100%;text-align:left;margin:4px 0;padding:10px}
-.badge{display:inline-block;font-size:10px;padding:2px 6px;border:1px solid;border-radius:3px;margin-left:6px}
+.badge{display:inline-block;font-size:10px;padding:2px 6px;border:1px solid;border-radius:12px;margin-left:6px}
 .badge.easy{border-color:var(--success);color:var(--success)}
-.badge.medium{border-color:var(--accent);color:var(--accent)}
+.badge.medium{border-color:var(--gold);color:var(--gold)}
 .badge.hard{border-color:#e07020;color:#e07020}
 .badge.extreme{border-color:var(--danger);color:var(--danger)}
-.candidate-photo{width:60px;height:60px;border-radius:50%;border:1px solid var(--border);margin-right:10px;vertical-align:middle;object-fit:cover}
+.candidate-photo{width:60px;height:60px;border-radius:50%;border:2px solid var(--border);margin-right:10px;vertical-align:middle;object-fit:cover;transition:border-color .2s}
+.candidate-photo:hover{border-color:var(--accent)}
 .phone-tabs{display:flex;gap:4px;margin:8px 0}
 .phone-tabs button{flex:1;text-align:center}
-.phone-tabs button.active{background:var(--accent);color:var(--bg)}
-.contact-card{border:1px solid var(--border);padding:12px;margin:6px 0;background:var(--panel);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.phone-tabs button.active{background:var(--accent);color:var(--bg);border-radius:8px}
+.contact-card{border:1px solid var(--border);padding:12px;margin:6px 0;background:var(--panel);display:flex;justify-content:space-between;align-items:center;gap:10px;border-radius:10px;transition:all .2s}
+.contact-card:hover{border-color:var(--pink);transform:translateX(4px)}
 .contact-card .info{flex:1}
 .contact-card .name{color:var(--accent);font-size:15px}
 .contact-card .desc{font-size:12px;color:var(--dim);margin-top:4px}
-.message-card{border:1px solid var(--accent);padding:12px;margin:8px 0;background:var(--panel)}
+.message-card{border:1px solid var(--gold);padding:12px;margin:8px 0;background:var(--panel);border-radius:10px}
 .message-card .time{font-size:11px;color:var(--dim)}
 .message-card .text{margin:6px 0;line-height:1.5}
 .message-card .actions{margin-top:8px}
 #status-bar{flex-wrap:wrap;gap:4px 12px}
 #s-relation-wrap{font-size:11px}
+.queen-sabotage{border-color:var(--danger) !important;animation:shake .3s ease-in-out}
+.queen-advance{border-left:3px solid var(--gold)}
 /* ===== Teléfono simulado (solo capa visual, estilo app móvil) ===== */
-.phone-frame{max-width:400px;margin:12px auto;background:#000;border:2px solid var(--border);border-radius:36px;padding:14px 14px 16px;box-shadow:0 0 0 1px #000,0 8px 32px rgba(0,0,0,.6),0 0 24px rgba(255,211,77,.06)}
+.phone-frame{max-width:400px;margin:12px auto;background:linear-gradient(145deg,#1a1025,#2a1a3e);border:2px solid var(--border);border-radius:36px;padding:14px 14px 16px;box-shadow:0 0 0 1px #000,0 8px 32px rgba(0,0,0,.6),0 0 24px rgba(255,107,157,.08)}
 .phone-notch{width:110px;height:22px;background:#000;border:1px solid var(--border);border-radius:12px;margin:0 auto 8px}
 .phone-status{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--dim);padding:2px 12px 8px}
-.phone-appbar{text-align:center;font-size:15px;border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:8px}
+.phone-appbar{text-align:center;font-size:15px;border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:8px;color:var(--gold)}
 .phone-screen-body{max-height:55vh;overflow-y:auto;padding:4px 4px 12px;scrollbar-width:thin}
 .phone-screen-body::-webkit-scrollbar{width:6px}
 .phone-screen-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
@@ -93,7 +101,7 @@ button:disabled .price-note{color:var(--danger);font-size:11px}
 .phone-tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;border-radius:14px;padding:10px 4px;background:transparent}
 .phone-tabbar button .tab-icon{font-size:22px;line-height:1}
 .phone-tabbar button .tab-label{font-size:11px;line-height:1;color:inherit}
-.phone-tabs.phone-tabbar button.active{background:rgba(255,211,77,.08);border-color:var(--accent);color:var(--accent)}
+.phone-tabs.phone-tabbar button.active{background:rgba(255,107,157,.15);border-color:var(--pink);color:var(--pink)}
 .phone-home{width:120px;height:4px;border-radius:2px;background:var(--border);margin:12px auto 0}
 .phone-frame .contact-card,.phone-frame .message-card,.phone-frame .candidate,.phone-frame .location-card{border-radius:12px;padding:16px;margin:10px 0}
 .phone-frame .contact-card button,.phone-frame .message-card .actions button,.phone-frame .location-card button,.phone-frame .candidate .actions button,.phone-frame .phone-screen-body>button{width:100%;border-radius:10px;padding:12px;margin:6px 0;text-align:center}

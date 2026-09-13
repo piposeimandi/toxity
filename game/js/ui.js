@@ -4,6 +4,26 @@
 
 var debugOpen=false;
 function photoHtml(src,name){return src?'<img class="candidate-photo" src="'+src+'" alt="'+name+'" onerror="this.style.display=\'none\'">':'';}
+function queenPortrait(size){
+  size=size||40;
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="'+size+'" height="'+size+'" style="display:inline-block;vertical-align:middle;margin-right:6px;border-radius:50%;border:2px solid #daa520">'
+    +'<defs><linearGradient id="qbg'+size+'" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#2a1a3e"/><stop offset="100%" style="stop-color:#1a0a2e"/></linearGradient>'
+    +'<linearGradient id="qcrown'+size+'" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#ffd700"/><stop offset="100%" style="stop-color:#daa520"/></linearGradient></defs>'
+    +'<rect width="120" height="120" fill="url(#qbg'+size+')" rx="8"/>'
+    +'<ellipse cx="60" cy="55" rx="35" ry="40" fill="#1a1a2e"/><path d="M25 55 Q25 95 40 100 L40 60 Z" fill="#1a1a2e"/><path d="M95 55 Q95 95 80 100 L80 60 Z" fill="#1a1a2e"/>'
+    +'<ellipse cx="60" cy="58" rx="22" ry="25" fill="#d4a574"/>'
+    +'<ellipse cx="52" cy="52" rx="4" ry="3" fill="#fff"/><ellipse cx="68" cy="52" rx="4" ry="3" fill="#fff"/>'
+    +'<circle cx="53" cy="52" r="2" fill="#2a1a3e"/><circle cx="69" cy="52" r="2" fill="#2a1a3e"/>'
+    +'<circle cx="53.5" cy="51.5" r="0.8" fill="#fff"/><circle cx="69.5" cy="51.5" r="0.8" fill="#fff"/>'
+    +'<path d="M47 47 Q52 44 57 47" stroke="#1a1a2e" stroke-width="1.5" fill="none"/>'
+    +'<path d="M63 47 Q68 44 73 47" stroke="#1a1a2e" stroke-width="1.5" fill="none"/>'
+    +'<path d="M52 68 Q60 73 68 68" stroke="#c44569" stroke-width="2" fill="#c44569"/>'
+    +'<path d="M38 38 L42 28 L48 35 L54 22 L60 35 L66 22 L72 35 L78 28 L82 38 Z" fill="url(#qcrown'+size+')" />'
+    +'<circle cx="42" cy="28" r="2" fill="#ff6b6b"/><circle cx="60" cy="22" r="2.5" fill="#4ecdc4"/><circle cx="78" cy="28" r="2" fill="#ff6b6b"/>'
+    +'<rect x="55" y="78" width="10" height="8" fill="#d4a574"/>'
+    +'<path d="M35 86 Q60 82 85 86 L85 100 Q60 96 35 100 Z" fill="#2a1a3e"/>'
+    +'</svg>';
+}
 
 function log(msg,cls){var el=document.getElementById('console-log');var d=document.createElement('div');d.className='log-line'+(cls?' '+cls:'');d.textContent=msg;el.appendChild(d);el.scrollTop=el.scrollHeight;}
 function showScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});var el=document.getElementById('screen-'+id);if(el)el.classList.add('active');updateStatusBar();}
@@ -105,14 +125,28 @@ if(ev.type==='known_person'){
   var cheapestCost=getCheapestLocationCost();
   var canAfford=G.money>=cheapestCost;
   var costNote=canAfford?'':' <span style="color:var(--dim)">(necesitas al menos $'+cheapestCost+')</span>';
-  item.innerHTML='<div class="time">💞 Conocido — '+getRelationProgressText(rel)+'</div>'+photoHtml(rel.photo,rel.name)+'<div class="text">'+ev.text+'</div><div class="actions"><button '+(canAfford?'':'disabled')+' onclick="goToDateKnown(\''+rel.id+'\')">'+(canAfford?'💞 Volver a ver a '+rel.name:'Sin plata para salir'+costNote)+'</button></div>';
+  var infidelityWarning='';
+  var _kpr=G.partner?findRelationById(G.partner):null;
+  var _gate=((typeof REL_HEALTH_THRESHOLDS!=='undefined'&&REL_HEALTH_THRESHOLDS&&REL_HEALTH_THRESHOLDS.novio)||40);
+  var _krisk=((typeof INFIDELITY_RISK!=='undefined')?INFIDELITY_RISK:40);
+  if(_kpr&&rel.id!==_kpr.id&&G.healthPoints>=_gate){
+    infidelityWarning='<div class="text" style="color:var(--danger);margin-top:4px">⚠️ Riesgo: '+_krisk+'% de infidelidad — si tu pareja se entere, perdés salud o te deja.</div>';
+  }
+  item.innerHTML='<div class="time">💞 Conocido — '+getRelationProgressText(rel)+'</div>'+photoHtml(rel.photo,rel.name)+'<div class="text">'+ev.text+'</div>'+infidelityWarning+'<div class="actions"><button '+(canAfford?'':'disabled')+' onclick="goToDateKnown(\''+rel.id+'\')">'+(canAfford?'💞 Volver a ver a '+rel.name:'Sin plata para salir'+costNote)+'</button></div>';
 }else if(ev.type==='pending_invite'){
   var irel=findRelationById(ev.relId);
   var iloc=DATE_LOCATIONS[ev.locationKey];
   if(irel&&iloc){
     var canAffordInv=G.money>=iloc.cost;
     var costNoteInv=canAffordInv?'':' <span style="color:var(--dim)">(necesitas $'+iloc.cost+')</span>';
-    item.innerHTML='<div class="time">💬 Te escribió '+irel.name+'</div>'+photoHtml(irel.photo,irel.name)+'<div class="text">'+ev.text+'</div><div class="text" style="color:var(--dim)">Te propone: '+iloc.icon+' '+iloc.name+' ($'+iloc.cost+')</div><div class="actions"><button '+(canAffordInv?'':'disabled')+' onclick="acceptInvite()">Aceptar plan'+costNoteInv+'</button><button onclick="declineInvite()">Rechazar</button></div>';
+    var inviteWarning='';
+    var _ipr=G.partner?findRelationById(G.partner):null;
+    var _igate=((typeof REL_HEALTH_THRESHOLDS!=='undefined'&&REL_HEALTH_THRESHOLDS&&REL_HEALTH_THRESHOLDS.novio)||40);
+    var _irisk=((typeof INFIDELITY_RISK!=='undefined')?INFIDELITY_RISK:40);
+    if(_ipr&&irel.id!==_ipr.id&&G.healthPoints>=_igate){
+      inviteWarning='<div class="text" style="color:var(--danger);margin-top:4px">⚠️ Riesgo: '+_irisk+'% de infidelidad — si tu pareja se entere, perdés salud o te deja.</div>';
+    }
+    item.innerHTML='<div class="time">💬 Te escribió '+irel.name+'</div>'+photoHtml(irel.photo,irel.name)+'<div class="text">'+ev.text+'</div><div class="text" style="color:var(--dim)">Te propone: '+iloc.icon+' '+iloc.name+' ($'+iloc.cost+')</div>'+inviteWarning+'<div class="actions"><button '+(canAffordInv?'':'disabled')+' onclick="acceptInvite()">Aceptar plan'+costNoteInv+'</button><button onclick="declineInvite()">Rechazar</button></div>';
   }else{
     item.innerHTML='<div class="time">Tu vida</div><div class="text">Un mensaje se perdió en el camino...</div>';
   }
@@ -245,7 +279,7 @@ var cheapestCost=getCheapestLocationCost();
 var canAffordAny=G.money>=cheapestCost;
 for(var i=0;i<profiles.length;i++){
 var p=profiles[i];
-html+='<div class="candidate fade-in"><div class="time">✨ Nuevo match en la app</div><div class="name">'+photoHtml(p.photo,p.name)+p.name+'</div><div class="traits">'+p.traits+' | '+p.personality+'</div><div class="actions"><button '+(canAffordAny?'':'disabled')+' onclick="requestDateFromApp(\''+p.name+'\')">'+(canAffordAny?'💘 Pedir cita a '+p.name:'Sin plata para salir (necesitas al menos $'+cheapestCost+')')+'</button></div></div>';
+html+='<div class="candidate fade-in"><div class="time">✨ Nuevo match en la app</div><div class="name">'+photoHtml(p.photo,p.name)+p.name+'</div><div class="traits">'+p.traits+' | '+p.personality+'</div><div class="actions"><button '+(canAffordAny?'':'disabled')+' onclick="requestDateFromApp(\''+p.id+'\')">'+(canAffordAny?'💘 Pedir cita a '+p.name:'Sin plata para salir (necesitas al menos $'+cheapestCost+')')+'</button></div></div>';
 }
 html+='<button onclick="showFeed()">Volver</button>';
 container.innerHTML=html;
@@ -288,7 +322,8 @@ else if(h.type==='date_success'){txt='💞 Cita exitosa con '+(h.name||'alguien'
 else if(h.type==='date_fail'){txt='💔 No funcionó con '+(h.name||'alguien')+'.';}
 else if(h.type==='gay_encounter'){txt='🌙 Te cruzaste con '+(h.name||'alguien')+' y la vibe era rara.';}
 if(txt){
-html+='<div class="message-card fade-in"><div class="time">Semana '+h.week+', Día '+h.day+'</div><div class="text">'+txt+'</div></div>';
+var queenHtml=(h.type==='sabotage')?'<div style="display:flex;align-items:center;margin-bottom:6px">'+queenPortrait(32)+'</div>':'';
+html+='<div class="message-card fade-in'+(h.type==='sabotage'?' queen-sabotage':'')+'"><div class="time">Semana '+h.week+', Día '+h.day+'</div>'+queenHtml+'<div class="text">'+txt+'</div></div>';
 shown++;
 }
 }
@@ -306,7 +341,13 @@ html+='<div class="candidate fade-in"><div class="text">Todavía no conocés a n
 }else{
 for(var j=0;j<G.relations.length;j++){
 var r=G.relations[j];
-html+='<div class="contact-card fade-in">'+photoHtml(r.photo,r.name)+'<div class="info"><div class="name">'+r.name+'</div><div class="desc">'+getRelationProgressText(r)+'</div></div><div><button onclick="showPhoneInvitePicker(\''+r.id+'\')">💞 Invitar</button></div></div>';
+var _cpr=G.partner?findRelationById(G.partner):null;
+var _cgate=((typeof REL_HEALTH_THRESHOLDS!=='undefined'&&REL_HEALTH_THRESHOLDS&&REL_HEALTH_THRESHOLDS.novio)||40);
+var _crisk=((typeof INFIDELITY_RISK!=='undefined')?INFIDELITY_RISK:40);
+var _isPartner=_cpr&&r.id===_cpr.id;
+var _canDate=_cpr&&!_isPartner&&G.healthPoints>=_cgate;
+var _warn=_canDate?'<div class="desc" style="color:var(--danger)">⚠️ '+_crisk+'% infidelidad</div>':'';
+html+='<div class="contact-card fade-in">'+photoHtml(r.photo,r.name)+'<div class="info"><div class="name">'+r.name+'</div><div class="desc">'+getRelationProgressText(r)+'</div>'+_warn+'</div><div><button onclick="showPhoneInvitePicker(\''+r.id+'\')">'+(_isPartner?'💞 Pareja':'💞 Invitar')+'</button></div></div>';
 }
 }
 html+='<button onclick="showFeed()">Volver</button>';
@@ -325,7 +366,14 @@ document.getElementById('phone-tabs').innerHTML='<button onclick="showPhone(\'co
 +'<button onclick="showPhone(\'mensajes\')"><span class="tab-icon">💬</span><span class="tab-label">Mensajes</span></button>'
 +'<button onclick="showPhone(\'app\')"><span class="tab-icon">📱</span><span class="tab-label">App</span></button>';
 var container=document.getElementById('phone-content');
-var html='<div class="candidate fade-in">'+photoHtml(rel.photo,rel.name)+'<div class="text">¿A dónde invitás a '+rel.name+'? ('+getRelationProgressText(rel)+')</div></div>';
+var _ipr2=G.partner?findRelationById(G.partner):null;
+var _igate2=((typeof REL_HEALTH_THRESHOLDS!=='undefined'&&REL_HEALTH_THRESHOLDS&&REL_HEALTH_THRESHOLDS.novio)||40);
+var _irisk2=((typeof INFIDELITY_RISK!=='undefined')?INFIDELITY_RISK:40);
+var _inviteWarn2='';
+if(_ipr2&&rel.id!==_ipr2.id&&G.healthPoints>=_igate2){
+  _inviteWarn2='<div class="candidate fade-in" style="border-color:var(--danger)"><div class="text" style="color:var(--danger)">⚠️ Tenés pareja ('+findRelationById(_ipr2.id).name+', '+G.healthPoints+'/100). Si invitás a '+rel.name+', hay '+_irisk2+'% de riesgo de que se entere.</div></div>';
+}
+var html=_inviteWarn2+'<div class="candidate fade-in">'+photoHtml(rel.photo,rel.name)+'<div class="text">¿A dónde invitás a '+rel.name+'? ('+getRelationProgressText(rel)+')</div></div>';
 var keys=Object.keys(DATE_LOCATIONS).filter(function(k){return DATE_LOCATIONS[k].mapVisible!==false && k!=='app';});
 for(var i=0;i<keys.length;i++){
 var loc=DATE_LOCATIONS[keys[i]];
@@ -333,6 +381,25 @@ var canAfford=G.money>=loc.cost;
 html+='<div class="location-card fade-in"><div class="info"><div class="name">'+loc.icon+' '+loc.name+'</div><div class="desc">$'+loc.cost+' | Riesgo: '+loc.riskLabel+'</div></div><div><button '+(canAfford?'':'disabled')+' onclick="goToDateKnownAtLocation(\''+rel.id+'\',\''+keys[i]+'\')">'+(canAfford?'💞 Invitar':'Sin plata')+'</button></div></div>';
 }
 html+='<button onclick="showPhone(\'contactos\')">Volver a contactos</button>';
+container.innerHTML=html;
+}
+/* Selector de lugar para concretar una cita desde la app.
+   Reutiliza el mismo patrón que showPhoneInvitePicker. */
+function showAppLocationPicker(candidateId){
+if(G.gameOver)return;
+var c=findCandidateById(candidateId);
+if(!c){showFeed();return;}
+showScreen('date');
+document.getElementById('date-title').textContent='Elegí el lugar para '+c.name;
+var container=document.getElementById('date-content');
+var html='<div class="candidate fade-in">'+photoHtml(c.photo,c.name)+'<div class="text">¿Dónde salís con '+c.name+'? Elegí el lugar: costo, riesgo y estrategia son tu decisión.</div></div>';
+var keys=Object.keys(DATE_LOCATIONS).filter(function(k){return DATE_LOCATIONS[k].mapVisible!==false && k!=='app';});
+for(var i=0;i<keys.length;i++){
+var loc=DATE_LOCATIONS[keys[i]];
+var canAfford=G.money>=loc.cost;
+html+='<div class="location-card fade-in"><div class="info"><div class="name">'+loc.icon+' '+loc.name+'</div><div class="desc">$'+loc.cost+' | Riesgo: '+loc.riskLabel+'</div><div class="desc">'+loc.desc+'</div></div><div><button '+(canAfford?'':'disabled')+' onclick="goToDate(\''+candidateId+'\',\'app\',\''+keys[i]+'\')">'+(canAfford?'💘 Salir con '+c.name:'Sin plata ($'+loc.cost+')')+'</button></div></div>';
+}
+html+='<button onclick="showFeed()">Volver</button>';
 container.innerHTML=html;
 }
 function showManResult(loc){showScreen('result');
@@ -391,16 +458,16 @@ case'victory_pg':
 html='<div style="text-align:center;margin-top:80px"><h1 style="color:var(--accent)">VICTORIA OCULTA</h1><h2>El Salado es la Verdadera Reina</h2><p style="margin:20px 0;color:var(--dim)">Sin aviso, sin explicacion. Llegaste a '+G.pg+' Puntos Gay. La Reina no contaba con esto.</p><p style="font-style:italic;margin-top:10px">"Al parecer, yo era el problema todo el tiempo." - La Reina</p></div>';
 break;
 case'defeat_queen_family':
-html='<div style="text-align:center;margin-top:80px"><h1 style="color:var(--danger)">DERROTA</h1><h2>La Reina formo familia</h2><p style="margin:20px 0;color:var(--dim)">'+(QUEEN_DEFEAT_TEXTS.familia||'La Reina formo familia antes que vos.')+'</p><p style="font-style:italic;margin-top:10px">"Gracias por todo, mi rey. Ahora reina yo."</p></div>';
+html='<div style="text-align:center;margin-top:80px">'+queenPortrait(80)+'<h1 style="color:var(--danger)">DERROTA</h1><h2>La Reina formo familia</h2><p style="margin:20px 0;color:var(--dim)">'+(QUEEN_DEFEAT_TEXTS.familia||'La Reina formo familia antes que vos.')+'</p><p style="font-style:italic;margin-top:10px">"Gracias por todo, mi rey. Ahora reina yo."</p></div>';
 break;
 case'defeat_isolation':
-html='<div style="text-align:center;margin-top:80px"><h1 style="color:var(--danger)">DERROTA</h1><h2>El Salado se aislo</h2><p style="margin:20px 0;color:var(--dim)">Tres semanas sin ver a nadie. Tu animo llego a cero. Te encerraste y la Reina gano por default.</p><p style="font-style:italic;margin-top:10px">"Siempre supe que no podias sin mi." - La Reina</p></div>';
+html='<div style="text-align:center;margin-top:80px">'+queenPortrait(80)+'<h1 style="color:var(--danger)">DERROTA</h1><h2>El Salado se aislo</h2><p style="margin:20px 0;color:var(--dim)">Tres semanas sin ver a nadie. Tu animo llego a cero. Te encerraste y la Reina gano por default.</p><p style="font-style:italic;margin-top:10px">"Siempre supe que no podias sin mi." - La Reina</p></div>';
 break;
 case'defeat_suffocation':
-html='<div style="text-align:center;margin-top:80px"><h1 style="color:var(--danger)">DERROTA</h1><h2>Asfixia</h2><p style="margin:20px 0;color:var(--dim)">Ocho semanas sin progresar. Tu relación se estancó y la Reina ganó por desgaste.</p><p style="font-style:italic;margin-top:10px">"Que triste. Yo al menos intento." - La Reina</p></div>';
+html='<div style="text-align:center;margin-top:80px">'+queenPortrait(80)+'<h1 style="color:var(--danger)">DERROTA</h1><h2>Asfixia</h2><p style="margin:20px 0;color:var(--dim)">Ocho semanas sin progresar. Tu relación se estancó y la Reina ganó por desgaste.</p><p style="font-style:italic;margin-top:10px">"Que triste. Yo al menos intento." - La Reina</p></div>';
 break;
 case'defeat_dumped':
-html='<div style="text-align:center;margin-top:80px"><h1 style="color:var(--danger)">DERROTA</h1><h2>Te dejaron</h2><p style="margin:20px 0;color:var(--dim)">La salud de tu relación llegó a 0. Te deprimiste, te dejó, o ambas cosas a la vez.</p><p style="font-style:italic;margin-top:10px">"Sabía que no podías sin mí. Ni conmigo, parece." - La Reina</p></div>';
+html='<div style="text-align:center;margin-top:80px">'+queenPortrait(80)+'<h1 style="color:var(--danger)">DERROTA</h1><h2>Te dejaron</h2><p style="margin:20px 0;color:var(--dim)">La salud de tu relación llegó a 0. Te deprimiste, te dejó, o ambas cosas a la vez.</p><p style="font-style:italic;margin-top:10px">"Sabía que no podías sin mí. Ni conmigo, parece." - La Reina</p></div>';
 break;
 }
 html+='<div style="margin-top:40px;text-align:center"><button onclick="location.reload()">Volver a empezar</button></div>';

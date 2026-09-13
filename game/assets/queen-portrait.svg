@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- Queen Portrait - Stylized SVG -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2a1a3e"/>
+      <stop offset="100%" style="stop-color:#1a0a2e"/>
+    </linearGradient>
+    <linearGradient id="crown" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffd700"/>
+      <stop offset="100%" style="stop-color:#daa520"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="120" height="120" fill="url(#bg)" rx="8"/>
+  
+  <!-- Hair (dark, flowing) -->
+  <ellipse cx="60" cy="55" rx="35" ry="40" fill="#1a1a2e"/>
+  <path d="M25 55 Q25 95 40 100 L40 60 Z" fill="#1a1a2e"/>
+  <path d="M95 55 Q95 95 80 100 L80 60 Z" fill="#1a1a2e"/>
+  
+  <!-- Face -->
+  <ellipse cx="60" cy="58" rx="22" ry="25" fill="#d4a574"/>
+  
+  <!-- Eyes (sharp, confident) -->
+  <ellipse cx="52" cy="52" rx="4" ry="3" fill="#fff"/>
+  <ellipse cx="68" cy="52" rx="4" ry="3" fill="#fff"/>
+  <circle cx="53" cy="52" r="2" fill="#2a1a3e"/>
+  <circle cx="69" cy="52" r="2" fill="#2a1a3e"/>
+  <circle cx="53.5" cy="51.5" r="0.8" fill="#fff"/>
+  <circle cx="69.5" cy="51.5" r="0.8" fill="#fff"/>
+  
+  <!-- Eyebrows (sharp arch) -->
+  <path d="M47 47 Q52 44 57 47" stroke="#1a1a2e" stroke-width="1.5" fill="none"/>
+  <path d="M63 47 Q68 44 73 47" stroke="#1a1a2e" stroke-width="1.5" fill="none"/>
+  
+  <!-- Nose -->
+  <path d="M58 55 L60 62 L62 55" stroke="#c4956a" stroke-width="1" fill="none"/>
+  
+  <!-- Lips (confident smile) -->
+  <path d="M52 68 Q60 73 68 68" stroke="#c44569" stroke-width="2" fill="#c44569"/>
+  
+  <!-- Crown -->
+  <path d="M38 38 L42 28 L48 35 L54 22 L60 35 L66 22 L72 35 L78 28 L82 38 Z" fill="url(#crown)"/>
+  <circle cx="42" cy="28" r="2" fill="#ff6b6b"/>
+  <circle cx="60" cy="22" r="2.5" fill="#4ecdc4"/>
+  <circle cx="78" cy="28" r="2" fill="#ff6b6b"/>
+  
+  <!-- Neck -->
+  <rect x="55" y="78" width="10" height="8" fill="#d4a574"/>
+  
+  <!-- Shoulders (elegant) -->
+  <path d="M35 86 Q60 82 85 86 L85 100 Q60 96 35 100 Z" fill="#2a1a3e"/>
+  
+  <!-- Collar detail -->
+  <path d="M45 86 Q60 90 75 86" stroke="#daa520" stroke-width="1" fill="none"/>
+</svg>

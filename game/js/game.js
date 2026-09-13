@@ -69,16 +69,49 @@ function showSavedGameOver(){
 }
 function newGame(){
 if(!DATA_LOADED){log('Cargando datos del juego...','highlight');return;}
+normalizeCandidateIds();
 G={week:1,day:1,money:100,labia:50,appearance:50,confidence:50,mood:50,pg:0,consecutiveMen:0,daysWithoutDates:0,history:[],queensLogs:[],gymLastEvent:'',lastGymResetWeek:null,gameOver:false,victory:null,relations:[],partner:null,familyDone:false,queenRelation:{stage:'conocer',dates:0,healthPoints:5},dateLog:[],healthPoints:5,weeksWithoutProgress:0,pendingInvite:null};
 loadRelConfig();
 log('=== NUEVA PARTIDA ===','highlight');
 log('Bienvenido, El Salado. Tu ex te esta observando.');
 showFeed();
 }
+/* Los nombres son texto de presentación; el id estable es la identidad. Los
+   datos antiguos no tenían ids, así que se completa uno determinista al cargar. */
+function normalizeCandidateIds(){
+  var pools=[{items:FEMALE_CANDIDATES,prefix:'female'},{items:MALE_CANDIDATES,prefix:'male'}];
+  for(var p=0;p<pools.length;p++){
+    for(var i=0;i<pools[p].items.length;i++){
+      var c=pools[p].items[i];
+      if(!c.id){c.id=pools[p].prefix+'_'+String(c.name||'candidate').toLowerCase().replace(/[^a-z0-9]+/g,'_')+'_'+i;}
+    }
+  }
+}
+function findCandidateById(id){
+  if(!id)return null;
+  var pools=[FEMALE_CANDIDATES,MALE_CANDIDATES];
+  for(var p=0;p<pools.length;p++){for(var i=0;i<pools[p].length;i++){if(pools[p][i].id===id)return pools[p][i];}}
+  return null;
+}
+/* Solo para migrar saves/API viejas que todavía pasan un nombre. Conserva la
+   preferencia histórica por la lista femenina cuando un nombre es ambiguo. */
+function findCandidateByName(name){
+  for(var i=0;i<FEMALE_CANDIDATES.length;i++){if(FEMALE_CANDIDATES[i].name===name)return FEMALE_CANDIDATES[i];}
+  for(var j=0;j<MALE_CANDIDATES.length;j++){if(MALE_CANDIDATES[j].name===name)return MALE_CANDIDATES[j];}
+  return null;
+}
+function candidateFromReference(ref){return typeof ref==='string'?findCandidateById(ref)||findCandidateByName(ref):ref;}
+function findCandidateForLegacyRelation(rel){
+  if(rel.candidateId)return findCandidateById(rel.candidateId);
+  var pools=[FEMALE_CANDIDATES,MALE_CANDIDATES];
+  if(rel.photo){for(var p=0;p<pools.length;p++){for(var i=0;i<pools[p].length;i++){if(pools[p][i].photo===rel.photo)return pools[p][i];}}}
+  return findCandidateByName(rel.name);
+}
 /* Migración campo-por-campo de saves viejos. Cada campo con default explícito
    (?? valorInicial) para evitar NaN/undefined. El stage del jugador y de la
    Reina es cosmético: se deriva de la salud, pero se inicializa por compat. */
 function migrateOldSave(){
+  normalizeCandidateIds();
   if(!G.relations){G.relations=[];}
   if(G.pendingInvite===undefined){G.pendingInvite=null;}
   if(G.partner===undefined){G.partner=null;}
@@ -108,27 +141,19 @@ function migrateOldSave(){
   if(G.weeksWithoutProgress===undefined||G.weeksWithoutProgress===null){G.weeksWithoutProgress=0;}
   for(var i=0;i<G.relations.length;i++){
     var r=G.relations[i];
+    var candidate=findCandidateForLegacyRelation(r);
+    if(candidate){r.candidateId=candidate.id;r.name=candidate.name;if(!r.photo)r.photo=candidate.photo;}
     if(r.healthPoints===undefined||r.healthPoints===null){r.healthPoints=5;}
     if(r.stage===undefined){r.stage='conocer';}
     if(r.dates===undefined||r.dates===null){r.dates=0;}
     if(r.photo===undefined){r.photo=null;}
     if(r.id===undefined){r.id='rel_'+Date.now()+'_'+i;}
-    if(!r.photo){
-      var found=null;
-      if(typeof FEMALE_CANDIDATES!=='undefined'){
-        for(var j=0;j<FEMALE_CANDIDATES.length;j++){
-          if(FEMALE_CANDIDATES[j].name===r.name){found=FEMALE_CANDIDATES[j].photo;break;}
-        }
-      }
-      if(!found&&typeof MALE_CANDIDATES!=='undefined'){
-        for(var k=0;k<MALE_CANDIDATES.length;k++){
-          if(MALE_CANDIDATES[k].name===r.name){found=MALE_CANDIDATES[k].photo;break;}
-        }
-      }
-      if(found){r.photo=found;}
-    }
     // Stage cosmético derivado de la salud (única verdad).
     r.stage=deriveStageFromHealth(r.healthPoints);
+  }
+  for(var dl=0;dl<G.dateLog.length;dl++){
+    var entry=G.dateLog[dl];
+    if(!entry.candidateId){var legacyCandidate=findCandidateByName(entry.name);if(legacyCandidate)entry.candidateId=legacyCandidate.id;}
   }
   // Limpieza de contadores/campos muertos del sistema viejo.
   delete G.totalConquests;delete G.conquests;
@@ -141,22 +166,23 @@ function migrateOldSave(){
 }
 function getDayName(d){var days=['Lunes','Martes','Miercoles','Jueves','Viernes','Sabado','Domingo'];return days[(d-1)%7];}
 
-function getOrCreateRelation(name){
+function getOrCreateRelation(candidateRef){
+  var candidate=candidateFromReference(candidateRef);
+  if(!candidate)return null;
   for(var i=0;i<G.relations.length;i++){
-    if(G.relations[i].name===name)return G.relations[i];
+    if(G.relations[i].candidateId===candidate.id)return G.relations[i];
   }
-  var rel={id:'rel_'+Date.now()+'_'+Math.floor(Math.random()*1000),name:name,stage:'conocer',dates:0,healthPoints:5};
-  for(var j=0;j<FEMALE_CANDIDATES.length;j++){if(FEMALE_CANDIDATES[j].name===name){rel.photo=FEMALE_CANDIDATES[j].photo;break;}}
-  if(!rel.photo){for(var j=0;j<MALE_CANDIDATES.length;j++){if(MALE_CANDIDATES[j].name===name){rel.photo=MALE_CANDIDATES[j].photo;break;}}}
+  var rel={id:'rel_'+Date.now()+'_'+Math.floor(Math.random()*1000),candidateId:candidate.id,name:candidate.name,photo:candidate.photo,stage:'conocer',dates:0,healthPoints:5};
   G.relations.push(rel);
   return rel;
 }
-function findRelation(name){
+function findRelationByCandidateId(candidateId){
   for(var i=0;i<G.relations.length;i++){
-    if(G.relations[i].name===name)return G.relations[i];
+    if(G.relations[i].candidateId===candidateId)return G.relations[i];
   }
   return null;
 }
+function findRelation(candidateRef){var candidate=candidateFromReference(candidateRef);return candidate?findRelationByCandidateId(candidate.id):null;}
 /* Stage cosmético derivado de la salud (umbrales de REL_HEALTH_THRESHOLDS).
    La salud es la ÚNICA fuente de verdad: este stage NUNCA decide victorias. */
 function deriveStageFromHealth(hp){
@@ -214,13 +240,14 @@ function getRelationProgressText(rel){
 }
 /* HTML del texto de primer encuentro (stageAdvanceTexts.first_meet) para la
    primera cita exitosa con alguien nuevo. Vacío si ya hubo éxito previo. */
-function maybeFirstMeetHtml(name){
+function maybeFirstMeetHtml(candidate){
+  var c=candidateFromReference(candidate);if(!c)return '';
   for(var i=0;i<G.dateLog.length;i++){
-    if(G.dateLog[i].name===name&&G.dateLog[i].success)return '';
+    if(G.dateLog[i].candidateId===c.id&&G.dateLog[i].success)return '';
   }
   if(typeof STAGE_ADVANCE_TEXTS!=='undefined'&&STAGE_ADVANCE_TEXTS&&STAGE_ADVANCE_TEXTS.first_meet&&STAGE_ADVANCE_TEXTS.first_meet.length){
     var arr=STAGE_ADVANCE_TEXTS.first_meet;
-    var t=arr[Math.floor(Math.random()*arr.length)].replace('{name}',name);
+    var t=arr[Math.floor(Math.random()*arr.length)].replace('{name}',c.name);
     return '<div style="margin-top:12px;padding:10px;border:1px solid var(--accent);background:var(--panel)"><b style="color:var(--accent)">Primer encuentro:</b> '+t+'</div>';
   }
   return '';
@@ -238,10 +265,10 @@ function getAvailableKnownPeople(){
 }
 function getNewCandidates(){
   var known={};
-  for(var i=0;i<G.relations.length;i++){known[G.relations[i].name]=true;}
+  for(var i=0;i<G.relations.length;i++){known[G.relations[i].candidateId]=true;}
   var result=[];
   for(var i=0;i<FEMALE_CANDIDATES.length;i++){
-    if(!known[FEMALE_CANDIDATES[i].name])result.push(FEMALE_CANDIDATES[i]);
+    if(!known[FEMALE_CANDIDATES[i].id])result.push(FEMALE_CANDIDATES[i]);
   }
   return result;
 }
@@ -249,24 +276,17 @@ function getNewCandidates(){
    Único uso: visitApp (puerta de entrada de gente nueva). */
 function getUnknownCandidates(){
   var known={};
-  for(var i=0;i<G.relations.length;i++){known[G.relations[i].name]=true;}
+  for(var i=0;i<G.relations.length;i++){known[G.relations[i].candidateId]=true;}
   var result=[];
   for(var i=0;i<FEMALE_CANDIDATES.length;i++){
-    if(!known[FEMALE_CANDIDATES[i].name])result.push(FEMALE_CANDIDATES[i]);
+    if(!known[FEMALE_CANDIDATES[i].id])result.push(FEMALE_CANDIDATES[i]);
   }
   if(typeof MALE_CANDIDATES!=='undefined'){
     for(var j=0;j<MALE_CANDIDATES.length;j++){
-      if(!known[MALE_CANDIDATES[j].name])result.push(MALE_CANDIDATES[j]);
+      if(!known[MALE_CANDIDATES[j].id])result.push(MALE_CANDIDATES[j]);
     }
   }
   return result;
-}
-function findCandidateByName(name){
-  for(var i=0;i<FEMALE_CANDIDATES.length;i++){if(FEMALE_CANDIDATES[i].name===name)return FEMALE_CANDIDATES[i];}
-  if(typeof MALE_CANDIDATES!=='undefined'){
-    for(var j=0;j<MALE_CANDIDATES.length;j++){if(MALE_CANDIDATES[j].name===name)return MALE_CANDIDATES[j];}
-  }
-  return null;
 }
 
 /* Feed: YA NO inventa gente nueva de la nada. Solo muestra: invitación
@@ -347,7 +367,7 @@ var casualChance=(typeof casualEncounterChance!=='undefined')?casualEncounterCha
 var unknowns=getNewCandidates();
 if(unknowns.length>0&&Math.random()*100<casualChance){
 var c=unknowns[Math.floor(Math.random()*unknowns.length)];
-getOrCreateRelation(c.name);
+getOrCreateRelation(c);
 saveGame();
 log('Te cruzaste con '+c.name+' en el '+loc.name+'.','success');
 showCandidateDate(c,loc,{origin:'casual'});
@@ -394,14 +414,15 @@ log('Revisaste la app: '+profiles.length+' perfiles nuevos.','highlight');
 saveGame();
 showAppProfiles(profiles);
 }
-/* Concretar cita desde la app: ACÁ se crea el contacto (no al ver el perfil). */
-function requestDateFromApp(candidateName){
-var c=findCandidateByName(candidateName);
+/* Concretar cita desde la app: ACÁ se crea el contacto (no al ver el perfil).
+   Después muestra selector de lugar para que el jugador decida dónde salir. */
+function requestDateFromApp(candidateId){
+var c=findCandidateById(candidateId);
 if(!c){log('Ese perfil ya no está disponible.','danger');showFeed();return;}
-getOrCreateRelation(c.name);
+getOrCreateRelation(c);
 saveGame();
 log('Concretaste cita con '+c.name+' por la app. Ya quedó en tus contactos.','success');
-goToDate(c.name,'app');
+showAppLocationPicker(candidateId);
 }
 function isLocationSafe(loc){
 return loc.safe===true||loc.risk==='low';
@@ -506,11 +527,11 @@ saveGame();
 showGymResult('harasser',c,[{stat:'Animo',change:'-5'},{stat:'Apariencia',change:'+3'}],harasserHealthNote);
 }
 
-function goToDate(candidateName,origin){
-var c=findCandidateByName(candidateName);
+function goToDate(candidateId,origin,locKey){
+var c=findCandidateById(candidateId);
 if(!c){log('No encontraste a esa persona.','danger');return;}
 var physKeys=Object.keys(DATE_LOCATIONS).filter(function(k){return DATE_LOCATIONS[k].mapVisible!==false && k!=='app';});
-var locKey=physKeys[Math.floor(Math.random()*physKeys.length)];
+if(!locKey)locKey=physKeys[Math.floor(Math.random()*physKeys.length)];
 var loc=DATE_LOCATIONS[locKey];
 if(G.money<loc.cost){
 log('No tenes plata para salir. Necesitas $'+loc.cost+' minimo.','danger');
@@ -524,7 +545,7 @@ return;
 G.money-=loc.cost;
 /* Concreción: el contacto se crea al aceptar ir a ver a alguien,
    antes de resolver la cita (queda aunque la cita falle). */
-getOrCreateRelation(c.name);
+getOrCreateRelation(c);
 saveGame();
 log('Gastaste $'+loc.cost+' y fuiste al '+loc.name+'.','highlight');
 showCandidateDate(c,loc,{origin:origin||'feed'});
@@ -577,11 +598,11 @@ showKnownPersonDate(rel,loc);
    día siguiente proponiendo un plan. El lugar lo elige ella: random entre TODOS
    los dateLocations (puede ser caro o riesgoso, esa es la gracia).
    Solo puede haber 1 invitación pendiente a la vez. */
-function maybeGenerateInvite(name){
+function maybeGenerateInvite(candidateId){
 if(G.pendingInvite)return;
 var chance=(typeof messageChance!=='undefined')?messageChance:50;
 if(Math.random()*100>=chance)return;
-var rel=findRelation(name);
+var rel=findRelationByCandidateId(candidateId);
 if(!rel)return;
 var keys=Object.keys(DATE_LOCATIONS).filter(function(k){return DATE_LOCATIONS[k].mapVisible!==false && k!=='app';});
 if(!keys.length)return;
@@ -619,10 +640,12 @@ showFeed();
 /* Infidelidad: salir con alguien más teniendo pareja con salud>=novio (40)
    dispara un dado de INFIDELITY_RISK% por cita de que se entere.
    Devuelve true si el juego terminó (te dejó -> D2). */
-function maybeTriggerInfidelity(targetName){
+function maybeTriggerInfidelity(targetCandidateId){
   var partnerRel=getActivePartner();
   if(!partnerRel)return false;
-  if(targetName&&targetName===partnerRel.name)return false;
+  var target=findCandidateById(targetCandidateId);
+  var targetName=target?target.name:'alguien';
+  if(targetCandidateId&&targetCandidateId===partnerRel.candidateId)return false;
   var gate=(REL_HEALTH_THRESHOLDS&&REL_HEALTH_THRESHOLDS.novio)||40;
   if(G.healthPoints<gate)return false;
   var risk=INFIDELITY_RISK||40;
@@ -648,7 +671,7 @@ function maybeTriggerInfidelity(targetName){
 }
 
 function resolveDate(c,loc,dialogue,chance){
-if(maybeTriggerInfidelity(c.name))return;
+if(maybeTriggerInfidelity(c.id))return;
 chance+=dialogue.bonus;
 G.mood-=dialogue.moodCost;
 if(G.mood<0)G.mood=0;
@@ -658,18 +681,18 @@ var roll=Math.random()*100;
 showScreen('result');
 var container=document.getElementById('result-content');
 if(roll<chance){
-var firstMeetHtml=maybeFirstMeetHtml(c.name);
-var rel=getOrCreateRelation(c.name);
+var firstMeetHtml=maybeFirstMeetHtml(c);
+var rel=getOrCreateRelation(c);
 var prevStage=rel.stage;
 var newStage=advanceRelation(rel);
 G.mood+=10;if(G.mood>100)G.mood=100;
 G.daysWithoutDates=0;
 G.consecutiveMen=0;
-G.dateLog.push({name:c.name,week:G.week,day:G.day,success:true});
+G.dateLog.push({candidateId:c.id,name:c.name,week:G.week,day:G.day,success:true});
 log('EXITO: Cita exitosa con '+c.name+'! ('+getRelationProgressText(rel)+')','success');
 G.history.push({type:'date_success',name:c.name,week:G.week,day:G.day,stage:rel.stage,dates:rel.dates});
 saveGame();
-maybeGenerateInvite(c.name);
+maybeGenerateInvite(c.id);
 var resultHtml='<div class="result-box success fade-in"><h2>Cita exitosa!</h2><p>'+getSuccessText(c,loc)+'</p>';
 resultHtml+='<p style="margin-top:10px">'+getRelationProgressText(rel)+' | +10 animo</p>';
 resultHtml+=firstMeetHtml;
@@ -684,7 +707,7 @@ container.innerHTML=resultHtml;
 checkVictories();
 }else{
 G.mood-=10;if(G.mood<0)G.mood=0;
-G.dateLog.push({name:c.name,week:G.week,day:G.day,success:false});
+G.dateLog.push({candidateId:c.id,name:c.name,week:G.week,day:G.day,success:false});
 log('FRACASO: '+c.name+' no interesada. (-10 animo)','danger');
 G.history.push({type:'date_fail',name:c.name,week:G.week,day:G.day});
 saveGame();
@@ -707,18 +730,18 @@ var roll=Math.random()*100;
 showScreen('result');
 var container=document.getElementById('result-content');
 if(roll<chance){
-var firstMeetHtml=maybeFirstMeetHtml(c.name);
-var rel=getOrCreateRelation(c.name);
+var firstMeetHtml=maybeFirstMeetHtml(c);
+var rel=getOrCreateRelation(c);
 var prevStage=rel.stage;
 var newStage=advanceRelation(rel);
 G.mood+=10;if(G.mood>100)G.mood=100;
 G.daysWithoutDates=0;
 G.consecutiveMen=0;
-G.dateLog.push({name:c.name,week:G.week,day:G.day,success:true});
+G.dateLog.push({candidateId:c.id,name:c.name,week:G.week,day:G.day,success:true});
 log('EXITO: Cita exitosa con '+c.name+'! ('+getRelationProgressText(rel)+')','success');
 G.history.push({type:'date_success',name:c.name,week:G.week,day:G.day,stage:rel.stage,dates:rel.dates});
 saveGame();
-maybeGenerateInvite(c.name);
+maybeGenerateInvite(c.id);
 var resultHtml='<div class="result-box success fade-in"><h2>Cita exitosa!</h2><p>'+getSuccessText(c,loc)+'</p>';
 resultHtml+='<p style="margin-top:10px">'+getRelationProgressText(rel)+' | +10 animo</p>';
 resultHtml+=firstMeetHtml;
@@ -733,7 +756,7 @@ container.innerHTML=resultHtml;
 checkVictories();
 }else{
 G.mood-=10;if(G.mood<0)G.mood=0;
-G.dateLog.push({name:c.name,week:G.week,day:G.day,success:false});
+G.dateLog.push({candidateId:c.id,name:c.name,week:G.week,day:G.day,success:false});
 log('FRACASO: '+c.name+' no interesada. (-10 animo)','danger');
 G.history.push({type:'date_fail',name:c.name,week:G.week,day:G.day});
 saveGame();
@@ -788,7 +811,7 @@ btn.onclick=function(){resolveKnownDate(rel,loc,d,baseChance);};
 }
 
 function resolveKnownDate(rel,loc,dialogue,chance){
-if(maybeTriggerInfidelity(rel.name))return;
+if(maybeTriggerInfidelity(rel.candidateId))return;
 chance+=dialogue.bonus;
 G.mood-=dialogue.moodCost;
 if(G.mood<0)G.mood=0;
@@ -798,17 +821,17 @@ var roll=Math.random()*100;
 showScreen('result');
 var container=document.getElementById('result-content');
 if(roll<chance){
-var firstMeetHtml=maybeFirstMeetHtml(rel.name);
+var firstMeetHtml=maybeFirstMeetHtml(rel.candidateId);
 var prevStage=rel.stage;
 var newStage=advanceRelation(rel);
 G.mood+=10;if(G.mood>100)G.mood=100;
 G.daysWithoutDates=0;
 G.consecutiveMen=0;
-G.dateLog.push({name:rel.name,week:G.week,day:G.day,success:true});
+G.dateLog.push({candidateId:rel.candidateId,name:rel.name,week:G.week,day:G.day,success:true});
 log('EXITO: Cita exitosa con '+rel.name+'! ('+getRelationProgressText(rel)+')','success');
 G.history.push({type:'date_success',name:rel.name,week:G.week,day:G.day,stage:rel.stage,dates:rel.dates});
 saveGame();
-maybeGenerateInvite(rel.name);
+maybeGenerateInvite(rel.candidateId);
 var resultHtml='<div class="result-box success fade-in"><h2>Cita exitosa!</h2><p>'+getSuccessText(rel,loc)+'</p>';
 resultHtml+='<p style="margin-top:10px">'+getRelationProgressText(rel)+' | +10 animo</p>';
 resultHtml+=firstMeetHtml;
@@ -823,7 +846,7 @@ container.innerHTML=resultHtml;
 checkVictories();
 }else{
 G.mood-=10;if(G.mood<0)G.mood=0;
-G.dateLog.push({name:rel.name,week:G.week,day:G.day,success:false});
+G.dateLog.push({candidateId:rel.candidateId,name:rel.name,week:G.week,day:G.day,success:false});
 log('FRACASO: Cita fallida con '+rel.name+'. (-10 animo)','danger');
 G.history.push({type:'date_fail',name:rel.name,week:G.week,day:G.day});
 saveGame();
@@ -846,17 +869,17 @@ var roll=Math.random()*100;
 showScreen('result');
 var container=document.getElementById('result-content');
 if(roll<chance){
-var firstMeetHtml=maybeFirstMeetHtml(rel.name);
+var firstMeetHtml=maybeFirstMeetHtml(rel.candidateId);
 var prevStage=rel.stage;
 var newStage=advanceRelation(rel);
 G.mood+=10;if(G.mood>100)G.mood=100;
 G.daysWithoutDates=0;
 G.consecutiveMen=0;
-G.dateLog.push({name:rel.name,week:G.week,day:G.day,success:true});
+G.dateLog.push({candidateId:rel.candidateId,name:rel.name,week:G.week,day:G.day,success:true});
 log('EXITO: Cita exitosa con '+rel.name+'! ('+getRelationProgressText(rel)+')','success');
 G.history.push({type:'date_success',name:rel.name,week:G.week,day:G.day,stage:rel.stage,dates:rel.dates});
 saveGame();
-maybeGenerateInvite(rel.name);
+maybeGenerateInvite(rel.candidateId);
 var resultHtml='<div class="result-box success fade-in"><h2>Cita exitosa!</h2><p>'+getSuccessText(rel,loc)+'</p>';
 resultHtml+='<p style="margin-top:10px">'+getRelationProgressText(rel)+' | +10 animo</p>';
 resultHtml+=firstMeetHtml;
@@ -871,7 +894,7 @@ container.innerHTML=resultHtml;
 checkVictories();
 }else{
 G.mood-=10;if(G.mood<0)G.mood=0;
-G.dateLog.push({name:rel.name,week:G.week,day:G.day,success:false});
+G.dateLog.push({candidateId:rel.candidateId,name:rel.name,week:G.week,day:G.day,success:false});
 log('FRACASO: Cita fallida con '+rel.name+'. (-10 animo)','danger');
 G.history.push({type:'date_fail',name:rel.name,week:G.week,day:G.day});
 saveGame();
@@ -958,6 +981,28 @@ if(G.partner){
   html+='<p style="margin:10px 0">Relacion: Sin relacion</p>';
 }
 html+='<p style="margin-top:15px;color:var(--dim);font-style:italic">'+WEEK_SUMMARY_GAGS[Math.floor(Math.random()*WEEK_SUMMARY_GAGS.length)]+'</p>';
+/* Reina: mostrar qué hizo esta semana */
+var queenLogsThisWeek=[];
+for(var q=G.queensLogs.length-1;q>=0;q--){
+  if(G.queensLogs[q].week===G.week){queenLogsThisWeek.unshift(G.queensLogs[q]);}else{break;}
+}
+if(queenLogsThisWeek.length>0){
+  html+='<div style="margin-top:16px;padding:12px;border:1px solid var(--gold);background:rgba(255,211,77,.05);border-radius:10px">';
+  html+='<div style="display:flex;align-items:center;margin-bottom:8px">'+queenPortrait(36)+'<b style="color:var(--gold)">La Reina esta semana:</b></div>';
+  for(var qi=0;qi<queenLogsThisWeek.length;qi++){
+    var ql=queenLogsThisWeek[qi];
+    if(ql.type==='queen_advance'){
+      html+='<p style="color:var(--dim)">👑 Avanzó su relación (+5 salud, ahora '+ql.health+'/100)</p>';
+    }else if(ql.type==='queen_sabotage_major'){
+      html+='<p style="color:var(--danger)">👑 SABOTEÓ tu relación (-'+ql.penalty+' salud)</p>';
+    }else if(ql.type==='queen_sabotage_minor'){
+      html+='<p style="color:var(--danger)">👑 Intentó sabotearte (-'+ql.penalty+' salud)</p>';
+    }else if(ql.type==='queen_sabotage_fail'){
+      html+='<p style="color:var(--success)">👑 Intentó sabotearte pero falló</p>';
+    }
+  }
+  html+='</div>';
+}
 html+='</div><button onclick="startNewWeek()">Iniciar Semana '+(G.week+1)+'</button>';
 container.innerHTML=html;
 // REGLA DE EMPATE: victoria antes que derrota — si ambos llegan a familia,
@@ -1001,7 +1046,7 @@ function updatePartnerHealthWeekly(){
   var hadSuccess=false,hadFail=false;
   for(var i=0;i<G.dateLog.length;i++){
     var d=G.dateLog[i];
-    if(d.week===G.week&&d.name===partnerRel.name){
+    if(d.week===G.week&&d.candidateId===partnerRel.candidateId){
       if(d.success){hadSuccess=true;}else{hadFail=true;}
     }
   }

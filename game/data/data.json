@@ -53,83 +53,551 @@
     "familia": "La Reina formo familia antes que vos. Se corono con diadema y todo. La casita esta en Instagram."
   },
   "femaleCandidates": [
-    {"name":"Camila","traits":"Divertida, directa, le gusta el cafe","personality":"Extrovertida","appeal":60,"photo":"https://randomuser.me/api/portraits/med/women/0.jpg"},
-    {"name":"Lucia","traits":"Intelectual, timida, lee mucho","personality":"Introspectiva","appeal":55,"photo":"https://randomuser.me/api/portraits/med/women/1.jpg"},
-    {"name":"Valentina","traits":"Artista, volatile, muy apasionada","personality":"Impredecible","appeal":65,"photo":"https://randomuser.me/api/portraits/med/women/2.jpg"},
-    {"name":"Sofia","traits":"Empresaria, controladora, lista","personality":"Ambiciosa","appeal":70,"photo":"https://randomuser.me/api/portraits/med/women/3.jpg"},
-    {"name":"Julieta","traits":"Comediante, sarcastica, siempre bromea","personality":"Ironica","appeal":58,"photo":"https://randomuser.me/api/portraits/med/women/4.jpg"},
-    {"name":"Paula","traits":"Enfermera, dulce, demasiado ocupada","personality":"Cuidadora","appeal":52,"photo":"https://randomuser.me/api/portraits/med/women/5.jpg"},
-    {"name":"Romina","traits":"DJ, fiestera, vive la noche","personality":"Bipolar social","appeal":62,"photo":"https://randomuser.me/api/portraits/med/women/6.jpg"},
-    {"name":"Agustina","traits":"Profesora de yoga, zen, habla lento","personality":"Tranquila","appeal":50,"photo":"https://randomuser.me/api/portraits/med/women/7.jpg"},
-    {"name":"Victoria","traits":"Chef, intensa, critica todo","personality":"Perfeccionista","appeal":68,"photo":"https://randomuser.me/api/portraits/med/women/8.jpg"},
-    {"name":"Florencia","traits":"Disenadora, opiniones fuertes","personality":"Combativa","appeal":45,"photo":"https://randomuser.me/api/portraits/med/women/9.jpg"},
-    {"name":"Camila V.","traits":"Modelo, superficial, solo habla de ella","personality":"Narcisista","appeal":75,"photo":"https://randomuser.me/api/portraits/med/women/10.jpg"},
-    {"name":"Renata","traits":"Periodista, investiga todo, desconfiada","personality":"Paranoica","appeal":53,"photo":"https://randomuser.me/api/portraits/med/women/11.jpg"},
-    {"name":"Martina","traits":"Abogada, fria, calcula cada palabra","personality":"Estratega","appeal":67,"photo":"https://randomuser.me/api/portraits/med/women/12.jpg"},
-    {"name":"Isabella","traits":"Influencer, vive del celular, validacion externa","personality":"Dependiente","appeal":72,"photo":"https://randomuser.me/api/portraits/med/women/13.jpg"},
-    {"name":"Catalina","traits":"Musica, toca guitarra, sentimental","personality":"Bohemia","appeal":56,"photo":"https://randomuser.me/api/portraits/med/women/14.jpg"},
-    {"name":"Rocio","traits":"Veterinaria, ama los animales mas que a la gente","personality":"Empatica","appeal":51,"photo":"https://randomuser.me/api/portraits/med/women/15.jpg"},
-    {"name":"Delfina","traits":"Arquitecta, obsesiva con los detalles, controla todo","personality":"Obsesiva","appeal":63,"photo":"https://randomuser.me/api/portraits/med/women/16.jpg"},
-    {"name":"Ana","traits":"Biologa, curiosa, hace preguntas incodas","personality":"Analitica","appeal":48,"photo":"https://randomuser.me/api/portraits/med/women/17.jpg"},
-    {"name":"Belen","traits":"Fotografa, viajera, nunca esta en un solo lugar","personality":"Errante","appeal":59,"photo":"https://randomuser.me/api/portraits/med/women/18.jpg"},
-    {"name":"Lorena","traits":"Contadora, organizada, aburrida pero estable","personality":"Prudente","appeal":42,"photo":"https://randomuser.me/api/portraits/med/women/19.jpg"},
-    {"name":"Manuela","traits":"Actriz, dramatica, todo es una pelicula","personality":"Teatral","appeal":66,"photo":"https://randomuser.me/api/portraits/med/women/20.jpg"},
-    {"name":"Santiago","traits":"Chef pastelera, dulce, demasiado intima","personality":"Adhesiva","appeal":47,"photo":"https://randomuser.me/api/portraits/med/women/21.jpg"},
-    {"name":"Pilar","traits":"Piloto de drone, aventurera, sin filtro","personality":"Temeraria","appeal":61,"photo":"https://randomuser.me/api/portraits/med/women/22.jpg"},
-    {"name":"Julia","traits":"Psicologa, analiza todo, te lee la cara","personality":"Observadora","appeal":57,"photo":"https://randomuser.me/api/portraits/med/women/23.jpg"},
-    {"name":"Emilia","traits":"Estudiante de medicina, agotada, hambrienta de vida","personality":"Desbordada","appeal":54,"photo":"https://randomuser.me/api/portraits/med/women/24.jpg"},
-    {"name":"Teresa","traits":"Chef de sushi, perfeccionista con la comida","personality":"Obsesiva gastronomica","appeal":49,"photo":"https://randomuser.me/api/portraits/med/women/25.jpg"},
-    {"name":"Valeria","traits":"Grafica, tatuada, habla con las manos","personality":"Expresiva","appeal":64,"photo":"https://randomuser.me/api/portraits/med/women/26.jpg"},
-    {"name":"Natalia","traits":"Ingeniera, resuelve todo con logica","personality":"Racional","appeal":46,"photo":"https://randomuser.me/api/portraits/med/women/27.jpg"},
-    {"name":"Micaela","traits":"Barista, creativa, hace latte art","personality":"Artista cotidiana","appeal":44,"photo":"https://randomuser.me/api/portraits/med/women/28.jpg"},
-    {"name":"Azul","traits":"Escritora, vive en su cabeza, cita rara","personality":"Onirica","appeal":43,"photo":"https://randomuser.me/api/portraits/med/women/29.jpg"},
-    {"name":"Carolina","traits":"Relaciones publicas, encantadora, manipuladora suave","personality":"Diplomatica","appeal":69,"photo":"https://randomuser.me/api/portraits/med/women/30.jpg"},
-    {"name":"Fernanda","traits":"Youtuber, energica, todo es contenido","personality":"Performatica","appeal":58,"photo":"https://randomuser.me/api/portraits/med/women/31.jpg"},
-    {"name":"Lucrecia","traits":"Historiadora del arte, elegante, inalcanzable","personality":"Aristocrata","appeal":71,"photo":"https://randomuser.me/api/portraits/med/women/32.jpg"},
-    {"name":"Mariana","traits":"Entrenadora personal, exigente, no tolera excusas","personality":"Disciplinada","appeal":62,"photo":"https://randomuser.me/api/portraits/med/women/33.jpg"}
+    {
+      "name": "Camila",
+      "traits": "Divertida, directa, le gusta el cafe",
+      "personality": "Extrovertida",
+      "appeal": 60,
+      "photo": "https://randomuser.me/api/portraits/med/women/0.jpg",
+      "id": "female_camila"
+    },
+    {
+      "name": "Lucia",
+      "traits": "Intelectual, timida, lee mucho",
+      "personality": "Introspectiva",
+      "appeal": 55,
+      "photo": "https://randomuser.me/api/portraits/med/women/1.jpg",
+      "id": "female_lucia"
+    },
+    {
+      "name": "Valentina",
+      "traits": "Artista, volatile, muy apasionada",
+      "personality": "Impredecible",
+      "appeal": 65,
+      "photo": "https://randomuser.me/api/portraits/med/women/2.jpg",
+      "id": "female_valentina"
+    },
+    {
+      "name": "Sofia",
+      "traits": "Empresaria, controladora, lista",
+      "personality": "Ambiciosa",
+      "appeal": 70,
+      "photo": "https://randomuser.me/api/portraits/med/women/3.jpg",
+      "id": "female_sofia"
+    },
+    {
+      "name": "Julieta",
+      "traits": "Comediante, sarcastica, siempre bromea",
+      "personality": "Ironica",
+      "appeal": 58,
+      "photo": "https://randomuser.me/api/portraits/med/women/4.jpg",
+      "id": "female_julieta"
+    },
+    {
+      "name": "Paula",
+      "traits": "Enfermera, dulce, demasiado ocupada",
+      "personality": "Cuidadora",
+      "appeal": 52,
+      "photo": "https://randomuser.me/api/portraits/med/women/5.jpg",
+      "id": "female_paula"
+    },
+    {
+      "name": "Romina",
+      "traits": "DJ, fiestera, vive la noche",
+      "personality": "Bipolar social",
+      "appeal": 62,
+      "photo": "https://randomuser.me/api/portraits/med/women/6.jpg",
+      "id": "female_romina"
+    },
+    {
+      "name": "Agustina",
+      "traits": "Profesora de yoga, zen, habla lento",
+      "personality": "Tranquila",
+      "appeal": 50,
+      "photo": "https://randomuser.me/api/portraits/med/women/7.jpg",
+      "id": "female_agustina"
+    },
+    {
+      "name": "Victoria",
+      "traits": "Chef, intensa, critica todo",
+      "personality": "Perfeccionista",
+      "appeal": 68,
+      "photo": "https://randomuser.me/api/portraits/med/women/8.jpg",
+      "id": "female_victoria"
+    },
+    {
+      "name": "Florencia",
+      "traits": "Disenadora, opiniones fuertes",
+      "personality": "Combativa",
+      "appeal": 45,
+      "photo": "https://randomuser.me/api/portraits/med/women/9.jpg",
+      "id": "female_florencia"
+    },
+    {
+      "name": "Camila V.",
+      "traits": "Modelo, superficial, solo habla de ella",
+      "personality": "Narcisista",
+      "appeal": 75,
+      "photo": "https://randomuser.me/api/portraits/med/women/10.jpg",
+      "id": "female_camila_v"
+    },
+    {
+      "name": "Renata",
+      "traits": "Periodista, investiga todo, desconfiada",
+      "personality": "Paranoica",
+      "appeal": 53,
+      "photo": "https://randomuser.me/api/portraits/med/women/11.jpg",
+      "id": "female_renata"
+    },
+    {
+      "name": "Martina",
+      "traits": "Abogada, fria, calcula cada palabra",
+      "personality": "Estratega",
+      "appeal": 67,
+      "photo": "https://randomuser.me/api/portraits/med/women/12.jpg",
+      "id": "female_martina"
+    },
+    {
+      "name": "Isabella",
+      "traits": "Influencer, vive del celular, validacion externa",
+      "personality": "Dependiente",
+      "appeal": 72,
+      "photo": "https://randomuser.me/api/portraits/med/women/13.jpg",
+      "id": "female_isabella"
+    },
+    {
+      "name": "Catalina",
+      "traits": "Musica, toca guitarra, sentimental",
+      "personality": "Bohemia",
+      "appeal": 56,
+      "photo": "https://randomuser.me/api/portraits/med/women/14.jpg",
+      "id": "female_catalina"
+    },
+    {
+      "name": "Rocio",
+      "traits": "Veterinaria, ama los animales mas que a la gente",
+      "personality": "Empatica",
+      "appeal": 51,
+      "photo": "https://randomuser.me/api/portraits/med/women/15.jpg",
+      "id": "female_rocio"
+    },
+    {
+      "name": "Delfina",
+      "traits": "Arquitecta, obsesiva con los detalles, controla todo",
+      "personality": "Obsesiva",
+      "appeal": 63,
+      "photo": "https://randomuser.me/api/portraits/med/women/16.jpg",
+      "id": "female_delfina"
+    },
+    {
+      "name": "Ana",
+      "traits": "Biologa, curiosa, hace preguntas incodas",
+      "personality": "Analitica",
+      "appeal": 48,
+      "photo": "https://randomuser.me/api/portraits/med/women/17.jpg",
+      "id": "female_ana"
+    },
+    {
+      "name": "Belen",
+      "traits": "Fotografa, viajera, nunca esta en un solo lugar",
+      "personality": "Errante",
+      "appeal": 59,
+      "photo": "https://randomuser.me/api/portraits/med/women/18.jpg",
+      "id": "female_belen"
+    },
+    {
+      "name": "Lorena",
+      "traits": "Contadora, organizada, aburrida pero estable",
+      "personality": "Prudente",
+      "appeal": 42,
+      "photo": "https://randomuser.me/api/portraits/med/women/19.jpg",
+      "id": "female_lorena"
+    },
+    {
+      "name": "Manuela",
+      "traits": "Actriz, dramatica, todo es una pelicula",
+      "personality": "Teatral",
+      "appeal": 66,
+      "photo": "https://randomuser.me/api/portraits/med/women/20.jpg",
+      "id": "female_manuela"
+    },
+    {
+      "id": "female_santiago",
+      "name": "Santiago",
+      "traits": "Chef pastelera, dulce, demasiado intima",
+      "personality": "Adhesiva",
+      "appeal": 47,
+      "photo": "https://randomuser.me/api/portraits/med/women/21.jpg"
+    },
+    {
+      "name": "Pilar",
+      "traits": "Piloto de drone, aventurera, sin filtro",
+      "personality": "Temeraria",
+      "appeal": 61,
+      "photo": "https://randomuser.me/api/portraits/med/women/22.jpg",
+      "id": "female_pilar"
+    },
+    {
+      "name": "Julia",
+      "traits": "Psicologa, analiza todo, te lee la cara",
+      "personality": "Observadora",
+      "appeal": 57,
+      "photo": "https://randomuser.me/api/portraits/med/women/23.jpg",
+      "id": "female_julia"
+    },
+    {
+      "name": "Emilia",
+      "traits": "Estudiante de medicina, agotada, hambrienta de vida",
+      "personality": "Desbordada",
+      "appeal": 54,
+      "photo": "https://randomuser.me/api/portraits/med/women/24.jpg",
+      "id": "female_emilia"
+    },
+    {
+      "name": "Teresa",
+      "traits": "Chef de sushi, perfeccionista con la comida",
+      "personality": "Obsesiva gastronomica",
+      "appeal": 49,
+      "photo": "https://randomuser.me/api/portraits/med/women/25.jpg",
+      "id": "female_teresa"
+    },
+    {
+      "name": "Valeria",
+      "traits": "Grafica, tatuada, habla con las manos",
+      "personality": "Expresiva",
+      "appeal": 64,
+      "photo": "https://randomuser.me/api/portraits/med/women/26.jpg",
+      "id": "female_valeria"
+    },
+    {
+      "name": "Natalia",
+      "traits": "Ingeniera, resuelve todo con logica",
+      "personality": "Racional",
+      "appeal": 46,
+      "photo": "https://randomuser.me/api/portraits/med/women/27.jpg",
+      "id": "female_natalia"
+    },
+    {
+      "name": "Micaela",
+      "traits": "Barista, creativa, hace latte art",
+      "personality": "Artista cotidiana",
+      "appeal": 44,
+      "photo": "https://randomuser.me/api/portraits/med/women/28.jpg",
+      "id": "female_micaela"
+    },
+    {
+      "name": "Azul",
+      "traits": "Escritora, vive en su cabeza, cita rara",
+      "personality": "Onirica",
+      "appeal": 43,
+      "photo": "https://randomuser.me/api/portraits/med/women/29.jpg",
+      "id": "female_azul"
+    },
+    {
+      "name": "Carolina",
+      "traits": "Relaciones publicas, encantadora, manipuladora suave",
+      "personality": "Diplomatica",
+      "appeal": 69,
+      "photo": "https://randomuser.me/api/portraits/med/women/30.jpg",
+      "id": "female_carolina"
+    },
+    {
+      "name": "Fernanda",
+      "traits": "Youtuber, energica, todo es contenido",
+      "personality": "Performatica",
+      "appeal": 58,
+      "photo": "https://randomuser.me/api/portraits/med/women/31.jpg",
+      "id": "female_fernanda"
+    },
+    {
+      "name": "Lucrecia",
+      "traits": "Historiadora del arte, elegante, inalcanzable",
+      "personality": "Aristocrata",
+      "appeal": 71,
+      "photo": "https://randomuser.me/api/portraits/med/women/32.jpg",
+      "id": "female_lucrecia"
+    },
+    {
+      "name": "Mariana",
+      "traits": "Entrenadora personal, exigente, no tolera excusas",
+      "personality": "Disciplinada",
+      "appeal": 62,
+      "photo": "https://randomuser.me/api/portraits/med/women/33.jpg",
+      "id": "female_mariana"
+    }
   ],
   "maleCandidates": [
-    {"name":"Tomas","traits":"Gym bro, motivador, habla mucho","personality":"Energetico","photo":"https://randomuser.me/api/portraits/med/men/0.jpg"},
-    {"name":"Diego","traits":"Barman, encantador, confiable","personality":"Seductor","photo":"https://randomuser.me/api/portraits/med/men/1.jpg"},
-    {"name":"Mateo","traits":"Programador, callado, observa todo","personality":"Misterioso","photo":"https://randomuser.me/api/portraits/med/men/2.jpg"},
-    {"name":"Santiago","traits":"Músico, romántico, toca en bares","personality":"Bohemio","photo":"https://randomuser.me/api/portraits/med/men/3.jpg"},
-    {"name":"Lucas","traits":"Abogado, ambicioso, habla rapido","personality":"Competitivo","photo":"https://randomuser.me/api/portraits/med/men/4.jpg"},
-    {"name":"Martin","traits":"Chef, creativo, perfeccionista con la comida","personality":"Apasionado","photo":"https://randomuser.me/api/portraits/med/men/5.jpg"},
-    {"name":"Pablo","traits":"Fotografo, artistico, vive de freelance","personality":"Bohemio","photo":"https://randomuser.me/api/portraits/med/men/6.jpg"},
-    {"name":"Alejandro","traits":"Ingeniero, nerd, sabe de todo","personality":"Analitico","photo":"https://randomuser.me/api/portraits/med/men/7.jpg"},
-    {"name":"Ricardo","traits":"Empresario, seguro de si mismo, demasiado directo","personality":"Dominante","photo":"https://randomuser.me/api/portraits/med/men/8.jpg"},
-    {"name":"Federico","traits":"Profesor de yoga, zen, demasiado relajado","personality":"Tranquilo","photo":"https://randomuser.me/api/portraits/med/men/9.jpg"},
-    {"name":"Joaquin","traits":"Deportista, competitivo, todo es un reto","personality":"Competitivo","photo":"https://randomuser.me/api/portraits/med/men/10.jpg"},
-    {"name":"Nicolas","traits":"Actor, carismatico, busca atencion","personality":"Exhibicionista","photo":"https://randomuser.me/api/portraits/med/men/11.jpg"},
-    {"name":"Emiliano","traits":"Viajero, espontaneo, sin rumbo fijo","personality":"Errante","photo":"https://randomuser.me/api/portraits/med/men/12.jpg"},
-    {"name":"Sebastian","traits":"Medico, ocupado, siempre guardando turnos","personality":"Dedicado","photo":"https://randomuser.me/api/portraits/med/men/13.jpg"},
-    {"name":"Gabriel","traits":"DJ, fiestero, vive la noche","personality":"Nocturno","photo":"https://randomuser.me/api/portraits/med/men/14.jpg"}
+    {
+      "name": "Tomas",
+      "traits": "Gym bro, motivador, habla mucho",
+      "personality": "Energetico",
+      "photo": "https://randomuser.me/api/portraits/med/men/0.jpg",
+      "id": "male_tomas"
+    },
+    {
+      "name": "Diego",
+      "traits": "Barman, encantador, confiable",
+      "personality": "Seductor",
+      "photo": "https://randomuser.me/api/portraits/med/men/1.jpg",
+      "id": "male_diego"
+    },
+    {
+      "name": "Mateo",
+      "traits": "Programador, callado, observa todo",
+      "personality": "Misterioso",
+      "photo": "https://randomuser.me/api/portraits/med/men/2.jpg",
+      "id": "male_mateo"
+    },
+    {
+      "id": "male_santiago",
+      "name": "Santiago",
+      "traits": "Músico, romántico, toca en bares",
+      "personality": "Bohemio",
+      "photo": "https://randomuser.me/api/portraits/med/men/3.jpg"
+    },
+    {
+      "name": "Lucas",
+      "traits": "Abogado, ambicioso, habla rapido",
+      "personality": "Competitivo",
+      "photo": "https://randomuser.me/api/portraits/med/men/4.jpg",
+      "id": "male_lucas"
+    },
+    {
+      "name": "Martin",
+      "traits": "Chef, creativo, perfeccionista con la comida",
+      "personality": "Apasionado",
+      "photo": "https://randomuser.me/api/portraits/med/men/5.jpg",
+      "id": "male_martin"
+    },
+    {
+      "name": "Pablo",
+      "traits": "Fotografo, artistico, vive de freelance",
+      "personality": "Bohemio",
+      "photo": "https://randomuser.me/api/portraits/med/men/6.jpg",
+      "id": "male_pablo"
+    },
+    {
+      "name": "Alejandro",
+      "traits": "Ingeniero, nerd, sabe de todo",
+      "personality": "Analitico",
+      "photo": "https://randomuser.me/api/portraits/med/men/7.jpg",
+      "id": "male_alejandro"
+    },
+    {
+      "name": "Ricardo",
+      "traits": "Empresario, seguro de si mismo, demasiado directo",
+      "personality": "Dominante",
+      "photo": "https://randomuser.me/api/portraits/med/men/8.jpg",
+      "id": "male_ricardo"
+    },
+    {
+      "name": "Federico",
+      "traits": "Profesor de yoga, zen, demasiado relajado",
+      "personality": "Tranquilo",
+      "photo": "https://randomuser.me/api/portraits/med/men/9.jpg",
+      "id": "male_federico"
+    },
+    {
+      "name": "Joaquin",
+      "traits": "Deportista, competitivo, todo es un reto",
+      "personality": "Competitivo",
+      "photo": "https://randomuser.me/api/portraits/med/men/10.jpg",
+      "id": "male_joaquin"
+    },
+    {
+      "name": "Nicolas",
+      "traits": "Actor, carismatico, busca atencion",
+      "personality": "Exhibicionista",
+      "photo": "https://randomuser.me/api/portraits/med/men/11.jpg",
+      "id": "male_nicolas"
+    },
+    {
+      "name": "Emiliano",
+      "traits": "Viajero, espontaneo, sin rumbo fijo",
+      "personality": "Errante",
+      "photo": "https://randomuser.me/api/portraits/med/men/12.jpg",
+      "id": "male_emiliano"
+    },
+    {
+      "name": "Sebastian",
+      "traits": "Medico, ocupado, siempre guardando turnos",
+      "personality": "Dedicado",
+      "photo": "https://randomuser.me/api/portraits/med/men/13.jpg",
+      "id": "male_sebastian"
+    },
+    {
+      "name": "Gabriel",
+      "traits": "DJ, fiestero, vive la noche",
+      "personality": "Nocturno",
+      "photo": "https://randomuser.me/api/portraits/med/men/14.jpg",
+      "id": "male_gabriel"
+    }
   ],
   "dateLocations": {
-    "cafe":{"name":"Cafe","cost":10,"genderRatio":0.7,"risk":"medium","riskLabel":"Medio","desc":"Citas relajadas. Riesgo moderado.","key":"cafe","icon":"☕"},
-    "bar":{"name":"Bar","cost":20,"genderRatio":0.6,"risk":"high","riskLabel":"Alto","desc":"Citas nocturnas. Alto riesgo.","key":"bar","icon":"🍺"},
-    "gym":{"name":"Gimnasio","cost":15,"genderRatio":0.65,"risk":"low","riskLabel":"Bajo","desc":"Actividad fisica. Riesgo bajo. REFUGIO SEGURO.","key":"gym","safe":true,"icon":"🏋️"},
-    "app":{"name":"App de Citas","cost":0,"genderRatio":0.55,"risk":"extreme","riskLabel":"MUY ALTO","desc":"Digital y expuesto. Riesgo extremo.","key":"app","icon":"📱","mapVisible":false},
-    "parque":{"name":"Parque","cost":5,"genderRatio":0.68,"risk":"low","riskLabel":"Bajo","desc":"Al aire libre, relajado. Riesgo bajo.","key":"parque","icon":"🌳"},
-    "restaurante":{"name":"Restaurante","cost":35,"genderRatio":0.62,"risk":"medium","riskLabel":"Medio","desc":"Cena elegante. Inversion alta, riesgo medio.","key":"restaurante","icon":"🍽️"},
-    "libreria":{"name":"Libreria","cost":8,"genderRatio":0.72,"risk":"low","riskLabel":"Bajo","desc":"Ambiente tranquilo. Ideal para conversar.","key":"libreria","icon":"📚"},
-    "museo":{"name":"Museo","cost":12,"genderRatio":0.7,"risk":"low","riskLabel":"Bajo","desc":"Cultura y arte. Riesgo bajo,话题 rico.","key":"museo","icon":"🏛️"},
-    "bowling":{"name":"Bowling","cost":18,"genderRatio":0.65,"risk":"medium","riskLabel":"Medio","desc":"Diversion clasica. Riesgo moderado.","key":"bowling","icon":"🎳"},
-    "teatro":{"name":"Teatro","cost":40,"genderRatio":0.58,"risk":"high","riskLabel":"Alto","desc":"Alta cultura, alto compromiso. Riesgo alto.","key":"teatro","icon":"🎭"}
+    "cafe": {
+      "name": "Cafe",
+      "cost": 10,
+      "genderRatio": 0.7,
+      "risk": "medium",
+      "riskLabel": "Medio",
+      "desc": "Citas relajadas. Riesgo moderado.",
+      "key": "cafe",
+      "icon": "☕"
+    },
+    "bar": {
+      "name": "Bar",
+      "cost": 20,
+      "genderRatio": 0.6,
+      "risk": "high",
+      "riskLabel": "Alto",
+      "desc": "Citas nocturnas. Alto riesgo.",
+      "key": "bar",
+      "icon": "🍺"
+    },
+    "gym": {
+      "name": "Gimnasio",
+      "cost": 15,
+      "genderRatio": 0.65,
+      "risk": "low",
+      "riskLabel": "Bajo",
+      "desc": "Actividad fisica. Riesgo bajo. REFUGIO SEGURO.",
+      "key": "gym",
+      "safe": true,
+      "icon": "🏋️"
+    },
+    "app": {
+      "name": "App de Citas",
+      "cost": 0,
+      "genderRatio": 0.55,
+      "risk": "extreme",
+      "riskLabel": "MUY ALTO",
+      "desc": "Digital y expuesto. Riesgo extremo.",
+      "key": "app",
+      "icon": "📱",
+      "mapVisible": false
+    },
+    "parque": {
+      "name": "Parque",
+      "cost": 5,
+      "genderRatio": 0.68,
+      "risk": "low",
+      "riskLabel": "Bajo",
+      "desc": "Al aire libre, relajado. Riesgo bajo.",
+      "key": "parque",
+      "icon": "🌳"
+    },
+    "restaurante": {
+      "name": "Restaurante",
+      "cost": 35,
+      "genderRatio": 0.62,
+      "risk": "medium",
+      "riskLabel": "Medio",
+      "desc": "Cena elegante. Inversion alta, riesgo medio.",
+      "key": "restaurante",
+      "icon": "🍽️"
+    },
+    "libreria": {
+      "name": "Libreria",
+      "cost": 8,
+      "genderRatio": 0.72,
+      "risk": "low",
+      "riskLabel": "Bajo",
+      "desc": "Ambiente tranquilo. Ideal para conversar.",
+      "key": "libreria",
+      "icon": "📚"
+    },
+    "museo": {
+      "name": "Museo",
+      "cost": 12,
+      "genderRatio": 0.7,
+      "risk": "low",
+      "riskLabel": "Bajo",
+      "desc": "Cultura y arte. Riesgo bajo,tema rico.",
+      "key": "museo",
+      "icon": "🏛️"
+    },
+    "bowling": {
+      "name": "Bowling",
+      "cost": 18,
+      "genderRatio": 0.65,
+      "risk": "medium",
+      "riskLabel": "Medio",
+      "desc": "Diversion clasica. Riesgo moderado.",
+      "key": "bowling",
+      "icon": "🎳"
+    },
+    "teatro": {
+      "name": "Teatro",
+      "cost": 40,
+      "genderRatio": 0.58,
+      "risk": "high",
+      "riskLabel": "Alto",
+      "desc": "Alta cultura, alto compromiso. Riesgo alto.",
+      "key": "teatro",
+      "icon": "🎭"
+    }
   },
   "dialogueOptions": [
-    {"text":"Ser directo: \"Me gustaria conocerte mejor, salgamos\"","bonus":10,"moodCost":0},
-    {"text":"Ser misterioso: \"Tengo algo especial para mostrarte\"","bonus":15,"moodCost":5},
-    {"text":"Coqueteo suave: \"No paran de hablarme de vos\"","bonus":5,"moodCost":0},
-    {"text":"Humor: \"Si esta sale mal, al menos tenemos una buena historia\"","bonus":20,"moodCost":0},
-    {"text":"Vulnerabilidad: \"Estoy reconstruyendo mi vida, necesito algo real\"","bonus":8,"moodCost":10},
-    {"text":"Seductor: \"No puedo dejar de pensar en lo que me contaste\"","bonus":12,"moodCost":3},
-    {"text":"Despreocupado: \"No tengo planes, ni ganas de tenerlos\"","bonus":7,"moodCost":0},
-    {"text":"Desafiante: \"Me apostas a que no puedo hacerte reir?\"","bonus":14,"moodCost":2},
-    {"text":"Romantico: \"No se por que, pero siento que te conozco de antes\"","bonus":11,"moodCost":5},
-    {"text":"Critico: \"Me gustas, pero no me hagas trabajo pesado\"","bonus":9,"moodCost":0},
-    {"text":"Filosofico: \"Crees en eso del destino o somos solo dos randoms?\"","bonus":13,"moodCost":4},
-    {"text":"Dulce: \"Traje algo para vos. No preguntes que es.\"","bonus":16,"moodCost":8}
+    {
+      "text": "Ser directo: \"Me gustaria conocerte mejor, salgamos\"",
+      "bonus": 10,
+      "moodCost": 0
+    },
+    {
+      "text": "Ser misterioso: \"Tengo algo especial para mostrarte\"",
+      "bonus": 15,
+      "moodCost": 5
+    },
+    {
+      "text": "Coqueteo suave: \"No paran de hablarme de vos\"",
+      "bonus": 5,
+      "moodCost": 0
+    },
+    {
+      "text": "Humor: \"Si esta sale mal, al menos tenemos una buena historia\"",
+      "bonus": 20,
+      "moodCost": 0
+    },
+    {
+      "text": "Vulnerabilidad: \"Estoy reconstruyendo mi vida, necesito algo real\"",
+      "bonus": 8,
+      "moodCost": 10
+    },
+    {
+      "text": "Seductor: \"No puedo dejar de pensar en lo que me contaste\"",
+      "bonus": 12,
+      "moodCost": 3
+    },
+    {
+      "text": "Despreocupado: \"No tengo planes, ni ganas de tenerlos\"",
+      "bonus": 7,
+      "moodCost": 0
+    },
+    {
+      "text": "Desafiante: \"Me apostas a que no puedo hacerte reir?\"",
+      "bonus": 14,
+      "moodCost": 2
+    },
+    {
+      "text": "Romantico: \"No se por que, pero siento que te conozco de antes\"",
+      "bonus": 11,
+      "moodCost": 5
+    },
+    {
+      "text": "Critico: \"Me gustas, pero no me hagas trabajo pesado\"",
+      "bonus": 9,
+      "moodCost": 0
+    },
+    {
+      "text": "Filosofico: \"Crees en eso del destino o somos solo dos randoms?\"",
+      "bonus": 13,
+      "moodCost": 4
+    },
+    {
+      "text": "Dulce: \"Traje algo para vos. No preguntes que es.\"",
+      "bonus": 16,
+      "moodCost": 8
+    }
   ],
   "sabotageMessages": [
     "Un mensaje anonimo aparece en tu telefono: 'Estas seguro de que queres hacer esto?'",
@@ -163,18 +631,54 @@
     "Tu ex comenta en tu foto vieja: 'Que tiempos.' Tu novia actual ve el comentario."
   ],
   "stalkEvents": [
-    {"text":"Tu ex te esta siguiendo a la distancia. La ves parada en la esquina...","givesPG":true},
-    {"text":"Alguien dejo flores en tu casa. No tiene nombre. Conoces esa fragancia...","givesPG":false},
-    {"text":"Tu ex aparecio \"por casualidad\" en el supermercado. Cinco veces esta semana.","givesPG":true},
-    {"text":"Te llega una captura de pantalla de tu ubicacion. Sin remitente.","givesPG":true},
-    {"text":"Un follower nuevo en todas tus redes. Mismo avatar, mismo estilo que tu ex.","givesPG":false},
-    {"text":"Tu ex aparecio en el gym donde entrenas. No iba a ese gym.","givesPG":true},
-    {"text":"Encontraste una nota en tu mochila: 'Te vi hoy. Te ves bien.' No sabes cuando la puso.","givesPG":true},
-    {"text":"Un amigo te dice que tu ex esta preguntando a todos donde estas. Fanatica.","givesPG":false},
-    {"text":"Te cruzas con la amiga de tu ex en tres lugares distintos en un dia.","givesPG":true},
-    {"text":"Tu ex comenta algo sobre tu trabajo. No le contaste donde trabajas.","givesPG":true},
-    {"text":"Un paquete aparece en tu puerta con tu nombre escrito a mano. Reconoces la letra.","givesPG":false},
-    {"text":"Ves que alguien busca tu perfil con una cuenta fake. El avatar tiene una flor conocida.","givesPG":true}
+    {
+      "text": "Tu ex te esta siguiendo a la distancia. La ves parada en la esquina...",
+      "givesPG": true
+    },
+    {
+      "text": "Alguien dejo flores en tu casa. No tiene nombre. Conoces esa fragancia...",
+      "givesPG": false
+    },
+    {
+      "text": "Tu ex aparecio \"por casualidad\" en el supermercado. Cinco veces esta semana.",
+      "givesPG": true
+    },
+    {
+      "text": "Te llega una captura de pantalla de tu ubicacion. Sin remitente.",
+      "givesPG": true
+    },
+    {
+      "text": "Un follower nuevo en todas tus redes. Mismo avatar, mismo estilo que tu ex.",
+      "givesPG": false
+    },
+    {
+      "text": "Tu ex aparecio en el gym donde entrenas. No iba a ese gym.",
+      "givesPG": true
+    },
+    {
+      "text": "Encontraste una nota en tu mochila: 'Te vi hoy. Te ves bien.' No sabes cuando la puso.",
+      "givesPG": true
+    },
+    {
+      "text": "Un amigo te dice que tu ex esta preguntando a todos donde estas. Fanatica.",
+      "givesPG": false
+    },
+    {
+      "text": "Te cruzas con la amiga de tu ex en tres lugares distintos en un dia.",
+      "givesPG": true
+    },
+    {
+      "text": "Tu ex comenta algo sobre tu trabajo. No le contaste donde trabajas.",
+      "givesPG": true
+    },
+    {
+      "text": "Un paquete aparece en tu puerta con tu nombre escrito a mano. Reconoces la letra.",
+      "givesPG": false
+    },
+    {
+      "text": "Ves que alguien busca tu perfil con una cuenta fake. El avatar tiene una flor conocida.",
+      "givesPG": true
+    }
   ],
   "weekSummaryGags": [
     "La semana fue un desastre, pero al menos sobreviviste.",
@@ -184,7 +688,7 @@
     "Una semana mas. Seguis vivo. Eso es algo.",
     "La Reina esta mas tranquila de lo normal. Eso es peor.",
     "Respiraste profundo y dijiste 'puedo con esto'. Mentiste, pero es un comienzo.",
-    "El universo te tiro un hueso. O era un ϖado. No se distingue bien.",
+    "El universo te tiro un hueso. O era un zapallo. No se distingue bien.",
     "Tu ex compartio una foto con una frase motivacional. Eso nunca es bueno.",
     "Alguien te dijo 'estas mejorando'. Tomas lo que podes.",
     "La Reina subio una historia sonriendo. Sonrisa de quien sabe algo que vos no.",
@@ -220,28 +724,148 @@
     "Tu ex te marca pero corta al segundo. Te queda la duda."
   ],
   "successTexts": {
-    "cafe":["La conversacion fluyo naturalmente. {name} se rio de tus chistes y vos la miraste a los ojos sin despistar.","Pediste otro cafe de excusa para que no se termine la charla. Funciono.","El cafe se enfrio pero la charla nunca. {name} no queria irse tampoco.","Te sentiste comodo. {name} tambien. Eso es raro y bueno a la vez.","Le contaste algo personal y {name} no huyo. Eso ya es victoria."],
-    "bar":["La musica de fondo era perfecta. Bajaste la voz un poco y {name} se acerco mas. La noche era joven.","La note mas relajada de lo que esperabas. Tomaron tragos y la noche se fue sola.","El bartender los confundio con una pareja. {name} no lo corrigio.","Cerraron el bar y seguian hablando. Eso es buena sena.","Le diste la camisa de tu cuerpo y {name} la guardo. simbolicamente, hablamos."],
-    "gym":["Hicieron ejercicio juntos y la quimica fue mejor que la proteina que toman despues. {name} te puso una mano en el hombro.","La sesion se alargo. Hablaron entre series como si se conocieran de toda la vida.","{name} te pidio ayuda con un ejercicio. No era excusa, pero funciono igual.","Se quedaron estirando y terminaron contandose la vida. El gym quedo de fondo.","La competencia sana los acerco mas de lo que el entrenamiento pudo."],
-    "app":["El perfil de {name} no mentia. Se veia igual de bien en persona. Y hablaba mejor.","El match fue solo el comienzo. La charla en persona fue mucho mejor que los mensajes.","{name} fue puntual. Eso en una app ya es unusual.","Despues de la cita, {name} te escribio primero. Eso no pasa.","La app funciono por una vez. No te ilusiones, pero funciono."],
-    "parque":["Caminaron por el parque y {name} se sento en un banco. Se quedaron ahi un rato sin hablar. Estaba bien.","El sol de tarde puso todo mas bonito. {name} se rio por una boludez y vos tambien.","Alguien les tiro un pan para las palomas. Se rieron como nenes chicos.","{name} vio un perro y se olvido de vos por cinco minutos. Lo entendiste.","Se sentaron bajo un arbol y la conversacion fluia como el viento."],
-    "restaurante":["La cena fue elegante. {name} se sorprendio de que elegiste bien el vino. Vos tambien.","El postre llego y {name} dijo 'no como mas'. Pediste uno igual y lo compartieron.","{name} toco tu mano sobre la mesa. No fue accidental.","El restaurante estaba lleno pero vosotros estaban en la suya.","La cuenta fue alta pero valio cada peso."],
-    "libreria":["{name} se entusiasmo con un libro y te hablo diez minutos sin respirar. Te encanto.","Se perdieron entre estantes. Se encontraron en el pasillo de poesia, como en una pelicula.","{name} te recomendo un libro. Le dijiste que lo leas juntos. Acepto.","El silencio de la libreria hizo todo mas intimo sin querer.","Cada tanto se miraban por encima de los libros. Hubo magia."],
-    "museo":["{name} sabe mucho de arte. Vos no, pero hiciste como que si. Funciono.","Frente a un cuadro abstracto, {name} dijo 'eso soy yo'. Te reiste. Ella tambien.","Se quedaron frente a una pintura y empezaron a inventar la historia de los personajes. No se fueron en una hora.","El museo era tranquilo. Casi susurraban. Era romantico sin proponerselo.","{name} se paro frente a un espejo del museo y se hizo una foto con vos al fondo."],
-    "bowling":["{name} no sabia jugar. Le enseñaste. Eso siempre sirve.","Ganaste por mucho. {name} se enojo un poco. Despues se rio.","{name} tiró la pelota por equivocacion en la pista de al lado. Se cayeron de risa.","Se hicieron una apuesta. No importa quien gano, el premio fue la charla de despues.","El bowling es de bajos riesgos. La quimica fue de altos."],
-    "teatro":["La obra era buena. {name} lloro en el final. Vos la miraste a ella en vez de al escenario.","{name} se prendio de tu brazo durante la escena tensa. No la soltaste.","Salieron del teatro y hablaron de la obra un bloque entero. No se aburrieron.","{name} dijo 'esto fue mejor de lo que esperaba'. No hablaba de la obra.","Se tomaron un vino despues del teatro y la cena fue mejor que la obra."]
+    "cafe": [
+      "La conversacion fluyo naturalmente. {name} se rio de tus chistes y vos la miraste a los ojos sin despistar.",
+      "Pediste otro cafe de excusa para que no se termine la charla. Funciono.",
+      "El cafe se enfrio pero la charla nunca. {name} no queria irse tampoco.",
+      "Te sentiste comodo. {name} tambien. Eso es raro y bueno a la vez.",
+      "Le contaste algo personal y {name} no huyo. Eso ya es victoria."
+    ],
+    "bar": [
+      "La musica de fondo era perfecta. Bajaste la voz un poco y {name} se acerco mas. La noche era joven.",
+      "La note mas relajada de lo que esperabas. Tomaron tragos y la noche se fue sola.",
+      "El bartender los confundio con una pareja. {name} no lo corrigio.",
+      "Cerraron el bar y seguian hablando. Eso es buena sena.",
+      "Le diste la camisa de tu cuerpo y {name} la guardo. simbolicamente, hablamos."
+    ],
+    "gym": [
+      "Hicieron ejercicio juntos y la quimica fue mejor que la proteina que toman despues. {name} te puso una mano en el hombro.",
+      "La sesion se alargo. Hablaron entre series como si se conocieran de toda la vida.",
+      "{name} te pidio ayuda con un ejercicio. No era excusa, pero funciono igual.",
+      "Se quedaron estirando y terminaron contandose la vida. El gym quedo de fondo.",
+      "La competencia sana los acerco mas de lo que el entrenamiento pudo."
+    ],
+    "app": [
+      "El perfil de {name} no mentia. Se veia igual de bien en persona. Y hablaba mejor.",
+      "El match fue solo el comienzo. La charla en persona fue mucho mejor que los mensajes.",
+      "{name} fue puntual. Eso en una app ya es raro.",
+      "Despues de la cita, {name} te escribio primero. Eso no pasa.",
+      "La app funciono por una vez. No te ilusiones, pero funciono."
+    ],
+    "parque": [
+      "Caminaron por el parque y {name} se sento en un banco. Se quedaron ahi un rato sin hablar. Estaba bien.",
+      "El sol de tarde puso todo mas bonito. {name} se rio por una boludez y vos tambien.",
+      "Alguien les tiro un pan para las palomas. Se rieron como nenes chicos.",
+      "{name} vio un perro y se olvido de vos por cinco minutos. Lo entendiste.",
+      "Se sentaron bajo un arbol y la conversacion fluia como el viento."
+    ],
+    "restaurante": [
+      "La cena fue elegante. {name} se sorprendio de que elegiste bien el vino. Vos tambien.",
+      "El postre llego y {name} dijo 'no como mas'. Pediste uno igual y lo compartieron.",
+      "{name} toco tu mano sobre la mesa. No fue accidental.",
+      "El restaurante estaba lleno pero ustedes estaban en la suya.",
+      "La cuenta fue alta pero valio cada peso."
+    ],
+    "libreria": [
+      "{name} se entusiasmo con un libro y te hablo diez minutos sin respirar. Te encanto.",
+      "Se perdieron entre estantes. Se encontraron en el pasillo de poesia, como en una pelicula.",
+      "{name} te recomendo un libro. Le dijiste que lo leas juntos. Acepto.",
+      "El silencio de la libreria hizo todo mas intimo sin querer.",
+      "Cada tanto se miraban por encima de los libros. Hubo magia."
+    ],
+    "museo": [
+      "{name} sabe mucho de arte. Vos no, pero hiciste como que si. Funciono.",
+      "Frente a un cuadro abstracto, {name} dijo 'eso soy yo'. Te reiste. Ella tambien.",
+      "Se quedaron frente a una pintura y empezaron a inventar la historia de los personajes. No se fueron en una hora.",
+      "El museo era tranquilo. Casi susurraban. Era romantico sin proponerselo.",
+      "{name} se paro frente a un espejo del museo y se hizo una foto con vos al fondo."
+    ],
+    "bowling": [
+      "{name} no sabia jugar. Le enseñaste. Eso siempre sirve.",
+      "Ganaste por mucho. {name} se enojo un poco. Despues se rio.",
+      "{name} tiró la pelota por equivocacion en la pista de al lado. Se cayeron de risa.",
+      "Se hicieron una apuesta. No importa quien gano, el premio fue la charla de despues.",
+      "El bowling es de bajos riesgos. La quimica fue de altos."
+    ],
+    "teatro": [
+      "La obra era buena. {name} lloro en el final. Vos la miraste a ella en vez de al escenario.",
+      "{name} se prendio de tu brazo durante la escena tensa. No la soltaste.",
+      "Salieron del teatro y hablaron de la obra un bloque entero. No se aburrieron.",
+      "{name} dijo 'esto fue mejor de lo que esperaba'. No hablaba de la obra.",
+      "Se tomaron un vino despues del teatro y la cena fue mejor que la obra."
+    ]
   },
   "failTexts": {
-    "cafe":["La conversacion se curso rapido. {name} dijo que tenia que irse \"temprano\". No volvio a escribir.","Pediste la cuenta y la charla murio entre sorbos amargos.","{name} reviso el telefono tres veces en diez minutos. No era un buen signo.","El cafe era amargo pero la charla fue mas amarga. Al menos el cafe era bueno.","{name} te confundio con otra persona dos veces. La tercera fue la vencida."],
-    "bar":["La musica era fuerte pero la conexion era nula. {name} estuvo mirando el telefono toda la noche.","Saliste del bar sintiendote como un boludo. Otra noche mas.","{name} se fue con sus amigas y te dejo con el trago a medio tomar.","El bar estaba lleno pero vos estabas solo. Metaforicamente y literalmente.","{name} te dijo 'eres nice' y se fue. Nice no es bueno."],
-    "gym":["La charla se redujo a \"¿cuantas series te quedan?\" y nada mas. {name} se fue a entrenar con otra persona.","La sesion fue un desastre. No sabias que decir entre series.","{name} te mando a freir churros con un 'mejor solo, gracias'. Humillante.","Le ofreciste ayuda con una maquina. Te dijo que ya la conocia. Quedaste como un boludo.","Lo unico que levantaste fue tu nivel de verguenza."],
-    "app":["La foto era de hace tres anios. En persona era otra persona. Literal.","La cita fue tan mala que el bartender te dio un trago de cortesia. Por lastima.","{name} llego con una amiga. No era una cita grupal, pero asi termino.","Despues de la cita, {name} te bloqueo. Antes de llegar a tu casa.","El perfil decia 'aventurera'. La aventura fue llegar a casa sin llorar."],
-    "parque":["Empezó a llover. {name} tenia paraguas y vos no. Se fue sola.","Las palomas se comieron el medialunas mientras {name} las filmaba. Vos no existias.","Se sentaron en un banco sucio. El dia empeoró desde ahi.","{name} se cruzo de brazos y dijo 'esto es todo?'. No pudiste responder.","El parque estaba lindo pero la conversacion estaba vacia."],
-    "restaurante":["La comida llego fria. {name} culpo al mozo. Vos no dijiste nada. Tampoco la charla.","{name} pidio lo mas caro. Vos pediste la ensalada. No hubo segunda cita.","La cuenta llego y {name} no se movio. Tampoco se movio despues.","El restaurante estaba lleno pero la conversacion estaba vacia.","{name} se quejo de todo: la comida, el servicio, la musica. Vos tambien, pero internamente."],
-    "libreria":["{name} se entusiasmo con un libro y te dejo plantado leyendo. Literalmente.","Se confundieron de piso y terminaron en la seccion de cocina. No era buena sena.","{name} no leia, solo hacia selfies en la libreria. Te fuiste con la excusa de comprar algo.","La libreria cerraba temprano. {name} no quiso quedarse un minuto mas.","{name} compró un libro sobre 'superar ex'. No sabias si reir o llorar."],
-    "museo":["{name} no sabia nada de arte. Tampoco vos. Se aburrieron en silencio.","Frente a una pintura, {name} dijo 'mi hijo de cinco hace algo parecido'. Ouch.","El museo era gratis pero la verguenza no.","Se perdieron en el museo. {name} se enojo porque no encontraba la salida.","{name} se toco el pelo veinte veces frente al espejo del museo. No te miro ni una vez."],
-    "bowling":["Ganaste por mucho. {name} no le gusta perder. Se fue sin despedirse.","{name} tiró la pelota y te pego en el pie. El resto de la noche fue peor.","Se cayeron de risa. De risa de vos, no con vos.","La pista era resbalosa. Vos caiste, {name} se rio. No se levanto a ayudarte.","{name} mejoró su juego con otra persona. Vos te quedaste mirando."],
-    "teatro":["La obra era mala. {name} se durmió. Literalmente.","{name} no hablo durante toda la obra ni despues. Era muda o aburrida.","Salieron del teatro y {name} dijo 'igual la obra era mejor que la cita'.","La obra era comedia. {name} no se rio en ningun momento. Ni de vos.","{name} se fue al intermedio y no volvio. Dejaste la entrada en el piso."]
+    "cafe": [
+      "La conversacion se curso rapido. {name} dijo que tenia que irse \"temprano\". No volvio a escribir.",
+      "Pediste la cuenta y la charla murio entre sorbos amargos.",
+      "{name} reviso el telefono tres veces en diez minutos. No era un buen signo.",
+      "El cafe era amargo pero la charla fue mas amarga. Al menos el cafe era bueno.",
+      "{name} te confundio con otra persona dos veces. La tercera fue la vencida."
+    ],
+    "bar": [
+      "La musica era fuerte pero la conexion era nula. {name} estuvo mirando el telefono toda la noche.",
+      "Saliste del bar sintiendote como un boludo. Otra noche mas.",
+      "{name} se fue con sus amigas y te dejo con el trago a medio tomar.",
+      "El bar estaba lleno pero vos estabas solo. Metaforicamente y literalmente.",
+      "{name} te dijo 'eres nice' y se fue. Nice no es bueno."
+    ],
+    "gym": [
+      "La charla se redujo a \"¿cuantas series te quedan?\" y nada mas. {name} se fue a entrenar con otra persona.",
+      "La sesion fue un desastre. No sabias que decir entre series.",
+      "{name} te mando a freir churros con un 'mejor solo, gracias'. Humillante.",
+      "Le ofreciste ayuda con una maquina. Te dijo que ya la conocia. Quedaste como un boludo.",
+      "Lo unico que levantaste fue tu nivel de verguenza."
+    ],
+    "app": [
+      "La foto era de hace tres anios. En persona era otra persona. Literal.",
+      "La cita fue tan mala que el bartender te dio un trago de cortesia. Por lastima.",
+      "{name} llego con una amiga. No era una cita grupal, pero asi termino.",
+      "Despues de la cita, {name} te bloqueo. Antes de llegar a tu casa.",
+      "El perfil decia 'aventurera'. La aventura fue llegar a casa sin llorar."
+    ],
+    "parque": [
+      "Empezó a llover. {name} tenia paraguas y vos no. Se fue sola.",
+      "Las palomas se comieron el medialunas mientras {name} las filmaba. Vos no existias.",
+      "Se sentaron en un banco sucio. El dia empeoró desde ahi.",
+      "{name} se cruzo de brazos y dijo 'esto es todo?'. No pudiste responder.",
+      "El parque estaba lindo pero la conversacion estaba vacia."
+    ],
+    "restaurante": [
+      "La comida llego fria. {name} culpo al mozo. Vos no dijiste nada. Tampoco la charla.",
+      "{name} pidio lo mas caro. Vos pediste la ensalada. No hubo segunda cita.",
+      "La cuenta llego y {name} no se movio. Tampoco se movio despues.",
+      "El restaurante estaba lleno pero la conversacion estaba vacia.",
+      "{name} se quejo de todo: la comida, el servicio, la musica. Vos tambien, pero internamente."
+    ],
+    "libreria": [
+      "{name} se entusiasmo con un libro y te dejo plantado leyendo. Literalmente.",
+      "Se confundieron de piso y terminaron en la seccion de cocina. No era buena sena.",
+      "{name} no leia, solo hacia selfies en la libreria. Te fuiste con la excusa de comprar algo.",
+      "La libreria cerraba temprano. {name} no quiso quedarse un minuto mas.",
+      "{name} compró un libro sobre 'superar ex'. No sabias si reir o llorar."
+    ],
+    "museo": [
+      "{name} no sabia nada de arte. Tampoco vos. Se aburrieron en silencio.",
+      "Frente a una pintura, {name} dijo 'mi hijo de cinco hace algo parecido'. Ouch.",
+      "El museo era gratis pero la verguenza no.",
+      "Se perdieron en el museo. {name} se enojo porque no encontraba la salida.",
+      "{name} se toco el pelo veinte veces frente al espejo del museo. No te miro ni una vez."
+    ],
+    "bowling": [
+      "Ganaste por mucho. {name} no le gusta perder. Se fue sin despedirse.",
+      "{name} tiró la pelota y te pego en el pie. El resto de la noche fue peor.",
+      "Se cayeron de risa. De risa de vos, no con vos.",
+      "La pista era resbalosa. Vos caiste, {name} se rio. No se levanto a ayudarte.",
+      "{name} mejoró su juego con otra persona. Vos te quedaste mirando."
+    ],
+    "teatro": [
+      "La obra era mala. {name} se durmió. Literalmente.",
+      "{name} no hablo durante toda la obra ni despues. Era muda o aburrida.",
+      "Salieron del teatro y {name} dijo 'igual la obra era mejor que la cita'.",
+      "La obra era comedia. {name} no se rio en ningun momento. Ni de vos.",
+      "{name} se fue al intermedio y no volvio. Dejaste la entrada en el piso."
+    ]
   },
   "maleEncounterNames": [
     "un tipo que se te acerco en la fila del cafe",
@@ -250,13 +874,13 @@
     "un barman que te quiso dar su numero",
     "un vecino que siempre te saluda demasiado",
     "un vendedor que te dijo 'tenes una cara linda' y te ofrecio descuento",
-    "un companion de facultad que insistia en tomar mates juntos",
+    "un compañero de facultad que insistia en tomar mates juntos",
     "un tipo en el colectivo que no paraba de mirarte"
   ],
   "gymSoloTexts": [
     "Te miraste al espejo 40 minutos. Productividad.",
     "Hiciste 200 abdominales y despues te comiste un guarrada. Equilibrio.",
-    "Te cruzaste con tu ex en la pantalla de la bicicleta estatica. La电视 y la控 remota.",
+    "Te cruzaste con tu ex en la pantalla de la bicicleta estatica. La tele y la control remota.",
     "Entrenaste como si tu vida dependiera de ello. No depende, pero el animo sube.",
     "Pusiste musica motivational y te sentiste un guion de pelicula. Tipico.",
     "Te diste cuenta que llevas 20 minutos sentado en la maquina mirando el techo. Gym exitoso.",
@@ -279,7 +903,7 @@
   ],
   "gymHarasserTexts": [
     "Un tipo se te acerca y te dice 'che, entrenas conmigo? Yo te ayudo con las sentadillas'. No sabes como reaccionar.",
-    "Un tipo te dice 'que buena forma tenes, segui asi'. Queres Correspondencia pero te quedas mudo.",
+    "Un tipo te dice 'que buena forma tenes, segui asi'. Queres correspondencia pero te quedas mudo.",
     "Un tipo te pregunta si necesitas spotting. Le decis que si. Se queda demasiado cerca.",
     "Un tipo te dice 'nos vemos todos los dias, somos como una familia'. No lo conoces de nada.",
     "Un tipo te ofrece entrenar juntos. Le decis que ya estas. Te espera afuera igual.",
@@ -287,7 +911,7 @@
     "Un tipo te dice 'tu entrenamiento es inspirador'. No sabes si es cumplido o algo mas.",
     "Un tipo te pregunta si queres tomar un protein shake juntos. Algo en la mirada te dice que no es solo por el shake.",
     "Un tipo te sigue por el gym observando tu tecnica. No entrenas con nadie.",
-    "Un tipo te dice 'che, no pareces de aca'. No sabes si es un halago o una investidura."
+    "Un tipo te dice 'che, no pareces de aca'. No sabes si es un halago o una insinuación."
   ],
   "gymInterestTexts": [
     "Un amigo te mira de una forma rara. No sabes si es cariño o algo más.",

@@ -13,10 +13,10 @@
 | Aspecto | Decisión |
 |---|---|
 | **Formato** | Simulador de vida/relaciones con estado de ánimo |
-| **Plataforma** | Phaser.js (framework de juegos web) |
+| **Plataforma** | Web estática (HTML, CSS, JSON y JavaScript) |
 | **Estilo visual** | Terminal retro (CMD / typewriter) |
-| **Mundo** | Feed tipo timeline con eventos + mapa de 4 lugares |
-| **Campaña** | Semanas con guardado manual |
+| **Mundo** | Feed tipo timeline con eventos + mapa de 9 lugares físicos; app de citas en el teléfono |
+| **Campaña** | Semanas con guardado local automático |
 | **Duración** | Largo tipo campaña |
 
 ---
@@ -82,13 +82,20 @@ La exmarida acechadora que sabotea y controla.
 - **Consecuencia:** Pierde la cita + puntos de acción gastados
 - **Feedback:** Aviso enigmático (el jugador ve algo ambiguo)
 
-### 📍 Mapa y Lugares (4 lugares básicos)
+### 📍 Mapa y lugares físicos
 | Lugar | Perfil de citas | Riesgo de sabotaje |
 |---|---|---|
 | **Café** | Citas relajadas, más probabilidades de mujeres | Medio |
 | **Bar** | Citas nocturnas, más movimiento, más dinero necesario | Alto |
-| **Gimnasio** | Citas de actividad física, más apariencia | Bajo |
-| **App de Citas** | Digital, más opciones pero más exposición | Muy alto |
+| **Gimnasio** | Actividad física y refugio seguro | Bajo |
+| **Parque** | Citas al aire libre y encuentros casuales | Bajo |
+| **Restaurante** | Cena elegante, inversión alta | Medio |
+| **Librería** | Ambiente tranquilo para conversar | Bajo |
+| **Museo** | Cultura y arte | Bajo |
+| **Bowling** | Actividad distendida | Medio |
+| **Teatro** | Alta cultura y compromiso | Alto |
+
+La **App de Citas** no forma parte del mapa: se abre desde la pestaña App del teléfono. Ofrece perfiles nuevos, con mayor exposición al sabotaje.
 
 ### 📱 Feed Tipo Timeline
 - Las oportunidades aparecen como eventos en un feed
@@ -154,7 +161,7 @@ La exmarida acechadora que sabotea y controla.
 
 ## 🛠️ Tecnología
 
-- **Framework:** Phaser.js
+- **Base:** HTML, CSS, JSON y JavaScript sin framework
 - **Estilo visual:** Terminal retro (CMD / typewriter)
 - **Plataforma:** Web (se sube a host estático)
 - **Desarrollo:** Mecánica primero, arte después
@@ -166,12 +173,12 @@ La exmarida acechadora que sabotea y controla.
 | Aspecto | Decisión |
 |---|---|
 | Formato | Simulador de vida/relaciones con estado de ánimo |
-| Tecnología | Phaser.js |
+| Tecnología | HTML, CSS, JSON y JavaScript sin framework |
 | Estilo visual | Terminal retro (CMD / typewriter) |
-| Mundo | Feed tipo timeline + mapa de 4 lugares |
-| Campaña | Semanas con guardado manual |
+| Mundo | Feed tipo timeline + mapa de 9 lugares físicos; app dentro del teléfono |
+| Campaña | Semanas con guardado local automático |
 | Atributos | Labia, Apariencia, Confianza, Ánimo, Dinero |
-| Victoria Salado | 3 conquistas O 7 Puntos Gay oculto |
+| Victoria Salado | Familia con una persona O 7 Puntos Gay ocultos |
 | Victoria Reina | Se corona primero / aislamiento / asfixia |
 | Tono | Drama + comedia oscura |
 | Desarrollo | Mecánica primero, arte después |

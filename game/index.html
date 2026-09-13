@@ -20,8 +20,9 @@
 <div style="text-align:center;margin-top:8px;">
 <p style="color:var(--accent);font-size:12px">REINA FALSA: La Trampa Kármica de los Exmaridos</p>
 </div>
-<div style="text-align:center;margin-top:60px;">
-<p style="color:var(--dim);margin-bottom:30px;line-height:1.6">
+<div style="text-align:center;margin-top:40px;">
+<div id="queen-start-portrait"></div>
+<p style="color:var(--dim);margin:20px 0 30px;line-height:1.6">
 "Despues de todo lo que pase...<br>tenes que intentarlo de nuevo."
 </p>
 <p style="margin-bottom:40px;font-size:12px;color:var(--dim)">Un simulador de vida, amor y sabotaje emocional.</p>
@@ -77,6 +78,10 @@
 function updatePhoneClock(){var el=document.getElementById('phone-clock');if(!el)return;var d=new Date();var h=String(d.getHours()).padStart(2,'0');var m=String(d.getMinutes()).padStart(2,'0');el.textContent=h+':'+m;}
 updatePhoneClock();setInterval(updatePhoneClock,30000);
 new MutationObserver(updatePhoneClock).observe(document.getElementById('screen-phone'),{attributes:true,attributeFilter:['class']});
+/* Reina: inyectar retrato en pantalla de inicio */
+function injectQueenPortrait(){var el=document.getElementById('queen-start-portrait');if(el&&typeof queenPortrait==='function'){el.innerHTML='<div style="text-align:center">'+queenPortrait(100)+'</div>';}}
+document.addEventListener('DOMContentLoaded',injectQueenPortrait);
+setTimeout(injectQueenPortrait,500);
 </script>
 </body>
 </html>

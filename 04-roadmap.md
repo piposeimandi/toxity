@@ -1,7 +1,7 @@
 # 🗺️ Toxity (Reina Falsa) — Roadmap
 
 Guía de evolución del proyecto. Cada etapa se construye sobre la anterior.
-Última actualización: 2026-09-11.
+Última actualización: 2026-09-12.
 
 ---
 
@@ -35,10 +35,11 @@ game/
 
 ---
 
-## 🔨 En curso — El teléfono como centro
+## ✅ Teléfono como centro (COMPLETADO)
 
-- [ ] **App de Citas sale del mapa** → vive solo dentro del teléfono (pestaña App). El mapa queda con 9 lugares físicos.
-- [ ] Revisar textos que mencionen "ir a la app desde el mapa".
+- [x] **App de Citas fuera del mapa**: vive solo dentro del teléfono, en la pestaña App.
+- [x] El mapa muestra 9 lugares físicos: café, bar, gimnasio, parque, restaurante, librería, museo, bowling y teatro.
+- [x] Textos y navegación alineados: la app se abre desde el teléfono, no desde el mapa.
 - [ ] Playtesting del flujo completo: app → cita → contacto → invitar desde teléfono → mensaje de ella.
 
 ---
@@ -49,7 +50,7 @@ game/
 - [ ] **Economía**: +$80/sem alcanza para ~2 citas caras; vigilar si el jugador activo se funde.
 - [ ] **Gate de ánimo**: éxito +10 siempre (+15 con ánimo alto); vigilar que no sea ni trivial ni imposible.
 - [ ] **Reina más expresiva**: que sus sabotajes se sientan personales (mensajes con nombre, escenas).
-- [ ] **Más lugares con identidad**: cada lugar con evento propio (hoy solo gym y app tienen mecánica única).
+- [ ] **Más lugares con identidad**: cada lugar con evento propio (hoy solo el gimnasio tiene una mecánica única).
 - [ ] **Finales narrativos**: textos de victoria/derrota más largos, epílogo según con quién formaste familia.
 - [ ] **Fotos propias**: reemplazar randomuser por arte generado cuando haya estilo definido (Etapa 3).
 
@@ -81,7 +82,7 @@ Host definitivo, dominio propio, analítica, anti-trampas, PWA instalable.
 
 ```
 Etapa 0: Prototipo Mecánico      ████████░░ COMPLETO (jugable, en Pages)
-En curso: Teléfono como centro   ██████░░░░ (falta: app sale del mapa)
+Teléfono como centro             ██████████ COMPLETO
 Ideas backlog                    ░░░░░░░░░░ (7 ideas del diseñador)
 Etapa 1: Cuentas y Nube          ░░░░░░░░░░ PLANIFICADO (siguiente grande)
 Etapa 2: Multiplayer Online      ░░░░░░░░░░ PLANIFICADO

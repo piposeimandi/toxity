@@ -5,6 +5,7 @@ import { gameData } from '../data/gameData';
 import { pick } from '../utils/math';
 import { formatMoney } from '../utils/text';
 import { Button } from '../components/Button';
+import { renderQueenPortrait } from '../components/QueenPortrait';
 import { updatePartnerHealthWeekly, findRelationById, getRelationProgressText } from '../models/RelationSystem';
 import { queenTurn, type QueenTurnResult } from '../models/QueenAI';
 import { generateWeekEvents, type WeekEvent } from '../models/EventSystem';
@@ -188,13 +189,16 @@ export class WeekEndScene extends Phaser.Scene {
   }
 
   private renderQueenResult(x: number, y: number, result: QueenTurnResult): void {
+    // Queen portrait
+    renderQueenPortrait(this, x - 140, y, 40);
+
     const icon = result.action === 'advance' ? '👑' : '⚔️';
     const color = result.action === 'advance' ? '#8a6a2a'
       : result.action.includes('major') ? '#aa2a2a'
       : result.action.includes('minor') ? '#aa6a2a'
       : '#4a8a4a';
 
-    this.renderPaperLine(x, y, `${icon} ${result.detail}`, color);
+    this.renderPaperLine(x + 20, y, `${icon} ${result.detail}`, color);
   }
 
   private renderWeekEvents(x: number, y: number, events: WeekEvent[]): void {

@@ -6,16 +6,8 @@ import { gameData } from '../data/gameData';
 import { pick } from '../utils/math';
 
 const LOCATION_ICONS: Record<string, string> = {
-  cafe: '☕',
-  bar: '🍺',
-  gym: '🏋️',
-  parque: '🌳',
-  app: '📱',
-  restaurante: '🍽️',
-  libreria: '📚',
-  museo: '🏛️',
-  bowling: '🎳',
-  teatro: '🎭',
+  cafe: '☕', bar: '🍺', gym: '🏋️', parque: '🌳', app: '📱',
+  restaurante: '🍽️', libreria: '📚', museo: '🏛️', bowling: '🎳', teatro: '🎭',
 };
 
 export class LocationScene extends Phaser.Scene {
@@ -36,50 +28,39 @@ export class LocationScene extends Phaser.Scene {
 
     const { width, height } = this.cameras.main;
 
-    // ── Wooden desk background ──
+    // ── Desk background ──
     this.add.rectangle(width / 2, height / 2, width, height, 0x3d2b1f);
-
-    // Wood grain lines
     for (let i = 0; i < 18; i++) {
-      const y = 20 + i * 35;
-      this.add.rectangle(width / 2, y, width, 1, 0x4a3525, 0.4);
+      this.add.rectangle(width / 2, 20 + i * 35, width, 1, 0x4a3525, 0.4);
     }
 
-    // ── Location title (sticky note in corner) ──
+    // ── Title sticky note ──
     const locIcon = LOCATION_ICONS[this.locKey] ?? '📍';
-    const titleW = 260;
-    const titleH = 40;
-    const titleX = width / 2;
-    const titleY = titleH / 2 + 14;
-
-    this.add.rectangle(titleX + 2, titleY + 2, titleW, titleH, 0x000000, 0.2);
-    this.add.rectangle(titleX, titleY, titleW, titleH, 0xfff9b0);
-    this.add.rectangle(titleX, titleY, titleW, titleH).setStrokeStyle(1, 0xc9b99a);
-
-    this.add.text(titleX, titleY, `${locIcon} ${this.location.name}`, {
+    this.add.rectangle(width / 2 + 2, 32, 240, 36, 0x000000, 0.2);
+    this.add.rectangle(width / 2, 30, 240, 36, 0xfff9b0);
+    this.add.text(width / 2, 30, `${locIcon} ${this.location.name}`, {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '11px',
+      fontSize: '10px',
       color: '#5a3e1b',
     }).setOrigin(0.5);
 
-    // Risk label
+    // Risk
     const riskColor = this.location.risk === 'low' ? '#4ecdc4' :
                       this.location.risk === 'medium' ? '#ffcc00' :
                       this.location.risk === 'high' ? '#ff8844' : '#ff4444';
-
-    this.add.text(titleX, titleY + 28, `Riesgo: ${this.location.riskLabel}`, {
+    this.add.text(width / 2, 54, `Riesgo: ${this.location.riskLabel}`, {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
+      fontSize: '7px',
       color: riskColor,
     }).setOrigin(0.5);
 
-    // ── Gym is safe haven ──
+    // ── Gym safe haven ──
     if (this.locKey === 'gym') {
       this.handleGym(width, height);
       return;
     }
 
-    // ── Try to find a candidate ──
+    // ── Find candidate ──
     const candidates = this.getAvailableCandidates();
     if (candidates.length === 0) {
       this.handleNoCandidate(width, height);
@@ -88,20 +69,20 @@ export class LocationScene extends Phaser.Scene {
 
     const candidate = pick(candidates);
 
-    // ── Candidate "file folder" ──
-    const folderW = 400;
-    const folderH = 320;
+    // ── File folder ──
+    const folderW = 380;
+    const folderH = 340;
     const folderX = width / 2;
-    const folderY = height / 2 + 20;
+    const folderY = height / 2 + 30;
 
-    // Folder shadow
-    this.add.rectangle(folderX + 5, folderY + 5, folderW, folderH, 0x000000, 0.35);
+    // Shadow
+    this.add.rectangle(folderX + 4, folderY + 4, folderW, folderH, 0x000000, 0.3);
 
-    // Folder tab (top tab sticking out)
-    this.add.rectangle(folderX - 100, folderY - folderH / 2 - 12, 120, 24, 0xd4c4a0);
-    this.add.text(folderX - 100, folderY - folderH / 2 - 12, 'EXPEDIENTE', {
+    // Tab
+    this.add.rectangle(folderX - 80, folderY - folderH / 2 - 10, 100, 20, 0xd4c4a0);
+    this.add.text(folderX - 80, folderY - folderH / 2 - 10, 'EXPEDIENTE', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '7px',
+      fontSize: '6px',
       color: '#5a3e1b',
     }).setOrigin(0.5);
 
@@ -109,118 +90,87 @@ export class LocationScene extends Phaser.Scene {
     this.add.rectangle(folderX, folderY, folderW, folderH, 0xfaf3e0);
     this.add.rectangle(folderX, folderY, folderW, folderH).setStrokeStyle(2, 0xc9b99a);
 
-    // ── Photo placeholder (portrait box) ──
-    const photoW = 100;
-    const photoH = 110;
+    // ── Photo ──
     const photoX = folderX;
-    const photoY = folderY - 90;
+    const photoY = folderY - 80;
+    const photoW = 90;
+    const photoH = 100;
 
+    // Photo frame
+    this.add.rectangle(photoX, photoY, photoW + 6, photoH + 6, 0x8a7a62);
     this.add.rectangle(photoX, photoY, photoW, photoH, 0xe8dcc8);
-    this.add.rectangle(photoX, photoY, photoW, photoH).setStrokeStyle(1, 0xa0937a);
 
-    // Initial letter as placeholder
+    // Initial letter
     this.add.text(photoX, photoY, candidate.name.charAt(0), {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '28px',
+      fontSize: '32px',
       color: '#7a5c3a',
     }).setOrigin(0.5);
 
-    // "Foto" label under photo
-    this.add.text(photoX, photoY + photoH / 2 + 12, '[ foto ]', {
+    // Photo label
+    this.add.text(photoX, photoY + photoH / 2 + 10, '[ foto ]', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '7px',
+      fontSize: '6px',
       color: '#a0937a',
     }).setOrigin(0.5);
 
-    // ── Candidate name ──
-    this.add.text(folderX, photoY + photoH / 2 + 32, candidate.name, {
+    // ── Candidate info ──
+    this.add.text(folderX, photoY + photoH / 2 + 30, candidate.name, {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '14px',
+      fontSize: '12px',
       color: '#3e2712',
     }).setOrigin(0.5);
 
-    // ── Traits ──
-    this.add.text(folderX, photoY + photoH / 2 + 56, candidate.traits, {
+    this.add.text(folderX, photoY + photoH / 2 + 52, candidate.traits, {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
+      fontSize: '7px',
       color: '#6b5b42',
       wordWrap: { width: folderW - 40 },
       align: 'center',
     }).setOrigin(0.5);
 
-    // ── Personality ──
-    this.add.text(folderX, photoY + photoH / 2 + 80, `Personalidad: ${candidate.personality}`, {
+    this.add.text(folderX, photoY + photoH / 2 + 74, `Personalidad: ${candidate.personality}`, {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '7px',
+      fontSize: '6px',
       color: '#8a7a62',
     }).setOrigin(0.5);
 
-    // ── Action buttons (sticky notes / stamps) ──
-    // "Ir a la cita" — pink sticky note
-    const dateNoteW = 160;
-    const dateNoteH = 44;
-    const dateNoteX = folderX - 90;
-    const dateNoteY = folderY + folderH / 2 - 38;
-
-    const dateNote = this.add.container(dateNoteX, dateNoteY);
-
-    const dateShadow = this.add.rectangle(3, 3, dateNoteW, dateNoteH, 0x000000, 0.2);
-    dateShadow.setOrigin(0.5);
-    const dateBg = this.add.rectangle(0, 0, dateNoteW, dateNoteH, 0xffb6c1);
-    dateBg.setOrigin(0.5);
+    // ── Action buttons ──
+    // "Ir a la cita" — pink note
+    const dateBtn = this.add.container(folderX - 80, folderY + folderH / 2 - 36);
+    dateBtn.add(this.add.rectangle(3, 3, 140, 38, 0x000000, 0.2).setOrigin(0.5));
+    const dateBg = this.add.rectangle(0, 0, 140, 38, 0xffb6c1).setOrigin(0.5);
     dateBg.setStrokeStyle(1, 0xd4738a);
-    const dateText = this.add.text(0, 0, '💘 Ir a la cita', {
+    dateBtn.add(dateBg);
+    dateBtn.add(this.add.text(0, 0, '💘 Ir a la cita', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '9px',
+      fontSize: '8px',
       color: '#6b1a2a',
-    }).setOrigin(0.5);
-    const dateZone = this.add.zone(0, 0, dateNoteW, dateNoteH);
-    dateZone.setInteractive({ useHandCursor: true });
-
-    dateZone.on('pointerover', () => {
-      this.tweens.add({ targets: dateNote, y: dateNoteY - 3, duration: 100 });
-      dateBg.setFillStyle(0xffcdd8);
-    });
-    dateZone.on('pointerout', () => {
-      this.tweens.add({ targets: dateNote, y: dateNoteY, duration: 100 });
-      dateBg.setFillStyle(0xffb6c1);
-    });
+    }).setOrigin(0.5));
+    const dateZone = this.add.zone(0, 0, 140, 38).setInteractive({ useHandCursor: true });
+    dateBtn.add(dateZone);
+    dateZone.on('pointerover', () => this.tweens.add({ targets: dateBtn, y: dateBtn.y - 3, duration: 80 }));
+    dateZone.on('pointerout', () => this.tweens.add({ targets: dateBtn, y: folderY + folderH / 2 - 36, duration: 80 }));
     dateZone.on('pointerdown', () => {
       const baseChance = this.calculateBaseChance();
       this.scene.start('DateScene', { candidate, loc: this.location, baseChance });
     });
 
-    dateNote.add([dateShadow, dateBg, dateText, dateZone]);
-
-    // "Volver" — blue sticky note
-    const backNoteW = 140;
-    const backNoteH = 44;
-    const backNoteX = folderX + 90;
-    const backNoteY = folderY + folderH / 2 - 38;
-
-    const backNote = this.add.container(backNoteX, backNoteY);
-
-    const backShadow = this.add.rectangle(3, 3, backNoteW, backNoteH, 0x000000, 0.2);
-    backShadow.setOrigin(0.5);
-    const backBg = this.add.rectangle(0, 0, backNoteW, backNoteH, 0xd4e6f1);
-    backBg.setOrigin(0.5);
+    // "Volver" — blue note
+    const backBtn = this.add.container(folderX + 80, folderY + folderH / 2 - 36);
+    backBtn.add(this.add.rectangle(3, 3, 120, 38, 0x000000, 0.2).setOrigin(0.5));
+    const backBg = this.add.rectangle(0, 0, 120, 38, 0xd4e6f1).setOrigin(0.5);
     backBg.setStrokeStyle(1, 0x8aaabb);
-    const backText = this.add.text(0, 0, '← Volver', {
+    backBtn.add(backBg);
+    backBtn.add(this.add.text(0, 0, '← Volver', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '9px',
+      fontSize: '8px',
       color: '#2c3e50',
-    }).setOrigin(0.5);
-    const backZone = this.add.zone(0, 0, backNoteW, backNoteH);
-    backZone.setInteractive({ useHandCursor: true });
-
-    backZone.on('pointerover', () => {
-      this.tweens.add({ targets: backNote, y: backNoteY - 3, duration: 100 });
-      backBg.setFillStyle(0xe0eef6);
-    });
-    backZone.on('pointerout', () => {
-      this.tweens.add({ targets: backNote, y: backNoteY, duration: 100 });
-      backBg.setFillStyle(0xd4e6f1);
-    });
+    }).setOrigin(0.5));
+    const backZone = this.add.zone(0, 0, 120, 38).setInteractive({ useHandCursor: true });
+    backBtn.add(backZone);
+    backZone.on('pointerover', () => this.tweens.add({ targets: backBtn, y: backBtn.y - 3, duration: 80 }));
+    backZone.on('pointerout', () => this.tweens.add({ targets: backBtn, y: folderY + folderH / 2 - 36, duration: 80 }));
     backZone.on('pointerdown', () => {
       this.state.day += 1;
       this.state.daysWithoutDates += 1;
@@ -231,45 +181,39 @@ export class LocationScene extends Phaser.Scene {
       }
       this.scene.start('WorldScene');
     });
-
-    backNote.add([backShadow, backBg, backText, backZone]);
   }
 
   private handleGym(width: number, height: number): void {
-    // ── Gym paper on desk ──
-    const paperW = 400;
-    const paperH = 220;
+    const paperW = 380;
+    const paperH = 200;
     const paperX = width / 2;
-    const paperY = height / 2 + 20;
+    const paperY = height / 2 + 30;
 
     this.add.rectangle(paperX + 4, paperY + 4, paperW, paperH, 0x000000, 0.3);
     this.add.rectangle(paperX, paperY, paperW, paperH, 0xfaf3e0);
     this.add.rectangle(paperX, paperY, paperW, paperH).setStrokeStyle(2, 0xc9b99a);
 
-    // Stamp: "REFUGIO SEGURO"
-    const stampW = 200;
-    const stampH = 30;
-    this.add.rectangle(paperX, paperY - 60, stampW, stampH);
-    const stampBorder = this.add.rectangle(paperX, paperY - 60, stampW, stampH);
-    stampBorder.setStrokeStyle(2, 0x4ecdc4);
-    this.add.text(paperX, paperY - 60, 'REFUGIO SEGURO', {
+    // Stamp
+    this.add.rectangle(paperX, paperY - 50, 180, 26);
+    this.add.rectangle(paperX, paperY - 50, 180, 26).setStrokeStyle(2, 0x4ecdc4);
+    this.add.text(paperX, paperY - 50, 'REFUGIO SEGURO', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '10px',
+      fontSize: '9px',
       color: '#4ecdc4',
     }).setOrigin(0.5);
 
     const eventText = pick(this.dataService.gymSoloTexts);
-    this.add.text(paperX, paperY + 5, eventText, {
+    this.add.text(paperX, paperY + 10, eventText, {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '9px',
+      fontSize: '8px',
       color: '#3e2712',
       wordWrap: { width: paperW - 40 },
       align: 'center',
     }).setOrigin(0.5);
 
-    this.add.text(paperX, paperY + 55, 'Ganaste +5 confianza', {
+    this.add.text(paperX, paperY + 50, 'Ganaste +5 confianza', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '9px',
+      fontSize: '8px',
       color: '#4ecdc4',
     }).setOrigin(0.5);
 
@@ -278,34 +222,17 @@ export class LocationScene extends Phaser.Scene {
     this.state.day += 1;
     this.registry.set('gameState', this.state);
 
-    // Back sticky note
-    const backNoteW = 180;
-    const backNoteH = 40;
-    const backNoteX = paperX;
-    const backNoteY = paperY + paperH / 2 + 40;
-
-    const backNote = this.add.container(backNoteX, backNoteY);
-    const backShadow = this.add.rectangle(3, 3, backNoteW, backNoteH, 0x000000, 0.2);
-    backShadow.setOrigin(0.5);
-    const backBg = this.add.rectangle(0, 0, backNoteW, backNoteH, 0xd4e6f1);
-    backBg.setOrigin(0.5);
-    backBg.setStrokeStyle(1, 0x8aaabb);
-    const backText = this.add.text(0, 0, '← Volver al mapa', {
+    // Back button
+    const backBtn = this.add.container(paperX, paperY + paperH / 2 + 36);
+    backBtn.add(this.add.rectangle(3, 3, 160, 34, 0x000000, 0.2).setOrigin(0.5));
+    backBtn.add(this.add.rectangle(0, 0, 160, 34, 0xd4e6f1).setOrigin(0.5).setStrokeStyle(1, 0x8aaabb));
+    backBtn.add(this.add.text(0, 0, '← Volver al mapa', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
+      fontSize: '7px',
       color: '#2c3e50',
-    }).setOrigin(0.5);
-    const backZone = this.add.zone(0, 0, backNoteW, backNoteH);
-    backZone.setInteractive({ useHandCursor: true });
-
-    backZone.on('pointerover', () => {
-      this.tweens.add({ targets: backNote, y: backNoteY - 3, duration: 100 });
-      backBg.setFillStyle(0xe0eef6);
-    });
-    backZone.on('pointerout', () => {
-      this.tweens.add({ targets: backNote, y: backNoteY, duration: 100 });
-      backBg.setFillStyle(0xd4e6f1);
-    });
+    }).setOrigin(0.5));
+    const backZone = this.add.zone(0, 0, 160, 34).setInteractive({ useHandCursor: true });
+    backBtn.add(backZone);
     backZone.on('pointerdown', () => {
       if (this.state.day > 7) {
         this.scene.start('WeekEndScene');
@@ -313,14 +240,11 @@ export class LocationScene extends Phaser.Scene {
       }
       this.scene.start('WorldScene');
     });
-
-    backNote.add([backShadow, backBg, backText, backZone]);
   }
 
   private handleNoCandidate(width: number, height: number): void {
-    // ── Empty paper on desk ──
-    const paperW = 380;
-    const paperH = 160;
+    const paperW = 360;
+    const paperH = 140;
     const paperX = width / 2;
     const paperY = height / 2 + 30;
 
@@ -328,18 +252,17 @@ export class LocationScene extends Phaser.Scene {
     this.add.rectangle(paperX, paperY, paperW, paperH, 0xfaf3e0);
     this.add.rectangle(paperX, paperY, paperW, paperH).setStrokeStyle(2, 0xc9b99a);
 
-    this.add.text(paperX, paperY - 30, 'No hay nadie aquí...', {
+    this.add.text(paperX, paperY - 25, 'No hay nadie aquí...', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '12px',
+      fontSize: '11px',
       color: '#6b5b42',
     }).setOrigin(0.5);
 
-    // Maybe ambient event
     if (Math.random() < 0.5) {
       const event = pick(this.dataService.ambientEvents);
-      this.add.text(paperX, paperY + 20, event, {
+      this.add.text(paperX, paperY + 15, event, {
         fontFamily: '"Press Start 2P", monospace',
-        fontSize: '8px',
+        fontSize: '7px',
         color: '#8a7a62',
         wordWrap: { width: paperW - 40 },
         align: 'center',
@@ -350,34 +273,16 @@ export class LocationScene extends Phaser.Scene {
     this.state.daysWithoutDates += 1;
     this.registry.set('gameState', this.state);
 
-    // Back sticky note
-    const backNoteW = 180;
-    const backNoteH = 40;
-    const backNoteX = paperX;
-    const backNoteY = paperY + paperH / 2 + 36;
-
-    const backNote = this.add.container(backNoteX, backNoteY);
-    const backShadow = this.add.rectangle(3, 3, backNoteW, backNoteH, 0x000000, 0.2);
-    backShadow.setOrigin(0.5);
-    const backBg = this.add.rectangle(0, 0, backNoteW, backNoteH, 0xd4e6f1);
-    backBg.setOrigin(0.5);
-    backBg.setStrokeStyle(1, 0x8aaabb);
-    const backText = this.add.text(0, 0, '← Volver al mapa', {
+    const backBtn = this.add.container(paperX, paperY + paperH / 2 + 32);
+    backBtn.add(this.add.rectangle(3, 3, 160, 30, 0x000000, 0.2).setOrigin(0.5));
+    backBtn.add(this.add.rectangle(0, 0, 160, 30, 0xd4e6f1).setOrigin(0.5).setStrokeStyle(1, 0x8aaabb));
+    backBtn.add(this.add.text(0, 0, '← Volver al mapa', {
       fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
+      fontSize: '7px',
       color: '#2c3e50',
-    }).setOrigin(0.5);
-    const backZone = this.add.zone(0, 0, backNoteW, backNoteH);
-    backZone.setInteractive({ useHandCursor: true });
-
-    backZone.on('pointerover', () => {
-      this.tweens.add({ targets: backNote, y: backNoteY - 3, duration: 100 });
-      backBg.setFillStyle(0xe0eef6);
-    });
-    backZone.on('pointerout', () => {
-      this.tweens.add({ targets: backNote, y: backNoteY, duration: 100 });
-      backBg.setFillStyle(0xd4e6f1);
-    });
+    }).setOrigin(0.5));
+    const backZone = this.add.zone(0, 0, 160, 30).setInteractive({ useHandCursor: true });
+    backBtn.add(backZone);
     backZone.on('pointerdown', () => {
       if (this.state.day > 7) {
         this.scene.start('WeekEndScene');
@@ -385,29 +290,16 @@ export class LocationScene extends Phaser.Scene {
       }
       this.scene.start('WorldScene');
     });
-
-    backNote.add([backShadow, backBg, backText, backZone]);
   }
 
   private getAvailableCandidates(): Candidate[] {
-    const all = [
-      ...this.dataService.femaleCandidates,
-      ...this.dataService.maleCandidates,
-    ];
-    // Shuffle and take a few
-    const shuffled = all.sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, 3);
+    const all = [...this.dataService.femaleCandidates, ...this.dataService.maleCandidates];
+    return all.sort(() => Math.random() - 0.5).slice(0, 3);
   }
 
   private calculateBaseChance(): number {
-    const riskMap: Record<string, number> = {
-      low: 65,
-      medium: 55,
-      high: 45,
-      extreme: 35,
-    };
+    const riskMap: Record<string, number> = { low: 65, medium: 55, high: 45, extreme: 35 };
     const base = riskMap[this.location.risk] ?? 50;
-    // Bonus from stats
     return Math.min(90, base + Math.floor(this.state.labia / 10));
   }
 }

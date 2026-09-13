@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import type { GameState } from '../types/game';
 import { DataService } from '../data/DataService';
 import { gameData } from '../data/gameData';
+import { saveGame } from '../models/SaveSystem';
 
 const MAP_LOCATIONS = [
   { key: 'cafe', label: 'Café', icon: '☕', color: 0x6c63ff, x: 150, y: 200 },
@@ -152,7 +153,12 @@ export class WorldScene extends Phaser.Scene {
             this.state.day += 1;
             this.state.daysWithoutDates += 1;
             this.registry.set('gameState', this.state);
-            this.scene.restart();
+            if (this.state.day > 7) {
+              saveGame(this.state);
+              this.scene.start('WeekEndScene');
+            } else {
+              this.scene.restart();
+            }
           });
           return;
         }
@@ -194,6 +200,7 @@ export class WorldScene extends Phaser.Scene {
       this.state.daysWithoutDates += 1;
       if (this.state.day > 7) {
         this.registry.set('gameState', this.state);
+        saveGame(this.state);
         this.scene.start('WeekEndScene');
         return;
       }
